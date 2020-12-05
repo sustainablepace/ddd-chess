@@ -11,9 +11,12 @@ class MoveController(val chessGameRepository: ChessGameRepository) {
     @PostMapping("/move/{id}")
     fun move(@PathVariable id: String, @RequestBody move: String): String {
         chessGameRepository.get(id)?.let { chessGame ->
-            val (from, to) = move.split("-")
-            chessGame.position.set(to, chessGame.position.getValue(from))
-            chessGame.position.remove(from)
+            val (departureSquare, arrivalSquare) = move.split("-")
+            if (departureSquare == arrivalSquare) {
+                return "invalid move"
+            }
+            chessGame.position.set(arrivalSquare, chessGame.position.getValue(departureSquare))
+            chessGame.position.remove(departureSquare)
             println(chessGame.position)
             return ""
             //return "invalid move"
