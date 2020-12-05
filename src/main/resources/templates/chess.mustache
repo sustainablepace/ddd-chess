@@ -1,0 +1,68 @@
+<html>
+<head>
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/css/chessboard-1.0.0.min.css">
+    <script src="/js/jquery-3.5.1.min.js"></script>
+    <script src="/js/chessboard-1.0.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var id = ""
+            let div = 'myBoard';
+            var board = Chessboard(div)
+
+            let onDrop = function (departureSquare, arrivalSquare) {
+                let result = makeMove(departureSquare, arrivalSquare)
+                if (result === "invalid move") {
+                    return "snapback"
+                }
+                else if (result === "checkmate" || result === "draw") {
+                    board.move(departureSquare + "-" + arrivalSquare, false)
+                    alert("Game over - " + result)
+                    board = Chessboard(div, {
+                        draggable: false,
+                        position: board.position()
+                    })
+                }
+            }
+
+            let makeMove = function (departureSquare, arrivalSquare) {
+                let outcome = ""
+                $.ajax({
+                    type: "post",
+                    async: false,
+                    url: "/move/"+id,
+                    data: departureSquare + "-" + arrivalSquare,
+                    contentType: "text/plain",
+                    success: function (result) {
+                        outcome = result
+                    },
+                    error: function () {
+                        outcome = "invalid move"
+                    }
+                })
+                return outcome
+            }
+
+            $('#startBtn').on('click', function () {
+                $.post("/setup", function (game) {
+                    id = game.id
+                    board = Chessboard(div, {
+                        onDrop: onDrop,
+                        draggable: true,
+                        position: game.position
+                    })
+                })
+            })
+        });
+    </script>
+</head>
+<body>
+
+<h1>{{title}}</h1>
+<button id="startBtn">Start game</button>
+<br/>
+<br/>
+<div id="myBoard" style="width: 400px"></div>
+
+</body>
+</html>
