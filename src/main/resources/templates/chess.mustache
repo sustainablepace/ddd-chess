@@ -6,53 +6,89 @@
     <script src="/js/chessboard-1.0.0.min.js"></script>
     <script>
         $(document).ready(function () {
-            var id = ""
             let div = 'myBoard';
-            var board = Chessboard(div)
+            let chessGame = {
+                id: "",
+                board: Chessboard(div),
+                turn: "",
+                white: "",
+                black: "",
+                status: ""
+            }
+
+            let onDragStart = function (source, piece) {
+                if ((chessGame.turn === 'white' && piece.search(/^w/) === -1) ||
+                        (chessGame.turn === 'black' && piece.search(/^b/) === -1)) {
+                    return false
+                }
+            }
 
             let onDrop = function (departureSquare, arrivalSquare) {
-                let result = makeMove(departureSquare, arrivalSquare)
-                if (result === "invalid move") {
+                let game = makeMove(departureSquare, arrivalSquare)
+                if (game === null) {
                     return "snapback"
-                }
-                else if (result === "checkmate" || result === "draw") {
-                    board.move(departureSquare + "-" + arrivalSquare, false)
-                    alert("Game over - " + result)
-                    board = Chessboard(div, {
-                        draggable: false,
-                        position: board.position()
-                    })
+                } else {
+                    updateGame(game)
+                    if(chessGame[chessGame.turn] === "computer" && chessGame.status === "in progress") {
+                        let move = suggestMove()
+                        if(move !== null) {
+                            let squares = move.split("-")
+                            onDrop(squares[0], squares[1])
+                        }
+                    }
                 }
             }
 
             let makeMove = function (departureSquare, arrivalSquare) {
-                let outcome = ""
+                let outcome = null
                 $.ajax({
                     type: "post",
                     async: false,
-                    url: "/move/"+id,
+                    url: "/move/" + chessGame.id,
                     data: departureSquare + "-" + arrivalSquare,
                     contentType: "text/plain",
-                    success: function (result) {
-                        outcome = result
-                    },
-                    error: function () {
-                        outcome = "invalid move"
+                    success: function (game) {
+                        outcome = game
+                    }
+                })
+                return outcome
+            }
+
+            let suggestMove = function() {
+                let outcome = null
+                $.ajax({
+                    type: "post",
+                    async: false,
+                    url: "/calculateMove/" + chessGame.id,
+                    success: function (move) {
+                        outcome = move
                     }
                 })
                 return outcome
             }
 
             $('#startBtn').on('click', function () {
-                $.post("/setup", function (game) {
-                    id = game.id
-                    board = Chessboard(div, {
-                        onDrop: onDrop,
-                        draggable: true,
-                        position: game.position
-                    })
-                })
+                $.post("/setup", updateGame)
             })
+
+            function updateGame(game) {
+                chessGame.id = game.id
+
+                let draggable = game[game.turn] === "human" && game.status === "in progress"
+                chessGame.board = Chessboard(div, {
+                    onDrop: onDrop,
+                    onDragStart: onDragStart,
+                    draggable: draggable,
+                    position: game.position
+                })
+                chessGame.turn = game.turn
+                chessGame.white = game.white
+                chessGame.black = game.black
+                chessGame.status = game.status
+                if (game.status !== "in progress") {
+                    alert("Game over - " + game.status)
+                }
+            }
         });
     </script>
 </head>

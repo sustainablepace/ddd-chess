@@ -1,25 +1,23 @@
 package net.sustainablepace.chess.domain
 
-typealias Position = MutableMap<String, String>
-
-inline class ChessGameId (val id: String) {
-    constructor(): this(createId())
-
-    companion object {
-        private fun createId(): String {
-            val charPool = ('a'..'z').toList() + ('1'..'9').toList()
-            return (1..7)
-                .map { _ -> kotlin.random.Random.nextInt(0, charPool.size) }
-                .map(charPool::get)
-                .joinToString("");
-        }
-    }
-}
-
-class ChessGame private constructor (val id: String, val position: Position) {
+class ChessGame private constructor(
+    val id: ChessGameId,
+    val position: MutableMap<String, String>,
+    var turn: String,
+    val white: String,
+    val black: String,
+    var status: String
+) {
 
     constructor() : this(defaultPosition())
-    private constructor(position: Position): this(ChessGameId().id, position)
+    private constructor(position: MutableMap<String, String>) : this(
+        id = chessGameId(),
+        position = position,
+        turn = "white",
+        white = "human",
+        black = "computer",
+        status = "in progress"
+    )
 
     companion object {
         private fun defaultPosition() = mapOf(
