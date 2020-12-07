@@ -1,34 +1,24 @@
 package net.sustainablepace.chess.adapter.web
 
-import net.sustainablepace.chess.adapter.database.ChessGameRepository
+import net.sustainablepace.chess.adapter.database.ChessGameRepositoryAdapter
+import net.sustainablepace.chess.application.port.`in`.MovePiece
+import net.sustainablepace.chess.application.service.ApplicationService
 import net.sustainablepace.chess.domain.ChessGame
+import net.sustainablepace.chess.domain.PieceMoved
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class MoveController(val chessGameRepository: ChessGameRepository) {
+class MoveController(val movePieceService: ApplicationService<MovePiece, PieceMoved>) {
     @PostMapping("/move/{id}")
     fun move(@PathVariable id: String, @RequestBody move: String): ChessGame {
-        chessGameRepository.get(id)?.let { chessGame ->
-            val (departureSquare, arrivalSquare) = move.split("-")
-            if (departureSquare == arrivalSquare) {
-                throw IllegalArgumentException("invalid move")
-            }
-            chessGame.position.set(arrivalSquare, chessGame.position.getValue(departureSquare))
-            chessGame.position.remove(departureSquare)
-            if(!chessGame.position.values.map { it[0] }.containsAll(listOf('b', 'w'))) {
-                chessGame.status = "checkmate"
-            }
-            if(chessGame.turn == "white") {
-                chessGame.turn = "black"
-            } else {
-                chessGame.turn = "white"
-            }
-            println(chessGame.position)
-            return chessGame
+        MovePiece(id, move).let { result ->
+            result
+                .onSuccess { return movePieceService.process(it).chessGame }
+                .onFailure { throw IllegalArgumentException("") }
         }
-        throw IllegalArgumentException("Unknown game {$id}")
+        throw IllegalArgumentException("")
     }
 }

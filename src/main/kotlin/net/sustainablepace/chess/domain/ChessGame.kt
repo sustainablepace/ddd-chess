@@ -9,7 +9,21 @@ class ChessGame private constructor(
     var status: String
 ) {
 
-    constructor() : this(defaultPosition())
+    fun movePiece(move:Move): ChessGame {
+        position.set(move.arrivalSquare, position.getValue(move.departureSquare))
+        position.remove(move.departureSquare)
+        if (!position.values.map { it[0] }.containsAll(listOf('b', 'w'))) {
+            status = "checkmate"
+        }
+        if (turn == "white") {
+            turn = "black"
+        } else {
+            turn = "white"
+        }
+        return this
+    }
+
+    constructor() : this(defaultPosition)
     private constructor(position: MutableMap<String, String>) : this(
         id = chessGameId(),
         position = position,
@@ -20,7 +34,7 @@ class ChessGame private constructor(
     )
 
     companion object {
-        private fun defaultPosition() = mapOf(
+        val defaultPosition = mapOf(
             "a1" to "wR",
             "b1" to "wN",
             "c1" to "wB",

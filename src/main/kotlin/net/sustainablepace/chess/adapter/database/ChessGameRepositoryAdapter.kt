@@ -1,12 +1,14 @@
 package net.sustainablepace.chess.adapter.database
 
+import net.sustainablepace.chess.adapter.web.ChessController
+import net.sustainablepace.chess.application.port.out.ChessGameRepository
 import net.sustainablepace.chess.domain.ChessGame
 import net.sustainablepace.chess.domain.ChessGameId
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Repository
 
 @Repository
-class ChessGameRepository: MutableMap<ChessGameId, ChessGame> {
+class ChessGameRepositoryAdapter: ChessGameRepository, MutableMap<ChessGameId, ChessGame> {
     private val games = emptyMap<ChessGameId, ChessGame>().toMutableMap()
 
     override val keys: MutableSet<ChessGameId>
@@ -35,4 +37,9 @@ class ChessGameRepository: MutableMap<ChessGameId, ChessGame> {
     override fun putAll(from: Map<out ChessGameId, ChessGame>) = games.putAll(from)
 
     override fun remove(key: ChessGameId): ChessGame? = games.remove(key)
+    override fun save(chessGame: ChessGame) {
+        set(chessGame.id, chessGame)
+    }
+
+    override fun findById(chessGameId: ChessGameId) = get(chessGameId)
 }

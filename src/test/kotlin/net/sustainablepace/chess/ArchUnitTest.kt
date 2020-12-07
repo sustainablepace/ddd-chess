@@ -5,6 +5,7 @@ import com.tngtech.archunit.junit.AnalyzeClasses
 import com.tngtech.archunit.junit.ArchTest
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition
 import com.tngtech.archunit.library.Architectures
+import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition
 import net.sustainablepace.chess.application.service.ApplicationService
 import net.sustainablepace.chess.application.port.`in`.Command
 import org.springframework.stereotype.Controller
@@ -46,11 +47,9 @@ class ArchUnitTest {
         .that().areAnnotatedWith(Controller::class.java)
         .should().resideInAPackage("..adapter.web..")
 
-
     @ArchTest
-    val `adapters are independent of one another` = ArchRuleDefinition.noClasses()
-        .that().resideInAPackage("..adapter..").should().accessClassesThat()
-        .areAnnotatedWith(Controller::class.java).orShould().accessClassesThat()
-        .areAnnotatedWith(Repository::class.java)
+    val `adapters are independent of one another` = SlicesRuleDefinition.slices()
+        .matching("net.sustainablepace.chess.adapter.(*)")
+        .should().notDependOnEachOther()
 
 }
