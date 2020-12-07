@@ -2,11 +2,11 @@ package net.sustainablepace.chess.domain
 
 class ChessGame private constructor(
     val id: ChessGameId,
-    val position: MutableMap<String, String>,
-    var turn: String,
+    val position: MutableMap<String, String>, // TODO: immutable
+    var turn: String, // TODO: immutable
     val white: String,
     val black: String,
-    var status: String
+    var status: String // TODO: immutable
 ) {
 
     fun movePiece(move:Move): ChessGame {
@@ -23,7 +23,7 @@ class ChessGame private constructor(
         return this
     }
 
-    constructor() : this(defaultPosition)
+    constructor() : this(defaultPosition.toMutableMap())
     private constructor(position: MutableMap<String, String>) : this(
         id = chessGameId(),
         position = position,
@@ -67,6 +67,6 @@ class ChessGame private constructor(
             "f7" to "bP",
             "g7" to "bP",
             "h7" to "bP"
-        ).toMutableMap()
+        )
     }
 }

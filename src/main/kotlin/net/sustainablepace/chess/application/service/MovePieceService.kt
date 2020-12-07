@@ -7,14 +7,14 @@ import net.sustainablepace.chess.domain.PieceMoved
 import org.springframework.stereotype.Service
 
 @Service
-class MovePieceService(val chessGameRepository: ChessGameRepository): ApplicationService<MovePiece, PieceMoved?> {
+class MovePieceService(val chessGameRepository: ChessGameRepository) : ApplicationService<MovePiece, PieceMoved?> {
     override fun process(intent: MovePiece): PieceMoved? = with(intent) {
         chessGameRepository.findById(chessGameId)?.let { chessGame ->
-            with(move) {
-                chessGame.movePiece(move)
-                println(chessGame.position)
-                PieceMoved(move, chessGame)
-            }
+            chessGame.movePiece(move)
+            println("-------")
+            println(chessGame.id)
+            println(chessGame.position)
+            PieceMoved(move, chessGame)
         }
     }
 }

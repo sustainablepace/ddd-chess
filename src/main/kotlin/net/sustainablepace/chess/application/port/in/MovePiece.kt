@@ -5,7 +5,7 @@ import net.sustainablepace.chess.domain.Move
 
 class MovePiece private constructor(val chessGameId: ChessGameId, val move: Move): Command {
     companion object {
-        operator fun invoke(chessGameId: ChessGameId, moveAsString: String): Result<MovePiece> {
+        operator fun invoke(chessGameId: ChessGameId, moveAsString: String): Result<MovePiece> {// TODO: is Result really the best solution?
             Move(moveAsString).let { moveResult ->
                 moveResult.onSuccess {
                     return Result.success(MovePiece(chessGameId, it))

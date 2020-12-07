@@ -6,7 +6,7 @@ data class Move private constructor(val departureSquare: Square, val arrivalSqua
 
     override fun toString() = "$departureSquare-$arrivalSquare"
     companion object {
-        operator fun invoke(moveAsString: String): Result<Move> {
+        operator fun invoke(moveAsString: String): Result<Move> { // TODO: is Result really the best solution?
             if(!moveAsString.matches(Regex("[a-h][1-8]-[a-h][1-8]"))) {
                 return Result.failure(IllegalArgumentException("Must be a string like e2-e4."))
             }

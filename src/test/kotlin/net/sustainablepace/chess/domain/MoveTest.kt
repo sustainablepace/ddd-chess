@@ -30,6 +30,7 @@ class MoveTest {
     fun `e2-e4 is a valid move`() {
         val move = Move("e2-e4").getOrNull()
 
+        assertThat(move.toString()).isEqualTo("e2-e4")
         assertThat(move?.departureSquare).isEqualTo("e2")
         assertThat(move?.arrivalSquare).isEqualTo("e4")
     }
