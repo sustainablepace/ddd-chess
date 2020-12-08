@@ -1,6 +1,5 @@
 package net.sustainablepace.chess.domain
 
-import net.sustainablepace.chess.domain.Move
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -9,29 +8,29 @@ class MoveTest {
     fun `ignore invalid move`() {
         val result = Move("invalid")
 
-        assertThat(result.isFailure).isTrue()
+        assertThat(result).isInstanceOf(InvalidMove::class.java)
     }
 
     @Test
     fun `ignore move to same square`() {
         val result = Move("e2-e2")
 
-        assertThat(result.isFailure).isTrue()
+        assertThat(result).isInstanceOf(InvalidMove::class.java)
     }
 
     @Test
     fun `ignore moves with invalid square`() {
         val result = Move("e2-e9")
 
-        assertThat(result.isFailure).isTrue()
+        assertThat(result).isInstanceOf(InvalidMove::class.java)
     }
 
     @Test
     fun `e2-e4 is a valid move`() {
-        val move = Move("e2-e4").getOrNull()
+        val move = Move("e2-e4") as ValidMove
 
-        assertThat(move.toString()).isEqualTo("e2-e4")
-        assertThat(move?.departureSquare).isEqualTo("e2")
-        assertThat(move?.arrivalSquare).isEqualTo("e4")
+        assertThat(move).isInstanceOf(ValidMove::class.java)
+        assertThat(move.departureSquare).isEqualTo("e2")
+        assertThat(move.arrivalSquare).isEqualTo("e4")
     }
 }

@@ -5,11 +5,11 @@ sealed class Player {
 }
 
 abstract class ComputerPlayer: Player() {
-    open fun calculateMove(chessGame: ChessGame): Move? = null
+    open fun calculateMove(chessGame: ChessGame): PossibleMove = NoMove
 }
 
 object StupidComputerPlayer: ComputerPlayer() {
-    override fun calculateMove(chessGame: ChessGame): Move? {
+    override fun calculateMove(chessGame: ChessGame): PossibleMove {
         val departureSquare = chessGame.position.filter { it.value[0] == chessGame.turn[0] }.keys.firstOrNull()
         val squares = ('a'..'h').flatMap { column ->
             ('1'..'8').map { column + "" + it }
@@ -18,8 +18,8 @@ object StupidComputerPlayer: ComputerPlayer() {
         val arrivalSquare = openSquares.firstOrNull()
 
         return if(departureSquare != null && arrivalSquare != null) {
-            Move("$departureSquare-$arrivalSquare").getOrNull()
-        } else null
+            Move("$departureSquare-$arrivalSquare")
+        } else NoMove
     }
 }
 

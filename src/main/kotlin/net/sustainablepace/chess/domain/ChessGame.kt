@@ -13,7 +13,7 @@ class ChessGame private constructor(
             white
         } else black
 
-    fun movePiece(move:Move): ChessGame {
+    fun movePiece(move:ValidMove): ChessGame {
         position.set(move.arrivalSquare, position.getValue(move.departureSquare))
         position.remove(move.departureSquare)
         if (!position.values.map { it[0] }.containsAll(listOf('b', 'w'))) {

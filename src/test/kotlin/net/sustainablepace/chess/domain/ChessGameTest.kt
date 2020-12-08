@@ -11,8 +11,8 @@ class ChessGameTest {
         assertThat(game.id).isNotEmpty()
         assertThat(game.status).isEqualTo("in progress")
         assertThat(game.turn).isEqualTo("white")
-        assertThat(game.white).isEqualTo("human")
-        assertThat(game.black).isEqualTo("computer")
+        assertThat(game.white).isInstanceOf(HumanPlayer::class.java)
+        assertThat(game.black).isInstanceOf(ComputerPlayer::class.java)
         assertThat(game.position).isEqualTo(ChessGame.defaultPosition)
     }
 
@@ -23,7 +23,9 @@ class ChessGameTest {
         assertThat(game.position.get("e2")).isEqualTo("wP")
         assertThat(game.position.get("e4")).isNull()
 
-        game.movePiece(Move("e2-e4").getOrThrow())
+        val move = Move("e2-e4") as ValidMove
+
+        game.movePiece(move)
 
         assertThat(game.position.get("e2")).isNull()
         assertThat(game.position.get("e4")).isEqualTo("wP")
