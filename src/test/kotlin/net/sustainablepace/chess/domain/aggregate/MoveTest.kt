@@ -1,5 +1,8 @@
-package net.sustainablepace.chess.domain
+package net.sustainablepace.chess.domain.aggregate
 
+import net.sustainablepace.chess.domain.InvalidMove
+import net.sustainablepace.chess.domain.Move
+import net.sustainablepace.chess.domain.ValidMove
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

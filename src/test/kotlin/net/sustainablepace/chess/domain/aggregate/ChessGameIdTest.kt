@@ -1,9 +1,10 @@
-package net.sustainablepace.chess.domain
+package net.sustainablepace.chess.domain.aggregate
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import net.sustainablepace.chess.domain.ChessGame
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

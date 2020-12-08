@@ -6,7 +6,7 @@ import com.tngtech.archunit.junit.ArchTest
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition
 import com.tngtech.archunit.library.Architectures
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition
-import net.sustainablepace.chess.application.service.ApplicationService
+import net.sustainablepace.chess.application.ApplicationService
 import net.sustainablepace.chess.application.port.`in`.Command
 import org.springframework.stereotype.Controller
 import org.springframework.stereotype.Repository

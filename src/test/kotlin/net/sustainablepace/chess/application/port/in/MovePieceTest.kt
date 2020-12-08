@@ -1,6 +1,6 @@
 package net.sustainablepace.chess.application.port.`in`
 
-import net.sustainablepace.chess.domain.Move
+import net.sustainablepace.chess.application.port.`in`.command.MovePiece
 import net.sustainablepace.chess.domain.ValidMove
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

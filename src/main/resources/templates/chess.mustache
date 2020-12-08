@@ -14,7 +14,7 @@
                 white: "",
                 black: "",
                 status: "",
-                activePlayer: ""
+                computerTurn: false
             }
 
             let onDragStart = function (source, piece) {
@@ -30,7 +30,8 @@
                     return "snapback"
                 } else {
                     updateGame(game)
-                    if(chessGame.activePlayer.computer && chessGame.status === "in progress") {
+                    console.log(game)
+                    if(chessGame.computerTurn && chessGame.status === "in progress") {
                         let move = suggestMove()
                         if(move !== null) {
                             let squares = move.split("-")
@@ -75,7 +76,7 @@
             function updateGame(game) {
                 chessGame.id = game.id
 
-                let draggable = !game.activePlayer.computer && game.status === "in progress"
+                let draggable = !game.computerTurn && game.status === "in progress"
                 chessGame.board = Chessboard(div, {
                     onDrop: onDrop,
                     onDragStart: onDragStart,
@@ -86,7 +87,7 @@
                 chessGame.white = game.white
                 chessGame.black = game.black
                 chessGame.status = game.status
-                chessGame.activePlayer = game.activePlayer
+                chessGame.computerTurn = game.computerTurn
                 if (game.status !== "in progress") {
                     alert("Game over - " + game.status)
                 }

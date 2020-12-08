@@ -1,6 +1,7 @@
-package net.sustainablepace.chess.application.port.`in`
+package net.sustainablepace.chess.application.port.`in`.command
 
-import net.sustainablepace.chess.domain.ChessGameId
+import net.sustainablepace.chess.application.port.`in`.Command
+import net.sustainablepace.chess.domain.aggregate.chessgame.ChessGameId
 import net.sustainablepace.chess.domain.InvalidMove
 import net.sustainablepace.chess.domain.ValidMove
 

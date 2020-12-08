@@ -1,9 +1,9 @@
 package net.sustainablepace.chess.adapter.web
 
-import net.sustainablepace.chess.application.port.`in`.CalculateMove
-import net.sustainablepace.chess.application.port.`in`.MoveString
-import net.sustainablepace.chess.application.service.ApplicationService
-import net.sustainablepace.chess.domain.ChessGameId
+import net.sustainablepace.chess.application.port.`in`.command.CalculateMove
+import net.sustainablepace.chess.application.port.`in`.command.MoveString
+import net.sustainablepace.chess.application.ApplicationService
+import net.sustainablepace.chess.domain.aggregate.chessgame.ChessGameId
 import net.sustainablepace.chess.domain.MoveCalculated
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.badRequest

@@ -1,4 +1,4 @@
-package net.sustainablepace.chess.application.service
+package net.sustainablepace.chess.application
 
 import net.sustainablepace.chess.application.port.`in`.Command
 

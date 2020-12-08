@@ -1,12 +1,11 @@
 package net.sustainablepace.chess.adapter.web
 
-import net.sustainablepace.chess.adapter.database.ChessGameRepositoryAdapter
-import net.sustainablepace.chess.application.port.`in`.MovePiece
-import net.sustainablepace.chess.application.port.`in`.MoveString
-import net.sustainablepace.chess.application.service.ApplicationService
+import net.sustainablepace.chess.application.port.`in`.command.MovePiece
+import net.sustainablepace.chess.application.port.`in`.command.MoveString
+import net.sustainablepace.chess.application.ApplicationService
 import net.sustainablepace.chess.domain.ChessGame
 import net.sustainablepace.chess.domain.PieceMoved
-import org.springframework.http.HttpStatus
+import net.sustainablepace.chess.domain.readmodel.ChessGameReadModel
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.*
@@ -18,16 +17,16 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class MoveController(val movePieceService: ApplicationService<MovePiece, PieceMoved>) {
     @PostMapping("/move/{id}")
-    fun move(@PathVariable id: String, @RequestBody move: MoveString): ResponseEntity<ChessGame> =
+    fun move(@PathVariable id: String, @RequestBody move: MoveString): ResponseEntity<ChessGameReadModel> =
         try {
             MovePiece(id, move).let { result ->
                 result.fold({
                     movePieceService.process(it).chessGame
                 }, {
-                    throw IllegalArgumentException("Invalid move {$move}")
+                    throw IllegalArgumentException("Invalid move {$move}. ${it.message}")
                 })
             }.let {
-                ok().body(it)
+                ok().body(ChessGameReadModel(it))
             }
         } catch (illegalArgumentException: IllegalArgumentException) {
             badRequest().build()
