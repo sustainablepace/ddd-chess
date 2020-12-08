@@ -1,10 +1,8 @@
 package net.sustainablepace.chess.adapter.database
 
-import net.sustainablepace.chess.adapter.web.ChessController
 import net.sustainablepace.chess.application.port.out.ChessGameRepository
 import net.sustainablepace.chess.domain.ChessGame
 import net.sustainablepace.chess.domain.ChessGameId
-import org.springframework.stereotype.Component
 import org.springframework.stereotype.Repository
 
 @Repository

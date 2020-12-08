@@ -4,10 +4,14 @@ class ChessGame private constructor(
     val id: ChessGameId,
     val position: MutableMap<String, String>, // TODO: immutable
     var turn: String, // TODO: immutable
-    val white: String,
-    val black: String,
+    val white: Player,
+    val black: Player,
     var status: String // TODO: immutable
 ) {
+    val activePlayer: Player
+        get() = if (turn == "white") {
+            white
+        } else black
 
     fun movePiece(move:Move): ChessGame {
         position.set(move.arrivalSquare, position.getValue(move.departureSquare))
@@ -28,8 +32,8 @@ class ChessGame private constructor(
         id = chessGameId(),
         position = position,
         turn = "white",
-        white = "human",
-        black = "computer",
+        white = HumanPlayer,
+        black = StupidComputerPlayer,
         status = "in progress"
     )
 
