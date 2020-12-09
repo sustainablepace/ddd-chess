@@ -6,7 +6,7 @@ import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.Black
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.Colour
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.White
 
-class Position(val squaresWithPieces: Map<Square, Piece>) {
+data class Position(val squaresWithPieces: Map<Square, Piece>) {
     fun movePiece(move: ValidMove): Position =
         mutableMapOf<Square, Piece>().run {
             putAll(squaresWithPieces)

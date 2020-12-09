@@ -5,7 +5,10 @@ import net.sustainablepace.chess.application.port.`in`.command.MoveString
 import net.sustainablepace.chess.application.ApplicationService
 import net.sustainablepace.chess.domain.ChessGame
 import net.sustainablepace.chess.domain.PieceMoved
+import net.sustainablepace.chess.domain.PieceMovedOrNot
+import net.sustainablepace.chess.domain.PieceNotMoved
 import net.sustainablepace.chess.domain.readmodel.ChessGameReadModel
+import net.sustainablepace.chess.logger
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.*
@@ -15,18 +18,27 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class MoveController(val movePieceService: ApplicationService<MovePiece, PieceMoved>) {
+class MoveController(val movePieceService: ApplicationService<MovePiece, PieceMovedOrNot>) {
+
+    val log = logger<MoveController>()
+
     @PostMapping("/move/{id}")
     fun move(@PathVariable id: String, @RequestBody move: MoveString): ResponseEntity<ChessGameReadModel> =
         try {
             MovePiece(id, move).let { result ->
                 result.fold({
-                    movePieceService.process(it).chessGame
+                    movePieceService.process(it)
                 }, {
                     throw IllegalArgumentException("Invalid move {$move}. ${it.message}")
                 })
-            }.let {
-                ok().body(ChessGameReadModel(it))
+            }.let { event ->
+                when(event) {
+                    is PieceMoved -> ok().body(ChessGameReadModel(event.chessGame))
+                    is PieceNotMoved -> {
+                        log.info(event.reason)
+                        badRequest().build()
+                    }
+                }
             }
         } catch (illegalArgumentException: IllegalArgumentException) {
             badRequest().build()

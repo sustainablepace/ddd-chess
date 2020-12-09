@@ -5,6 +5,8 @@ import net.sustainablepace.chess.application.port.`in`.command.MoveString
 import net.sustainablepace.chess.application.ApplicationService
 import net.sustainablepace.chess.domain.aggregate.chessgame.ChessGameId
 import net.sustainablepace.chess.domain.MoveCalculated
+import net.sustainablepace.chess.domain.MoveCalculatedOrNot
+import net.sustainablepace.chess.domain.NoMoveCalculated
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.badRequest
 import org.springframework.http.ResponseEntity.ok
@@ -13,10 +15,15 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class CalculateMoveController(val calculateMoveService: ApplicationService<CalculateMove, MoveCalculated?>) {
+class CalculateMoveController(val calculateMoveService: ApplicationService<CalculateMove, MoveCalculatedOrNot>) {
     @PostMapping("/calculateMove/{id}")
     fun move(@PathVariable id: ChessGameId): ResponseEntity<MoveString> =
-        calculateMoveService.process(CalculateMove(id))?.move?.run {
-            ok().body("$departureSquare-$arrivalSquare")
-        } ?: badRequest().build()
+        calculateMoveService.process(CalculateMove(id)).let { event ->
+            when(event) {
+                is MoveCalculated -> event.move.run {
+                    ok().body("$departureSquare-$arrivalSquare")
+                }
+                is NoMoveCalculated -> badRequest().build()
+            }
+        }
 }
