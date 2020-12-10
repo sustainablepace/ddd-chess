@@ -46,7 +46,7 @@ class ChessGameTest {
             "e3" to WhitePawn()
         )))
 
-        val moves = findMoves(chessGame, "c3")
+        val moves = chessGame.findMoves("c3")
         assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("c3-c4") as ValidMove,
             ValidMove("c3-c5") as ValidMove,
@@ -67,7 +67,7 @@ class ChessGameTest {
             "b4" to BlackPawn(),
             "e1" to WhiteKing()
         )))
-        val moves = findMoves(chessGame, "c2")
+        val moves = chessGame.findMoves("c2")
         assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("c2-d4") as ValidMove,
             ValidMove("c2-b4") as ValidMove,
@@ -82,7 +82,7 @@ class ChessGameTest {
         val chessGame = ChessGame(Position(mapOf(
             "e4" to WhiteBishop()
         )))
-        val moves = findMoves(chessGame, "e4")
+        val moves = chessGame.findMoves("e4")
         assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("e4-d3") as ValidMove,
             ValidMove("e4-c2") as ValidMove,
@@ -107,7 +107,7 @@ class ChessGameTest {
             "d5" to BlackPawn(),
             "g2" to WhiteQueen()
         )))
-        val moves = findMoves(chessGame, "e4")
+        val moves = chessGame.findMoves("e4")
         assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("e4-d3") as ValidMove,
             ValidMove("e4-c2") as ValidMove,
@@ -125,7 +125,7 @@ class ChessGameTest {
         val chessGame = ChessGame(Position(mapOf(
             "e4" to WhiteQueen()
         )))
-        val moves = findMoves(chessGame, "e4")
+        val moves = chessGame.findMoves("e4")
         assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("e4-d3") as ValidMove,
             ValidMove("e4-c2") as ValidMove,
@@ -169,7 +169,7 @@ class ChessGameTest {
             "e1" to WhiteRook(),
             "e6" to BlackQueen()
         )))
-        val moves = findMoves(chessGame, "e4")
+        val moves = chessGame.findMoves("e4")
         assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("e4-d3") as ValidMove,
             ValidMove("e4-c2") as ValidMove,
@@ -196,7 +196,7 @@ class ChessGameTest {
         val chessGame = ChessGame(Position(mapOf(
             "e4" to WhiteKing()
         )))
-        val moves = findMoves(chessGame, "e4")
+        val moves = chessGame.findMoves("e4")
         assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("e4-d3") as ValidMove,
             ValidMove("e4-e3") as ValidMove,
@@ -216,7 +216,7 @@ class ChessGameTest {
             "d5" to BlackPawn(),
             "e5" to WhiteQueen()
         )))
-        val moves = findMoves(chessGame, "e4")
+        val moves = chessGame.findMoves("e4")
         assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("e4-d3") as ValidMove,
             ValidMove("e4-e3") as ValidMove,

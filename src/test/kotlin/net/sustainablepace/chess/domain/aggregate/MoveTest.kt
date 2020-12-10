@@ -4,6 +4,7 @@ import net.sustainablepace.chess.domain.InvalidMove
 import net.sustainablepace.chess.domain.Move
 import net.sustainablepace.chess.domain.ValidMove
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.Test
 
 class MoveTest {
@@ -30,10 +31,13 @@ class MoveTest {
 
     @Test
     fun `e2-e4 is a valid move`() {
-        val move = Move("e2-e4") as ValidMove
+        val move = Move("e2-e4")
 
-        assertThat(move).isInstanceOf(ValidMove::class.java)
-        assertThat(move.departureSquare).isEqualTo("e2")
-        assertThat(move.arrivalSquare).isEqualTo("e4")
+        if(move is ValidMove) {
+            assertThat(move.departureSquare).isEqualTo("e2")
+            assertThat(move.arrivalSquare).isEqualTo("e4")
+        } else {
+            fail("Move is not valid.")
+        }
     }
 }

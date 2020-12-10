@@ -1,6 +1,8 @@
 package net.sustainablepace.chess.domain
 
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.Piece
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.Square
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.Black
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.Colour
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.White
@@ -29,6 +31,14 @@ class ChessGame private constructor(
         get() = if (turn == White) {
             white
         } else black
+
+    fun findMoves(departureSquare: Square): Set<ValidMove> {
+        val pieceToBeMoved = position.get(departureSquare)
+        if (pieceToBeMoved !is Piece) {
+            return emptySet()
+        }
+        return pieceToBeMoved.moveRules.findMoves(position::get, departureSquare, pieceToBeMoved)
+    }
 
     fun movePiece(move: ValidMove): ChessGame =
         position.movePiece(move).let { newPosition ->

@@ -1,6 +1,6 @@
 package net.sustainablepace.chess.domain
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.add
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.add
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 

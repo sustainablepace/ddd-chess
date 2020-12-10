@@ -2,17 +2,60 @@ package net.sustainablepace.chess.domain
 
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.*
 
-class MoveRules(val moveRules: Set<MoveRule>) {
+class MoveRules(private val moveRules: Set<MoveRule>) {
     constructor(moveRule: MoveRule) : this(setOf(moveRule))
     constructor(vararg moveOptions: MoveRules) : this(moveOptions.flatMap { it.moveRules.map { it.copy() } }.toSet())
+
+    fun findMoves(getPiece: (Square) -> Piece?, departureSquare: Square, pieceToBeMoved: Piece): Set<ValidMove> =
+        moveRules.flatMap { rule ->
+            when (rule.multiples) {
+                true -> (1..7)
+                false -> (1..1)
+            }.let { range ->
+                var abort = false
+                range.flatMap { scale ->
+                    if (abort) {
+                        emptySet()
+                    } else {
+                        departureSquare.add(rule.direction * scale)?.let { arrivalSquare ->
+                            getPiece(arrivalSquare)?.let { blockingPiece ->
+                                abort = true
+                                return@flatMap if (blockingPiece.colour != pieceToBeMoved.colour && rule.canCapture) {
+                                    setOf(ValidMove("$departureSquare-$arrivalSquare") as ValidMove)
+                                } else emptySet()
+                            } ?: setOf(ValidMove("$departureSquare-$arrivalSquare") as ValidMove)
+                        } ?: emptySet()
+                    }
+                }
+            }
+        }.toSet()
 }
 
 data class MoveRule(
     val direction: Direction,
     val canCapture: Boolean,
-    val multiples: Boolean = false,
-    val rotations: Boolean = false
-)
+    val multiples: Boolean = false
+) {
+    companion object {
+        operator fun invoke(
+            direction: Direction,
+            canCapture: Boolean,
+            multiples: Boolean = false,
+            rotations: Boolean = false
+        ): Set<MoveRule> = when (rotations) {
+            true -> 4
+            false -> 1
+        }.let { numRotations ->
+            (1..numRotations).map { currentRotation ->
+                MoveRule(
+                    direction.rotate(currentRotation % numRotations),
+                    canCapture,
+                    multiples
+                )
+            }.toSet()
+        }
+    }
+}
 
 object PieceMoveRules {
 
@@ -22,7 +65,7 @@ object PieceMoveRules {
         is Bishop -> bishopMoveRules
         is Queen -> queenMoveRules
         is King -> kingMoveRules
-        else -> TODO()
+        else -> rookMoveRules
     }
 
     private val rookMoveRules = MoveRules(
@@ -35,12 +78,11 @@ object PieceMoveRules {
     )
 
     private val knightMoveRules = MoveRules(
-        setOf(
-            MoveRule(
-                direction = Direction.lShaped(),
-                canCapture = true,
-                rotations = true
-            ),
+        MoveRule(
+            direction = Direction.lShaped(),
+            canCapture = true,
+            rotations = true
+        ).union(
             MoveRule(
                 direction = -Direction.lShaped(),
                 canCapture = true,
@@ -64,17 +106,17 @@ object PieceMoveRules {
     )
 
     private val kingMoveRules = MoveRules(
-        setOf(
-            MoveRule(
-                direction = Direction.diagonal(),
-                canCapture = true,
-                rotations = true
-            ),
+        MoveRule(
+            direction = Direction.diagonal(),
+            canCapture = true,
+            rotations = true
+        ).union(
             MoveRule(
                 direction = Direction.straightLine(),
                 canCapture = true,
                 rotations = true
             )
         )
+
     )
 }
