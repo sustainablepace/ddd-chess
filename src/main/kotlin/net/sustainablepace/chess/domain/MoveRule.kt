@@ -2,30 +2,37 @@ package net.sustainablepace.chess.domain
 
 import net.sustainablepace.chess.domain.CaptureType.*
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.*
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.Black
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.White
 
 class MoveRules(private val moveRules: Set<MoveRule>) {
     constructor(moveRule: MoveRule) : this(setOf(moveRule))
     constructor(vararg moveOptions: MoveRules) : this(moveOptions.flatMap { it.moveRules.map { it.copy() } }.toSet())
 
-    fun findMoves(getPiece: (Square) -> Piece?, departureSquare: Square, pieceToBeMoved: Piece): Set<ValidMove> =
+    fun findMoves(getPiece: (Square) -> Piece?, departureSquare: Square, movingPiece: Piece): Set<ValidMove> =
         moveRules.flatMap { rule ->
-            when (rule.multiples) {
-                true -> (1..7)
-                false -> (1..1)
-            }.let { range ->
-                var abort = false
-                range.flatMap { scale ->
-                    if (abort) {
-                        emptySet()
-                    } else {
-                        departureSquare.add(rule.direction * scale)?.let { arrivalSquare ->
-                            getPiece(arrivalSquare)?.let { blockingPiece ->
-                                abort = true
-                                return@flatMap if (pieceToBeMoved.colour != blockingPiece.colour && rule.captureType != NO) {
+            when (rule.pieceCanTakeMultipleSteps) {
+                true -> 7
+                false -> 1
+            }.let { steps ->
+                var pieceIsBlocking = false
+                (1..steps).flatMap { step ->
+                    when (pieceIsBlocking) {
+                        true -> emptySet()
+                        false -> when (val arrivalSquare = departureSquare.add(rule.direction * step)) {
+                            is Square -> when (val blockingPiece = getPiece(arrivalSquare)) {
+                                is Piece -> {
+                                    pieceIsBlocking = true
+                                    if (rule.condition(departureSquare, movingPiece) && movingPiece.colour != blockingPiece.colour && rule.captureType != DISALLOWED) {
+                                        setOf(ValidMove("$departureSquare-$arrivalSquare") as ValidMove)
+                                    } else emptySet()
+                                }
+                                else -> if (rule.condition(departureSquare, movingPiece) && rule.captureType != MANDATORY) {
                                     setOf(ValidMove("$departureSquare-$arrivalSquare") as ValidMove)
                                 } else emptySet()
-                            } ?: if(rule.captureType != MANDATORY) setOf(ValidMove("$departureSquare-$arrivalSquare") as ValidMove) else emptySet()
-                        } ?: emptySet()
+                            }
+                            else -> emptySet()
+                        }
                     }
                 }
             }
@@ -38,7 +45,8 @@ class MoveRules(private val moveRules: Set<MoveRule>) {
 data class MoveRule(
     val direction: Direction,
     val captureType: CaptureType,
-    val multiples: Boolean = false
+    val pieceCanTakeMultipleSteps: Boolean = false,
+    val condition: (square: Square, piece: Piece) -> Boolean = { _, _ -> true }
 ) {
     companion object {
         operator fun invoke(
@@ -62,17 +70,17 @@ data class MoveRule(
 }
 
 enum class CaptureType {
-    NO, OPTIONAL, MANDATORY
+    DISALLOWED, ALLOWED, MANDATORY
 }
 
-operator fun MoveRule.unaryMinus(): MoveRule = MoveRule(!direction, captureType, multiples)
+operator fun MoveRule.unaryMinus(): MoveRule = copy(direction = !direction)
 
 object PieceMoveRules {
 
     val rookMoveRules = MoveRules(
         MoveRule(
             direction = Direction.straightLine(),
-            captureType = OPTIONAL,
+            captureType = ALLOWED,
             multiples = true,
             rotations = true
         )
@@ -81,12 +89,12 @@ object PieceMoveRules {
     val knightMoveRules = MoveRules(
         MoveRule(
             direction = Direction.lShaped(),
-            captureType = OPTIONAL,
+            captureType = ALLOWED,
             rotations = true
         ).union(
             MoveRule(
                 direction = -Direction.lShaped(),
-                captureType = OPTIONAL,
+                captureType = ALLOWED,
                 rotations = true
             )
         )
@@ -95,7 +103,7 @@ object PieceMoveRules {
     val bishopMoveRules = MoveRules(
         MoveRule(
             direction = Direction.diagonal(),
-            captureType = OPTIONAL,
+            captureType = ALLOWED,
             multiples = true,
             rotations = true
         )
@@ -109,12 +117,12 @@ object PieceMoveRules {
     val kingMoveRules = MoveRules(
         MoveRule(
             direction = Direction.diagonal(),
-            captureType = OPTIONAL,
+            captureType = ALLOWED,
             rotations = true
         ).union(
             MoveRule(
                 direction = Direction.straightLine(),
-                captureType = OPTIONAL,
+                captureType = ALLOWED,
                 rotations = true
             )
         )
@@ -124,7 +132,15 @@ object PieceMoveRules {
         setOf(
             MoveRule(
                 direction = Direction.straightLine(),
-                captureType = NO
+                captureType = DISALLOWED
+            ),
+            MoveRule(
+                direction = Direction.initialPawnMove(),
+                captureType = DISALLOWED,
+                condition = { square, piece ->
+                    square.rank() == '2' && piece is White ||
+                    square.rank() == '7' && piece is Black
+                }
             ),
             MoveRule(
                 direction = Direction.diagonal(),

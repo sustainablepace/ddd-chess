@@ -31,13 +31,7 @@
                 } else {
                     updateGame(game)
                     console.log(game)
-                    if(chessGame.computerTurn && chessGame.status === "in progress") {
-                        let move = suggestMove()
-                        if(move !== null) {
-                            let squares = move.split("-")
-                            onDrop(squares[0], squares[1])
-                        }
-                    }
+
                 }
             }
 
@@ -73,7 +67,7 @@
                 $.post("/setup", updateGame)
             })
 
-            function updateGame(game) {
+            async function updateGame(game) {
                 chessGame.id = game.id
 
                 let draggable = !game.computerTurn && game.status === "in progress"
@@ -90,6 +84,15 @@
                 chessGame.computerTurn = game.computerTurn
                 if (game.status !== "in progress") {
                     alert("Game over - " + game.status)
+                }
+
+                if(chessGame.computerTurn && chessGame.status === "in progress") {
+                    let move = suggestMove()
+                    await new Promise(r => setTimeout(r, 1000));
+                    if(move !== null) {
+                        let squares = move.split("-")
+                        onDrop(squares[0], squares[1])
+                    }
                 }
             }
         });

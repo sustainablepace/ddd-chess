@@ -9,6 +9,18 @@ import org.junit.jupiter.api.Test
 
 class WhitePawnTest {
     @Test
+    fun `finds valid pawn movements on empty board in initial position`() {
+        val chessGame = ChessGame(Position(mapOf(
+            "e2" to WhitePawn()
+        )))
+        val moves = chessGame.findMoves("e2")
+        Assertions.assertThat(moves).containsExactlyInAnyOrder(
+            ValidMove("e2-e3") as ValidMove,
+            ValidMove("e2-e4") as ValidMove
+        )
+    }
+
+    @Test
     fun `finds valid pawn movements on empty board`() {
         val chessGame = ChessGame(Position(mapOf(
             "e4" to WhitePawn()
@@ -36,5 +48,6 @@ class WhitePawnTest {
 
     // TODO: Allow two steps forward if pawn has never been moved
     // TODO: Allow promotion
+    // TODO: En passent
 
 }

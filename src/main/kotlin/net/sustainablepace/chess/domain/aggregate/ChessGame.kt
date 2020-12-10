@@ -22,7 +22,7 @@ class ChessGame private constructor(
         id = chessGameId(),
         position = position,
         turn = side,
-        white = HumanPlayer,
+        white = HumanPlayer, //StupidComputerPlayer,
         black = StupidComputerPlayer,
         status = "in progress"
     )

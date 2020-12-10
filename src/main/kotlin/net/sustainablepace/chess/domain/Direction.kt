@@ -15,6 +15,7 @@ class Direction private constructor(val x: Int, val y: Int) {
     companion object {
         fun diagonal() = Direction(1, 1)
         fun straightLine() = Direction(0, 1)
+        fun initialPawnMove() = Direction(0, 2)
         fun lShaped() = Direction(1, 2)
     }
 
