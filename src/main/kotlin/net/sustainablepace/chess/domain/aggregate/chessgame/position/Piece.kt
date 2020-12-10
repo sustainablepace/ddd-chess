@@ -1,5 +1,9 @@
 package net.sustainablepace.chess.domain.aggregate.chessgame.position
 
+import net.sustainablepace.chess.domain.*
+import net.sustainablepace.chess.domain.PieceMoveRules.getRulesForPiece
+import net.sustainablepace.chess.domain.aggregate.chessgame.Square
+import net.sustainablepace.chess.domain.aggregate.chessgame.add
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.Black
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.Colour
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.White
@@ -11,6 +15,60 @@ interface Rook : PieceType
 interface Bishop : PieceType
 interface Queen : PieceType
 interface King : PieceType
+
+fun findMoves(chessGame: ChessGame = ChessGame(), square: Square): Set<ValidMove> {
+    val moves = mutableSetOf<ValidMove>()
+    chessGame.position.get(square)?.let { pieceToBeMoved ->
+        getRulesForPiece(pieceToBeMoved).moveRules.forEach { rule ->
+            when (rule.rotations) {
+                true -> 4
+                false -> 1
+            }.let { numRotations ->
+                (1..numRotations).map { currentRotation ->
+                    moves.addAll(
+                        findMovesInDirection(
+                            chessGame,
+                            square,
+                            pieceToBeMoved,
+                            rule.direction.rotate(currentRotation % numRotations),
+                            rule.canCapture,
+                            rule.multiples
+                        )
+                    )
+                }
+            }
+        }
+    }
+    return moves
+}
+
+fun findMovesInDirection(
+    chessGame: ChessGame,
+    departureSquare: Square,
+    pieceToBeMoved: Piece,
+    direction: Direction,
+    canCapture: Boolean,
+    multiples: Boolean
+): Set<ValidMove> {
+    val moves = mutableSetOf<ValidMove>()
+    when (multiples) {
+        true -> (1..7)
+        false -> (1..1)
+    }.forEach { scale ->
+        val arrivalSquare = departureSquare.add(direction * scale) ?: return moves
+        val blockingPiece = chessGame.position.get(arrivalSquare)
+        if (blockingPiece == null) {
+            moves.add(ValidMove("$departureSquare-$arrivalSquare") as ValidMove)
+        } else if (blockingPiece.colour != pieceToBeMoved.colour && canCapture) {
+            moves.add(ValidMove("$departureSquare-$arrivalSquare") as ValidMove)
+            return moves
+        } else {
+            return moves
+        }
+    }
+    return moves
+}
+
 
 sealed class Piece(open val colour: Colour) {
     override fun equals(other: Any?): Boolean =

@@ -28,6 +28,8 @@ class ValidMove private constructor(val departureSquare: Square, val arrivalSqua
             }
     }
 
+    override fun toString(): String = "$departureSquare-$arrivalSquare"
+
     override fun equals(other: Any?): Boolean =
         other is ValidMove &&
             departureSquare == other.departureSquare &&

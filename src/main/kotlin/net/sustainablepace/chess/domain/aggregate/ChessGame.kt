@@ -16,7 +16,7 @@ class ChessGame private constructor(
 ) {
 
     constructor() : this(Position.default)
-    private constructor(position: Position) : this(
+    constructor(position: Position) : this(
         id = chessGameId(),
         position = position,
         turn = White,
