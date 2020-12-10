@@ -4,7 +4,9 @@ import net.sustainablepace.chess.domain.*
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.*
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.Black
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.BlackPieces
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.White
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.WhitePieces
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -15,7 +17,7 @@ class ChessGameTest {
 
         assertThat(game.id).isNotEmpty()
         assertThat(game.status).isEqualTo("in progress")
-        assertThat(game.turn).isEqualTo(White)
+        assertThat(game.turn).isEqualTo(WhitePieces)
         assertThat(game.white).isInstanceOf(HumanPlayer::class.java)
         assertThat(game.black).isInstanceOf(ComputerPlayer::class.java)
         assertThat(game.position).isEqualTo(Position.default)
@@ -32,7 +34,7 @@ class ChessGameTest {
 
         val updatedGame = game.movePiece(move)
 
-        assertThat(updatedGame.turn).isEqualTo(Black)
+        assertThat(updatedGame.turn).isEqualTo(BlackPieces)
         assertThat(updatedGame.position.get("e2")).isNull()
         assertThat(updatedGame.position.get("e4")).isEqualTo(WhitePawn())
     }
@@ -226,5 +228,26 @@ class ChessGameTest {
             ValidMove("e4-d5") as ValidMove,
             ValidMove("e4-d4") as ValidMove
         )
+    }
+
+    @Test
+    fun `finds valid pawn movements on empty board`() {
+        val chessGame = ChessGame(Position(mapOf(
+            "e4" to WhitePawn()
+        )))
+        val moves = chessGame.findMoves("e4")
+        assertThat(moves).containsExactlyInAnyOrder(
+            ValidMove("e4-e5") as ValidMove
+        )
+    }
+
+    @Test
+    fun `finds valid pawn movements on crowded board`() {
+        val chessGame = ChessGame(Position(mapOf(
+            "e4" to WhitePawn(),
+            "e5" to WhiteQueen()
+        )))
+        val moves = chessGame.findMoves("e4")
+        assertThat(moves).isEmpty()
     }
 }

@@ -20,7 +20,7 @@ class MoveRules(private val moveRules: Set<MoveRule>) {
                         departureSquare.add(rule.direction * scale)?.let { arrivalSquare ->
                             getPiece(arrivalSquare)?.let { blockingPiece ->
                                 abort = true
-                                return@flatMap if (blockingPiece.colour != pieceToBeMoved.colour && rule.canCapture) {
+                                return@flatMap if (pieceToBeMoved.colour != blockingPiece.colour && rule.canCapture) {
                                     setOf(ValidMove("$departureSquare-$arrivalSquare") as ValidMove)
                                 } else emptySet()
                             } ?: setOf(ValidMove("$departureSquare-$arrivalSquare") as ValidMove)
@@ -29,7 +29,10 @@ class MoveRules(private val moveRules: Set<MoveRule>) {
                 }
             }
         }.toSet()
+
+    operator fun unaryMinus() : MoveRules = MoveRules(moveRules.map { -it }.toSet())
 }
+
 
 data class MoveRule(
     val direction: Direction,
@@ -57,18 +60,11 @@ data class MoveRule(
     }
 }
 
+operator fun MoveRule.unaryMinus() : MoveRule = MoveRule(-direction, canCapture, multiples)
+
 object PieceMoveRules {
 
-    fun getRulesForPiece(piece: Piece) = when (piece) {
-        is Rook -> rookMoveRules
-        is Knight -> knightMoveRules
-        is Bishop -> bishopMoveRules
-        is Queen -> queenMoveRules
-        is King -> kingMoveRules
-        else -> rookMoveRules
-    }
-
-    private val rookMoveRules = MoveRules(
+    val rookMoveRules = MoveRules(
         MoveRule(
             direction = Direction.straightLine(),
             canCapture = true,
@@ -77,7 +73,7 @@ object PieceMoveRules {
         )
     )
 
-    private val knightMoveRules = MoveRules(
+    val knightMoveRules = MoveRules(
         MoveRule(
             direction = Direction.lShaped(),
             canCapture = true,
@@ -91,7 +87,7 @@ object PieceMoveRules {
         )
     )
 
-    private val bishopMoveRules = MoveRules(
+    val bishopMoveRules = MoveRules(
         MoveRule(
             direction = Direction.diagonal(),
             canCapture = true,
@@ -100,12 +96,12 @@ object PieceMoveRules {
         )
     )
 
-    private val queenMoveRules = MoveRules(
+    val queenMoveRules = MoveRules(
         bishopMoveRules,
         rookMoveRules
     )
 
-    private val kingMoveRules = MoveRules(
+    val kingMoveRules = MoveRules(
         MoveRule(
             direction = Direction.diagonal(),
             canCapture = true,
@@ -117,6 +113,12 @@ object PieceMoveRules {
                 rotations = true
             )
         )
+    )
 
+    val pawnMoveRules = MoveRules(
+        MoveRule(
+            direction = Direction.straightLine(),
+            canCapture = true
+        )
     )
 }

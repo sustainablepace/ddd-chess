@@ -4,7 +4,9 @@ import net.sustainablepace.chess.domain.ChessGame
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.*
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.Black
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.BlackPieces
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.White
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.WhitePieces
 
 
 data class ChessGameReadModel(
@@ -19,19 +21,16 @@ data class ChessGameReadModel(
     companion object {
 
         private fun Piece.stringify(): String =
-            when (this) {
-                is WhitePawn -> "wP"
-                is WhiteKnight -> "wN"
-                is WhiteRook -> "wR"
-                is WhiteBishop -> "wB"
-                is WhiteQueen -> "wQ"
-                is WhiteKing -> "wK"
-                is BlackPawn -> "bP"
-                is BlackKnight -> "bN"
-                is BlackRook -> "bR"
-                is BlackBishop -> "bB"
-                is BlackQueen -> "bQ"
-                is BlackKing -> "bK"
+            when (colour) {
+                is WhitePieces -> "w"
+                is BlackPieces -> "b"
+            } + when (this) {
+                is Pawn -> "P"
+                is Knight -> "N"
+                is Rook -> "R"
+                is Bishop -> "B"
+                is Queen -> "Q"
+                is King -> "K"
             }
 
         operator fun invoke(chessGame: ChessGame): ChessGameReadModel {
@@ -40,8 +39,8 @@ data class ChessGameReadModel(
                     id = id,
                     position = position.squaresWithPieces.mapValues { it.value.stringify() },
                     turn = when (turn) {
-                        White -> "white"
-                        Black -> "black"
+                        WhitePieces -> "white"
+                        BlackPieces -> "black"
                     },
                     white = when (white) {
                         is HumanPlayer -> "human"
@@ -52,9 +51,9 @@ data class ChessGameReadModel(
                         is ComputerPlayer -> "computer"
                     },
                     status = status,
-                    computerTurn = when(turn) {
-                        White -> white is ComputerPlayer
-                        Black -> black is ComputerPlayer
+                    computerTurn = when (turn) {
+                        WhitePieces -> white is ComputerPlayer
+                        BlackPieces -> black is ComputerPlayer
                     }
                 )
             }

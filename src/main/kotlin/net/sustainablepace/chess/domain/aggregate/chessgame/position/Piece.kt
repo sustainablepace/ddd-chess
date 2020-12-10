@@ -1,68 +1,76 @@
 package net.sustainablepace.chess.domain.aggregate.chessgame.position
 
-import net.sustainablepace.chess.domain.*
-import net.sustainablepace.chess.domain.PieceMoveRules.getRulesForPiece
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.Black
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.Colour
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.White
+import net.sustainablepace.chess.domain.PieceMoveRules
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.*
 
-interface PieceType
-interface Pawn : PieceType
-interface Knight : PieceType
-interface Rook : PieceType
-interface Bishop : PieceType
-interface Queen : PieceType
-interface King : PieceType
+sealed class Piece(): Colour {
+    val colour: Side = when (this) {
+        is White -> WhitePieces
+        is Black -> BlackPieces
+        else -> throw IllegalStateException("Piece is neither white nor black.")
+    }
 
-sealed class Piece(open val colour: Colour) {
+    val moveRules = when (this) {
+        is Rook -> PieceMoveRules.rookMoveRules
+        is Knight -> PieceMoveRules.knightMoveRules
+        is Bishop -> PieceMoveRules.bishopMoveRules
+        is Queen -> PieceMoveRules.queenMoveRules
+        is King -> PieceMoveRules.kingMoveRules
+        is Pawn -> PieceMoveRules.pawnMoveRules
+    }.let { moveRules ->
+        when(colour) {
+            is WhitePieces -> moveRules
+            is BlackPieces -> -moveRules
+        }
+    }
 
-    val moveRules = getRulesForPiece(this)
+    init {
+        check(colour in setOf(WhitePieces, BlackPieces))
+    }
 
     override fun equals(other: Any?): Boolean =
         other is Piece &&
             colour == other.colour &&
             when (this) {
-                is WhitePawn -> other is WhitePawn
-                is WhiteKnight -> other is WhiteKnight
-                is WhiteRook -> other is WhiteRook
-                is WhiteBishop -> other is WhiteBishop
-                is WhiteQueen -> other is WhiteQueen
-                is WhiteKing -> other is WhiteKing
-                is BlackPawn -> other is BlackPawn
-                is BlackKnight -> other is BlackKnight
-                is BlackRook -> other is BlackRook
-                is BlackBishop -> other is BlackBishop
-                is BlackQueen -> other is BlackQueen
-                is BlackKing -> other is BlackKing
+                is Pawn -> other is Pawn
+                is Knight -> other is Knight
+                is Rook -> other is Rook
+                is Bishop -> other is Bishop
+                is Queen -> other is Queen
+                is King -> other is King
             }
 
     override fun hashCode(): Int {
-        return colour.hashCode() + when (this) {
-            is WhitePawn -> 1
-            is WhiteKnight -> 2
-            is WhiteRook -> 3
-            is WhiteBishop -> 4
-            is WhiteQueen -> 5
-            is WhiteKing -> 6
-            is BlackPawn -> 7
-            is BlackKnight -> 8
-            is BlackRook -> 9
-            is BlackBishop -> 10
-            is BlackQueen -> 11
-            is BlackKing -> 12
+        return when(colour) {
+            is WhitePieces -> 0
+            is BlackPieces -> 7
+        } + when (this) {
+            is Pawn -> 1
+            is Knight -> 2
+            is Rook -> 3
+            is Bishop -> 4
+            is Queen -> 5
+            is King -> 6
         }
     }
 }
 
-class WhitePawn : Piece(White), Pawn
-class WhiteKnight : Piece(White), Knight
-class WhiteRook : Piece(White), Rook
-class WhiteBishop : Piece(White), Bishop
-class WhiteQueen : Piece(White), Queen
-class WhiteKing : Piece(White), King
-class BlackPawn : Piece(Black), Pawn
-class BlackKnight : Piece(Black), Knight
-class BlackRook : Piece(Black), Rook
-class BlackBishop : Piece(Black), Bishop
-class BlackQueen : Piece(Black), Queen
-class BlackKing : Piece(Black), King
+abstract class Pawn : Piece()
+abstract class Knight : Piece()
+abstract class Rook : Piece()
+abstract class Bishop : Piece()
+abstract class Queen : Piece()
+abstract class King : Piece()
+
+class WhitePawn : White, Pawn()
+class WhiteKnight : White, Knight()
+class WhiteRook : White, Rook()
+class WhiteBishop : White, Bishop()
+class WhiteQueen : White, Queen()
+class WhiteKing : White, King()
+class BlackPawn : Black, Pawn()
+class BlackKnight : Black, Knight()
+class BlackRook : Black, Rook()
+class BlackBishop : Black, Bishop()
+class BlackQueen : Black, Queen()
+class BlackKing : Black, King()

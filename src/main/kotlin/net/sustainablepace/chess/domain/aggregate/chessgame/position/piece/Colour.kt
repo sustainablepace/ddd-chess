@@ -1,5 +1,9 @@
 package net.sustainablepace.chess.domain.aggregate.chessgame.position.piece
 
-sealed class Colour
-object White : Colour()
-object Black : Colour()
+interface Colour
+interface White : Colour
+interface Black : Colour
+
+sealed class Side
+object WhitePieces: Side(), White
+object BlackPieces: Side(), Black

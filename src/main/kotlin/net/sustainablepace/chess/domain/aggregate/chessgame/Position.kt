@@ -2,9 +2,7 @@ package net.sustainablepace.chess.domain.aggregate.chessgame
 
 import net.sustainablepace.chess.domain.ValidMove
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.*
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.Black
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.Colour
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.White
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.*
 
 data class Position(val squaresWithPieces: Map<Square, Piece>) {
     fun movePiece(move: ValidMove): Position =
@@ -27,10 +25,10 @@ data class Position(val squaresWithPieces: Map<Square, Piece>) {
         get() = squaresWithPieces.keys
 
     fun containsWhiteAndBlackPieces(): Boolean =
-        squaresWithPieces.values.map { it.colour }.containsAll(listOf(White, Black))
+        squaresWithPieces.values.map { it.colour }.containsAll(listOf(WhitePieces, BlackPieces))
 
-    fun getFirstOccupiedSquare(colour: Colour) = squaresWithPieces.filter {
-        it.value.colour == colour
+    fun getFirstOccupiedSquare(side: Side) = squaresWithPieces.filter {
+        it.value.colour == side
     }.keys.firstOrNull()
 
     fun getFirstEmptySquare() = (allSquares - occupiedSquares).firstOrNull()
