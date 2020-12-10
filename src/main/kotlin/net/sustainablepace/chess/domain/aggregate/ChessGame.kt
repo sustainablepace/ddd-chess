@@ -16,10 +16,12 @@ class ChessGame private constructor(
 ) {
 
     constructor() : this(Position.default)
-    constructor(position: Position) : this(
+    constructor(position: Position) : this(WhitePieces, position)
+    constructor(side: Side) : this(side, Position.default)
+    constructor(side: Side, position: Position) : this(
         id = chessGameId(),
         position = position,
-        turn = WhitePieces,
+        turn = side,
         white = HumanPlayer,
         black = StupidComputerPlayer,
         status = "in progress"
@@ -30,6 +32,11 @@ class ChessGame private constructor(
             white
         } else black
 
+    fun findMoves(): Set<ValidMove> {
+        val squares = position.squaresWithPieces.filter { it.value.colour == turn }.keys
+        return squares.flatMap { findMoves( it ) }.toSet()
+    }
+
     fun findMoves(departureSquare: Square): Set<ValidMove> {
         val pieceToBeMoved = position.get(departureSquare)
         if (pieceToBeMoved !is Piece) {
@@ -39,20 +46,22 @@ class ChessGame private constructor(
     }
 
     fun movePiece(move: ValidMove): ChessGame =
-        position.movePiece(move).let { newPosition ->
-            ChessGame(
-                id = id,
-                position = newPosition,
-                turn = if (turn == WhitePieces) {
-                    BlackPieces
-                } else {
-                    WhitePieces
-                },
-                white = white,
-                black = black,
-                status = if (!newPosition.containsWhiteAndBlackPieces()) {
-                    "checkmate"
-                } else status
-            )
-        }
+        if(findMoves().contains(move)) {
+            position.movePiece(move).let { newPosition ->
+                ChessGame(
+                    id = id,
+                    position = newPosition,
+                    turn = if (turn == WhitePieces) {
+                        BlackPieces
+                    } else {
+                        WhitePieces
+                    },
+                    white = white,
+                    black = black,
+                    status = if (!newPosition.containsWhiteAndBlackPieces()) {
+                        "checkmate"
+                    } else status
+                )
+            }
+        } else this
 }

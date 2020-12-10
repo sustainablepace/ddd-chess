@@ -7,7 +7,8 @@ import org.junit.jupiter.api.Test
 
 class PieceTest {
     @Test
-    fun name() {
+    fun `test hashCode`() {
+        assertThat(WhitePawn().hashCode()).isEqualTo(WhitePawn().hashCode())
         assertThat(WhitePawn().hashCode()).isNotEqualTo(BlackPawn().hashCode())
     }
 }

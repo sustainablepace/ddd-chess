@@ -10,6 +10,7 @@ class Direction private constructor(val x: Int, val y: Int) {
     operator fun times(scale: Int): Direction = Direction(x * scale, y * scale)
 
     operator fun unaryMinus() = Direction(-x, y)
+    operator fun not() = Direction(x, -y)
 
     companion object {
         fun diagonal() = Direction(1, 1)

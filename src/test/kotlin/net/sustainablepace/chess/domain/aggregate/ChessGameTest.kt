@@ -28,226 +28,64 @@ class ChessGameTest {
         val game = ChessGame()
 
         assertThat(game.position.get("e2")).isEqualTo(WhitePawn())
-        assertThat(game.position.get("e4")).isNull()
+        assertThat(game.position.get("e3")).isNull()
 
-        val move = Move("e2-e4") as ValidMove
+        val move = Move("e2-e3") as ValidMove
 
         val updatedGame = game.movePiece(move)
 
         assertThat(updatedGame.turn).isEqualTo(BlackPieces)
         assertThat(updatedGame.position.get("e2")).isNull()
-        assertThat(updatedGame.position.get("e4")).isEqualTo(WhitePawn())
+        assertThat(updatedGame.position.get("e3")).isEqualTo(WhitePawn())
     }
 
-
     @Test
-    fun `finds valid rook movements`() {
-        val chessGame = ChessGame(Position(mapOf(
-            "c3" to WhiteRook(),
-            "c7" to BlackPawn(),
-            "e3" to WhitePawn()
-        )))
+    fun `find moves for white in default position`() {
+        val game = ChessGame()
 
-        val moves = chessGame.findMoves("c3")
+        val moves = game.findMoves()
+
         assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove("c3-c4") as ValidMove,
-            ValidMove("c3-c5") as ValidMove,
-            ValidMove("c3-c6") as ValidMove,
-            ValidMove("c3-c7") as ValidMove,
-            ValidMove("c3-b3") as ValidMove,
-            ValidMove("c3-a3") as ValidMove,
-            ValidMove("c3-c2") as ValidMove,
-            ValidMove("c3-c1") as ValidMove,
-            ValidMove("c3-d3") as ValidMove
+            ValidMove("a2-a3") as ValidMove,
+            ValidMove("b2-b3") as ValidMove,
+            ValidMove("c2-c3") as ValidMove,
+            ValidMove("d2-d3") as ValidMove,
+            ValidMove("e2-e3") as ValidMove,
+            ValidMove("f2-f3") as ValidMove,
+            ValidMove("g2-g3") as ValidMove,
+            ValidMove("h2-h3") as ValidMove,
+            ValidMove("b1-a3") as ValidMove,
+            ValidMove("b1-c3") as ValidMove,
+            ValidMove("g1-f3") as ValidMove,
+            ValidMove("g1-h3") as ValidMove
         )
     }
 
     @Test
-    fun `finds valid knight movements`() {
-        val chessGame = ChessGame(Position(mapOf(
-            "c2" to WhiteKnight(),
-            "b4" to BlackPawn(),
-            "e1" to WhiteKing()
-        )))
-        val moves = chessGame.findMoves("c2")
+    fun `find moves for black in default position`() {
+        val game = ChessGame(BlackPieces)
+
+        val moves = game.findMoves()
+
         assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove("c2-d4") as ValidMove,
-            ValidMove("c2-b4") as ValidMove,
-            ValidMove("c2-e3") as ValidMove,
-            ValidMove("c2-a1") as ValidMove,
-            ValidMove("c2-a3") as ValidMove
+            ValidMove("a7-a6") as ValidMove,
+            ValidMove("b7-b6") as ValidMove,
+            ValidMove("c7-c6") as ValidMove,
+            ValidMove("d7-d6") as ValidMove,
+            ValidMove("e7-e6") as ValidMove,
+            ValidMove("f7-f6") as ValidMove,
+            ValidMove("g7-g6") as ValidMove,
+            ValidMove("h7-h6") as ValidMove,
+            ValidMove("b8-a6") as ValidMove,
+            ValidMove("b8-c6") as ValidMove,
+            ValidMove("g8-f6") as ValidMove,
+            ValidMove("g8-h6") as ValidMove
         )
     }
 
-    @Test
-    fun `finds valid bishop movements on empty board`() {
-        val chessGame = ChessGame(Position(mapOf(
-            "e4" to WhiteBishop()
-        )))
-        val moves = chessGame.findMoves("e4")
-        assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove("e4-d3") as ValidMove,
-            ValidMove("e4-c2") as ValidMove,
-            ValidMove("e4-b1") as ValidMove,
-            ValidMove("e4-d5") as ValidMove,
-            ValidMove("e4-c6") as ValidMove,
-            ValidMove("e4-b7") as ValidMove,
-            ValidMove("e4-a8") as ValidMove,
-            ValidMove("e4-f5") as ValidMove,
-            ValidMove("e4-g6") as ValidMove,
-            ValidMove("e4-h7") as ValidMove,
-            ValidMove("e4-f3") as ValidMove,
-            ValidMove("e4-g2") as ValidMove,
-            ValidMove("e4-h1") as ValidMove
-        )
-    }
 
-    @Test
-    fun `finds valid bishop movements on crowded board`() {
-        val chessGame = ChessGame(Position(mapOf(
-            "e4" to WhiteBishop(),
-            "d5" to BlackPawn(),
-            "g2" to WhiteQueen()
-        )))
-        val moves = chessGame.findMoves("e4")
-        assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove("e4-d3") as ValidMove,
-            ValidMove("e4-c2") as ValidMove,
-            ValidMove("e4-b1") as ValidMove,
-            ValidMove("e4-d5") as ValidMove,
-            ValidMove("e4-f5") as ValidMove,
-            ValidMove("e4-g6") as ValidMove,
-            ValidMove("e4-h7") as ValidMove,
-            ValidMove("e4-f3") as ValidMove
-        )
-    }
 
-    @Test
-    fun `finds valid queen movements on empty board`() {
-        val chessGame = ChessGame(Position(mapOf(
-            "e4" to WhiteQueen()
-        )))
-        val moves = chessGame.findMoves("e4")
-        assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove("e4-d3") as ValidMove,
-            ValidMove("e4-c2") as ValidMove,
-            ValidMove("e4-b1") as ValidMove,
-            ValidMove("e4-d5") as ValidMove,
-            ValidMove("e4-c6") as ValidMove,
-            ValidMove("e4-b7") as ValidMove,
-            ValidMove("e4-a8") as ValidMove,
-            ValidMove("e4-f5") as ValidMove,
-            ValidMove("e4-g6") as ValidMove,
-            ValidMove("e4-h7") as ValidMove,
-            ValidMove("e4-f3") as ValidMove,
-            ValidMove("e4-g2") as ValidMove,
-            ValidMove("e4-h1") as ValidMove,
-            ValidMove("e4-e5") as ValidMove,
-            ValidMove("e4-e6") as ValidMove,
-            ValidMove("e4-e7") as ValidMove,
-            ValidMove("e4-e8") as ValidMove,
-            ValidMove("e4-e3") as ValidMove,
-            ValidMove("e4-e2") as ValidMove,
-            ValidMove("e4-e1") as ValidMove,
-            ValidMove("e4-d4") as ValidMove,
-            ValidMove("e4-c4") as ValidMove,
-            ValidMove("e4-b4") as ValidMove,
-            ValidMove("e4-a4") as ValidMove,
-            ValidMove("e4-f4") as ValidMove,
-            ValidMove("e4-g4") as ValidMove,
-            ValidMove("e4-h4") as ValidMove
 
-        )
-    }
 
-    @Test
-    fun `finds valid queen movements on crowded board`() {
-        val chessGame = ChessGame(Position(mapOf(
-            "e4" to WhiteQueen(),
-            "d5" to BlackPawn(),
-            "g2" to WhiteBishop(),
-            "a4" to WhiteKing(),
-            "g4" to BlackPawn(),
-            "e1" to WhiteRook(),
-            "e6" to BlackQueen()
-        )))
-        val moves = chessGame.findMoves("e4")
-        assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove("e4-d3") as ValidMove,
-            ValidMove("e4-c2") as ValidMove,
-            ValidMove("e4-b1") as ValidMove,
-            ValidMove("e4-d5") as ValidMove,
-            ValidMove("e4-f5") as ValidMove,
-            ValidMove("e4-g6") as ValidMove,
-            ValidMove("e4-h7") as ValidMove,
-            ValidMove("e4-f3") as ValidMove,
-            ValidMove("e4-d4") as ValidMove,
-            ValidMove("e4-c4") as ValidMove,
-            ValidMove("e4-b4") as ValidMove,
-            ValidMove("e4-f4") as ValidMove,
-            ValidMove("e4-g4") as ValidMove,
-            ValidMove("e4-e3") as ValidMove,
-            ValidMove("e4-e2") as ValidMove,
-            ValidMove("e4-e5") as ValidMove,
-            ValidMove("e4-e6") as ValidMove
-        )
-    }
 
-    @Test
-    fun `finds valid king movements on empty board`() {
-        val chessGame = ChessGame(Position(mapOf(
-            "e4" to WhiteKing()
-        )))
-        val moves = chessGame.findMoves("e4")
-        assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove("e4-d3") as ValidMove,
-            ValidMove("e4-e3") as ValidMove,
-            ValidMove("e4-f3") as ValidMove,
-            ValidMove("e4-f4") as ValidMove,
-            ValidMove("e4-f5") as ValidMove,
-            ValidMove("e4-e5") as ValidMove,
-            ValidMove("e4-d5") as ValidMove,
-            ValidMove("e4-d4") as ValidMove
-        )
-    }
-
-    @Test
-    fun `finds valid king movements on crowded board`() {
-        val chessGame = ChessGame(Position(mapOf(
-            "e4" to WhiteKing(),
-            "d5" to BlackPawn(),
-            "e5" to WhiteQueen()
-        )))
-        val moves = chessGame.findMoves("e4")
-        assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove("e4-d3") as ValidMove,
-            ValidMove("e4-e3") as ValidMove,
-            ValidMove("e4-f3") as ValidMove,
-            ValidMove("e4-f4") as ValidMove,
-            ValidMove("e4-f5") as ValidMove,
-            ValidMove("e4-d5") as ValidMove,
-            ValidMove("e4-d4") as ValidMove
-        )
-    }
-
-    @Test
-    fun `finds valid pawn movements on empty board`() {
-        val chessGame = ChessGame(Position(mapOf(
-            "e4" to WhitePawn()
-        )))
-        val moves = chessGame.findMoves("e4")
-        assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove("e4-e5") as ValidMove
-        )
-    }
-
-    @Test
-    fun `finds valid pawn movements on crowded board`() {
-        val chessGame = ChessGame(Position(mapOf(
-            "e4" to WhitePawn(),
-            "e5" to WhiteQueen()
-        )))
-        val moves = chessGame.findMoves("e4")
-        assertThat(moves).isEmpty()
-    }
 }
