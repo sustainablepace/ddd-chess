@@ -24,7 +24,7 @@ class ChessGameTest {
         assertThat(game.turn).isEqualTo(WhitePieces)
         assertThat(game.white).isInstanceOf(HumanPlayer::class.java)
         assertThat(game.black).isInstanceOf(ComputerPlayer::class.java)
-        assertThat(game.getPosition()).isEqualTo(defaultPosition.toMap())
+        assertThat(game.position).isEqualTo(defaultPosition)
         assertThat(game.numberOfNextMove).isEqualTo(1)
         assertThat(game.enPassantSquare).isEqualTo(null)
     }

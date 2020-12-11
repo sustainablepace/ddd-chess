@@ -11,7 +11,7 @@ typealias EnPassentSquare = Square?
 
 class ChessGame private constructor(
     val id: ChessGameId,
-    private val position: Position,
+    val position: Position,
     val turn: Side,
     val white: Player,
     val black: Player,
@@ -152,8 +152,6 @@ class ChessGame private constructor(
         } else this
 
     fun pieceOn(arrivalSquare: Square): ChessPiece = position.get(arrivalSquare) ?: NoPiece
-
-    fun getPosition() = position.toMap()
 
     val allSquares = ('a'..'h').flatMap { column ->
         ('1'..'8').map { column + "" + it }
