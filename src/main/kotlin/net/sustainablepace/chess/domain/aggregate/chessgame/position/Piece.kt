@@ -28,6 +28,18 @@ sealed class Piece(): Colour {
         check(colour in setOf(WhitePieces, BlackPieces))
     }
 
+    override fun toString() = when(colour) {
+        is WhitePieces -> "White"
+        is BlackPieces -> "Black"
+    } + when (this) {
+        is Pawn -> "Pawn"
+        is Knight -> "Knight"
+        is Rook -> "Rook"
+        is Bishop -> "Bishop"
+        is Queen -> "Queen"
+        is King -> "King"
+    }
+
     override fun equals(other: Any?): Boolean =
         other is Piece &&
             colour == other.colour &&

@@ -1,6 +1,5 @@
 package net.sustainablepace.chess.domain
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.Position
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.*
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -9,9 +8,9 @@ class WhiteQueenTest {
 
     @Test
     fun `finds valid queen movements on empty board`() {
-        val chessGame = ChessGame(Position(mapOf(
+        val chessGame = ChessGame(mutableMapOf(
             "e4" to WhiteQueen()
-        )))
+        ))
         val moves = chessGame.findMoves("e4")
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("e4-d3") as ValidMove,
@@ -47,7 +46,7 @@ class WhiteQueenTest {
 
     @Test
     fun `finds valid queen movements on crowded board`() {
-        val chessGame = ChessGame(Position(mapOf(
+        val chessGame = ChessGame(mutableMapOf(
             "e4" to WhiteQueen(),
             "d5" to BlackPawn(),
             "g2" to WhiteBishop(),
@@ -55,7 +54,7 @@ class WhiteQueenTest {
             "g4" to BlackPawn(),
             "e1" to WhiteRook(),
             "e6" to BlackQueen()
-        )))
+        ))
         val moves = chessGame.findMoves("e4")
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("e4-d3") as ValidMove,

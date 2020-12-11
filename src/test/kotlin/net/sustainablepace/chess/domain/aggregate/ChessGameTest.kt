@@ -1,6 +1,7 @@
 package net.sustainablepace.chess.domain.aggregate
 
 import net.sustainablepace.chess.domain.*
+import net.sustainablepace.chess.domain.ChessGame.Companion.default
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.*
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.Black
@@ -20,7 +21,9 @@ class ChessGameTest {
         assertThat(game.turn).isEqualTo(WhitePieces)
         assertThat(game.white).isInstanceOf(HumanPlayer::class.java)
         assertThat(game.black).isInstanceOf(ComputerPlayer::class.java)
-        assertThat(game.position).isEqualTo(Position.default)
+        assertThat(game.position).isEqualTo(default)
+        assertThat(game.numberOfNextMove).isEqualTo(1)
+        assertThat(game.enPassant).isEqualTo(null)
     }
 
     @Test
@@ -35,6 +38,7 @@ class ChessGameTest {
         val updatedGame = game.movePiece(move)
 
         assertThat(updatedGame.turn).isEqualTo(BlackPieces)
+        assertThat(updatedGame.numberOfNextMove).isEqualTo(2)
         assertThat(updatedGame.position.get("e2")).isNull()
         assertThat(updatedGame.position.get("e3")).isEqualTo(WhitePawn())
     }
@@ -99,9 +103,88 @@ class ChessGameTest {
         )
     }
 
+    @Test
+    fun `en passant (white)`() {
+        val chessGame = ChessGame()
+        assertThat(chessGame.enPassant).isNull()
 
+        chessGame.movePiece(ValidMove("e2-e4") as ValidMove).let {
+            assertThat(it.enPassant).isEqualTo("e4")
+        }
 
+        chessGame.movePiece(ValidMove("e2-e3") as ValidMove).let {
+            assertThat(it.enPassant).isNull()
+        }
+    }
 
+    @Test
+    fun `en passant (black)`() {
+        val chessGame = ChessGame(BlackPieces)
+        assertThat(chessGame.enPassant).isNull()
 
+        chessGame.movePiece(ValidMove("e7-e6") as ValidMove).let {
+            assertThat(it.enPassant).isNull()
+        }
 
+        chessGame.movePiece(ValidMove("e7-e5") as ValidMove).let {
+            assertThat(it.enPassant).isEqualTo("e5")
+        }
+
+    }
+
+    @Test
+    fun `en passent capturing works for black (left)`() {
+        val chessGame = ChessGame(mutableMapOf(
+            "f4" to BlackPawn(),
+            "e2" to WhitePawn()
+        ))
+        val updatedChessGame = chessGame
+            .movePiece(ValidMove("e2-e4") as ValidMove)
+            .movePiece(ValidMove("f4-e3") as ValidMove)
+
+        assertThat(updatedChessGame.position.get("e3")).isEqualTo(BlackPawn())
+        assertThat(updatedChessGame.position.get("e4")).isNull()
+    }
+
+    @Test
+    fun `en passent capturing works for black (right)`() {
+        val chessGame = ChessGame(mutableMapOf(
+            "d4" to BlackPawn(),
+            "e2" to WhitePawn()
+        ))
+        val updatedChessGame = chessGame
+            .movePiece(ValidMove("e2-e4") as ValidMove)
+            .movePiece(ValidMove("d4-e3") as ValidMove)
+
+        assertThat(updatedChessGame.position.get("e3")).isEqualTo(BlackPawn())
+        assertThat(updatedChessGame.position.get("e4")).isNull()
+    }
+
+    @Test
+    fun `en passent capturing works for white (left)`() {
+        val chessGame = ChessGame(BlackPieces, mutableMapOf(
+            "e7" to BlackPawn(),
+            "d5" to WhitePawn()
+        ))
+        val updatedChessGame = chessGame
+            .movePiece(ValidMove("e7-e5") as ValidMove)
+            .movePiece(ValidMove("d5-e6") as ValidMove)
+
+        assertThat(updatedChessGame.position.get("e6")).isEqualTo(WhitePawn())
+        assertThat(updatedChessGame.position.get("e5")).isNull()
+    }
+
+    @Test
+    fun `en passent capturing works for white (right)`() {
+        val chessGame = ChessGame(BlackPieces, mutableMapOf(
+            "e7" to BlackPawn(),
+            "f5" to WhitePawn()
+        ))
+        val updatedChessGame = chessGame
+            .movePiece(ValidMove("e7-e5") as ValidMove)
+            .movePiece(ValidMove("f5-e6") as ValidMove)
+
+        assertThat(updatedChessGame.position.get("e6")).isEqualTo(WhitePawn())
+        assertThat(updatedChessGame.position.get("e5")).isNull()
+    }
 }

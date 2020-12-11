@@ -1,6 +1,5 @@
 package net.sustainablepace.chess.domain
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.Position
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.BlackPawn
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.WhiteBishop
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.WhiteQueen
@@ -10,9 +9,9 @@ import org.junit.jupiter.api.Test
 class WhiteBishopTest {
     @Test
     fun `finds valid bishop movements on empty board`() {
-        val chessGame = ChessGame(Position(mapOf(
+        val chessGame = ChessGame(mutableMapOf(
             "e4" to WhiteBishop()
-        )))
+        ))
         val moves = chessGame.findMoves("e4")
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("e4-d3") as ValidMove,
@@ -33,11 +32,11 @@ class WhiteBishopTest {
 
     @Test
     fun `finds valid bishop movements on crowded board`() {
-        val chessGame = ChessGame(Position(mapOf(
+        val chessGame = ChessGame(mutableMapOf(
             "e4" to WhiteBishop(),
             "d5" to BlackPawn(),
             "g2" to WhiteQueen()
-        )))
+        ))
         val moves = chessGame.findMoves("e4")
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("e4-d3") as ValidMove,

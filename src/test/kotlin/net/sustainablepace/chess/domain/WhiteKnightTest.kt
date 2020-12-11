@@ -1,6 +1,5 @@
 package net.sustainablepace.chess.domain
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.Position
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.BlackPawn
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.WhiteKing
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.WhiteKnight
@@ -11,11 +10,11 @@ class WhiteKnightTest {
 
     @Test
     fun `finds valid knight movements`() {
-        val chessGame = ChessGame(Position(mapOf(
+        val chessGame = ChessGame(mutableMapOf(
             "c2" to WhiteKnight(),
             "b4" to BlackPawn(),
             "e1" to WhiteKing()
-        )))
+        ))
         val moves = chessGame.findMoves("c2")
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("c2-d4") as ValidMove,

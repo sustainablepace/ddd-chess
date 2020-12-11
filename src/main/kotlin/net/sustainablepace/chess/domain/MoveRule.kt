@@ -7,9 +7,11 @@ import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.White
 
 class MoveRules(private val moveRules: Set<MoveRule>) {
     constructor(moveRule: MoveRule) : this(setOf(moveRule))
+    constructor(vararg moveOptions: MoveRule) : this(moveOptions.toSet())
+    constructor(vararg moveOptions: Set<MoveRule>) : this(moveOptions.flatMap { it }.toSet())
     constructor(vararg moveOptions: MoveRules) : this(moveOptions.flatMap { it.moveRules.map { it.copy() } }.toSet())
 
-    fun findMoves(getPiece: (Square) -> Piece?, departureSquare: Square, movingPiece: Piece): Set<ValidMove> =
+    fun findMoves(chessGame: ChessGame, departureSquare: Square, movingPiece: Piece): Set<ValidMove> =
         moveRules.flatMap { rule ->
             when (rule.pieceCanTakeMultipleSteps) {
                 true -> 7
@@ -19,19 +21,27 @@ class MoveRules(private val moveRules: Set<MoveRule>) {
                 (1..steps).flatMap { step ->
                     when (pieceIsBlocking) {
                         true -> emptySet()
-                        false -> when (val arrivalSquare = departureSquare.add(rule.direction * step)) {
-                            is Square -> when (val blockingPiece = getPiece(arrivalSquare)) {
-                                is Piece -> {
-                                    pieceIsBlocking = true
-                                    if (rule.condition(departureSquare, movingPiece) && movingPiece.colour != blockingPiece.colour && rule.captureType != DISALLOWED) {
+                        false -> if (rule.moveCondition == null) {
+
+                            when (val arrivalSquare = departureSquare.add(rule.direction * step)) {
+                                is Square -> when (val blockingPiece = chessGame.position.get(arrivalSquare)) {
+                                    is Piece -> {
+                                        pieceIsBlocking = true
+                                        if (movingPiece.colour != blockingPiece.colour && rule.captureType != DISALLOWED) {
+                                            setOf(ValidMove("$departureSquare-$arrivalSquare") as ValidMove)
+                                        } else emptySet()
+                                    }
+                                    else -> if (rule.captureType != MANDATORY) {
                                         setOf(ValidMove("$departureSquare-$arrivalSquare") as ValidMove)
                                     } else emptySet()
                                 }
-                                else -> if (rule.condition(departureSquare, movingPiece) && rule.captureType != MANDATORY) {
-                                    setOf(ValidMove("$departureSquare-$arrivalSquare") as ValidMove)
-                                } else emptySet()
+                                else -> emptySet()
                             }
-                            else -> emptySet()
+                        } else {
+                            val arrivalSquare = departureSquare.add(rule.direction * step)
+                            if (arrivalSquare != null && rule.moveCondition.invoke(chessGame, departureSquare, arrivalSquare, movingPiece)) {
+                                setOf(ValidMove("$departureSquare-$arrivalSquare") as ValidMove)
+                            } else emptySet()
                         }
                     }
                 }
@@ -42,18 +52,19 @@ class MoveRules(private val moveRules: Set<MoveRule>) {
 }
 
 
-data class MoveRule(
+data class MoveRule private constructor(
     val direction: Direction,
     val captureType: CaptureType,
     val pieceCanTakeMultipleSteps: Boolean = false,
-    val condition: (square: Square, piece: Piece) -> Boolean = { _, _ -> true }
+    val moveCondition: ((chessGame: ChessGame, departureSquare: Square, arrivalSquare: Square, piece: Piece) -> Boolean)? = null,
 ) {
     companion object {
         operator fun invoke(
             direction: Direction,
             captureType: CaptureType,
-            multiples: Boolean = false,
-            rotations: Boolean = false
+            pieceCanTakeMultipleSteps: Boolean = false,
+            rotations: Boolean = false,
+            moveCondition: ((chessGame: ChessGame, departureSquare: Square, arrivalSquare: Square, piece: Piece) -> Boolean)? = null
         ): Set<MoveRule> = when (rotations) {
             true -> 4
             false -> 1
@@ -62,7 +73,8 @@ data class MoveRule(
                 MoveRule(
                     direction.rotate(currentRotation % numRotations),
                     captureType,
-                    multiples
+                    pieceCanTakeMultipleSteps,
+                    moveCondition
                 )
             }.toSet()
         }
@@ -81,7 +93,7 @@ object PieceMoveRules {
         MoveRule(
             direction = Direction.straightLine(),
             captureType = ALLOWED,
-            multiples = true,
+            pieceCanTakeMultipleSteps = true,
             rotations = true
         )
     )
@@ -91,12 +103,11 @@ object PieceMoveRules {
             direction = Direction.lShaped(),
             captureType = ALLOWED,
             rotations = true
-        ).union(
-            MoveRule(
-                direction = -Direction.lShaped(),
-                captureType = ALLOWED,
-                rotations = true
-            )
+        ),
+        MoveRule(
+            direction = -Direction.lShaped(),
+            captureType = ALLOWED,
+            rotations = true
         )
     )
 
@@ -104,7 +115,7 @@ object PieceMoveRules {
         MoveRule(
             direction = Direction.diagonal(),
             captureType = ALLOWED,
-            multiples = true,
+            pieceCanTakeMultipleSteps = true,
             rotations = true
         )
     )
@@ -119,37 +130,110 @@ object PieceMoveRules {
             direction = Direction.diagonal(),
             captureType = ALLOWED,
             rotations = true
-        ).union(
-            MoveRule(
-                direction = Direction.straightLine(),
-                captureType = ALLOWED,
-                rotations = true
-            )
+        ),
+        MoveRule(
+            direction = Direction.straightLine(),
+            captureType = ALLOWED,
+            rotations = true
+        ),
+        MoveRule(
+            direction = -Direction.castlingMove(), // queenside
+            captureType = DISALLOWED,
+            moveCondition = { chessGame, departureSquare, arrivalSquare, piece ->
+                if (piece is WhiteKing) {
+                    departureSquare == "e1" &&
+                        arrivalSquare == "c1" &&
+                            chessGame.position.get("a1") is WhiteRook &&
+                            chessGame.whiteCastlingOptions.queenSide &&
+                            chessGame.position.get("b1") == null &&
+                            chessGame.position.get("c1") == null &&
+                            chessGame.position.get("d1") == null
+                } else if(piece is BlackKing) {
+                    departureSquare == "e8" &&
+                        arrivalSquare == "c8" &&
+                        chessGame.position.get("a8") is BlackRook &&
+                        chessGame.whiteCastlingOptions.queenSide &&
+                        chessGame.position.get("b8") == null &&
+                        chessGame.position.get("c8") == null &&
+                        chessGame.position.get("d8") == null
+                } else false
+            }
+        ),
+        MoveRule(
+            direction = Direction.castlingMove(),
+            captureType = DISALLOWED,
+            moveCondition = { chessGame, departureSquare, arrivalSquare, piece ->
+                if (piece is WhiteKing) {
+                    departureSquare == "e1" &&
+                        arrivalSquare == "g1" &&
+                        chessGame.position.get("h1") is WhiteRook &&
+                        chessGame.whiteCastlingOptions.kingSide &&
+                        chessGame.position.get("f1") == null &&
+                        chessGame.position.get("g1") == null
+                } else if(piece is BlackKing) {
+                    departureSquare == "e8" &&
+                        arrivalSquare == "g8" &&
+                        chessGame.position.get("h8") is BlackRook &&
+                        chessGame.whiteCastlingOptions.queenSide &&
+                        chessGame.position.get("f8") == null &&
+                        chessGame.position.get("g8") == null
+                } else false
+            }
         )
     )
 
     val pawnMoveRules = MoveRules(
-        setOf(
-            MoveRule(
-                direction = Direction.straightLine(),
-                captureType = DISALLOWED
-            ),
-            MoveRule(
-                direction = Direction.initialPawnMove(),
-                captureType = DISALLOWED,
-                condition = { square, piece ->
-                    square.rank() == '2' && piece is White ||
-                    square.rank() == '7' && piece is Black
-                }
-            ),
-            MoveRule(
-                direction = Direction.diagonal(),
-                captureType = MANDATORY
-            ),
-            MoveRule(
-                direction = -Direction.diagonal(),
-                captureType = MANDATORY
-            )
+        MoveRule(
+            direction = Direction.straightLine(),
+            captureType = DISALLOWED
+        ),
+        MoveRule(
+            direction = Direction.initialPawnMove(),
+            captureType = DISALLOWED,
+            moveCondition = { chessGame, departureSquare, arrivalSquare, piece ->
+                departureSquare.rank() == '2' && piece is White &&
+                    chessGame.position.get(departureSquare.upperNeighbour()!!) == null &&
+                    chessGame.position.get(arrivalSquare) == null ||
+                    departureSquare.rank() == '7' && piece is Black &&
+                    chessGame.position.get(departureSquare.lowerNeighbour()!!) == null &&
+                    chessGame.position.get(arrivalSquare) == null
+            }
+        ),
+        MoveRule(
+            direction = Direction.diagonal(),
+            captureType = MANDATORY
+        ),
+        MoveRule(
+            direction = -Direction.diagonal(),
+            captureType = MANDATORY
+        ),
+        MoveRule(
+            direction = Direction.diagonal(),
+            captureType = MANDATORY,
+            moveCondition = { chessGame, departureSquare, arrivalSquare, piece ->
+                val neighbourSquare = departureSquare.rightNeighbour()
+                if (
+                    chessGame.enPassant is Square &&
+                    chessGame.enPassant == neighbourSquare
+                ) {
+                    val neighbourPiece = chessGame.position.get(neighbourSquare)
+                    neighbourPiece is Pawn && piece.colour != neighbourPiece.colour
+                } else false
+            }
+        ),
+        MoveRule(
+            direction = -Direction.diagonal(),
+            captureType = MANDATORY,
+            moveCondition = { chessGame, departureSquare, arrivalSquare, piece ->
+                val neighbourSquare = departureSquare.leftNeighbour()
+                if (
+                    chessGame.enPassant is Square &&
+                    chessGame.enPassant == neighbourSquare
+                ) {
+                    val neighbourPiece = chessGame.position.get(neighbourSquare)
+                    neighbourPiece is Pawn && piece.colour != neighbourPiece.colour
+                } else false
+            }
         )
     )
 }

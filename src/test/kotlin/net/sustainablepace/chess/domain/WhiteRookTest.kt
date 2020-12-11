@@ -1,6 +1,5 @@
 package net.sustainablepace.chess.domain
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.Position
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.BlackPawn
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.WhitePawn
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.WhiteRook
@@ -11,11 +10,11 @@ class WhiteRookTest {
 
     @Test
     fun `finds valid rook movements`() {
-        val chessGame = ChessGame(Position(mapOf(
+        val chessGame = ChessGame(mutableMapOf(
             "c3" to WhiteRook(),
             "c7" to BlackPawn(),
             "e3" to WhitePawn()
-        )))
+        ))
 
         val moves = chessGame.findMoves("c3")
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
