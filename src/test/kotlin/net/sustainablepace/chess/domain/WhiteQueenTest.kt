@@ -8,7 +8,7 @@ class WhiteQueenTest {
 
     @Test
     fun `finds valid queen movements on empty board`() {
-        val chessGame = ChessGame(mutableMapOf(
+        val chessGame = ChessGame(mapOf(
             "e4" to WhiteQueen()
         ))
         val moves = chessGame.findMoves("e4")
@@ -46,7 +46,7 @@ class WhiteQueenTest {
 
     @Test
     fun `finds valid queen movements on crowded board`() {
-        val chessGame = ChessGame(mutableMapOf(
+        val chessGame = ChessGame(mapOf(
             "e4" to WhiteQueen(),
             "d5" to BlackPawn(),
             "g2" to WhiteBishop(),

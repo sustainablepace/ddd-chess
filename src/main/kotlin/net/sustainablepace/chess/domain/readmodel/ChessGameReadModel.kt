@@ -3,10 +3,6 @@ package net.sustainablepace.chess.domain.readmodel
 import net.sustainablepace.chess.domain.ChessGame
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.*
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.Black
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.BlackPieces
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.White
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.WhitePieces
 
 
 data class ChessGameReadModel(

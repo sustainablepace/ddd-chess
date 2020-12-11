@@ -1,6 +1,7 @@
 package net.sustainablepace.chess.domain
 
 class Direction private constructor(val x: Int, val y: Int) {
+
     fun rotate(n: Int): Direction = when {
         n == 1 -> Direction(y, -x)
         n > 1 -> Direction(y, -x).rotate(n - 1)
@@ -8,7 +9,6 @@ class Direction private constructor(val x: Int, val y: Int) {
     }
 
     operator fun times(scale: Int): Direction = Direction(x * scale, y * scale)
-
     operator fun unaryMinus() = Direction(-x, y)
     operator fun not() = Direction(x, -y)
 

@@ -1,16 +1,12 @@
 package net.sustainablepace.chess.domain
 
+import net.sustainablepace.chess.domain.aggregate.Position
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.*
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.*
+import net.sustainablepace.chess.domain.aggregate.containsWhiteAndBlackPieces
 import java.lang.Math.abs
 
 typealias EnPassentSquare = Square?
-
-typealias Position = MutableMap<Square, Piece>
-
-fun Map<Square, Piece>.containsWhiteAndBlackPieces(): Boolean =
-    values.map { it.colour }.containsAll(listOf(WhitePieces, BlackPieces))
 
 
 class ChessGame private constructor(
@@ -21,14 +17,14 @@ class ChessGame private constructor(
     val black: Player,
     val status: String,
     val numberOfNextMove: Int = 1,
-    val enPassant: EnPassentSquare = null,
-    val whiteCastlingOptions: CastlingOptions<WhitePieces> = CastlingOptions(),
-    val blackCastlingOptions: CastlingOptions<BlackPieces> = CastlingOptions(),
+    val enPassantSquare: EnPassentSquare = null,
+    val whiteCastlingOptions: CastlingOptions = CastlingOptions(),
+    val blackCastlingOptions: CastlingOptions = CastlingOptions(),
 ) {
 
-    constructor() : this(default)
+    constructor() : this(defaultPosition)
     constructor(position: Position) : this(WhitePieces, position)
-    constructor(side: Side) : this(side, default)
+    constructor(side: Side) : this(side, defaultPosition)
     constructor(side: Side, position: Position) : this(
         id = chessGameId(),
         position = position,
@@ -51,7 +47,7 @@ class ChessGame private constructor(
     fun findMoves(departureSquare: Square): Set<ValidMove> =
         position.get(departureSquare).let { pieceToBeMoved ->
             if (pieceToBeMoved is Piece) {
-                pieceToBeMoved.moveRules.findMoves(this, departureSquare, pieceToBeMoved)
+                pieceToBeMoved.rules.findMoves(this, departureSquare, pieceToBeMoved)
             }
             else emptySet()
         }
@@ -67,8 +63,7 @@ class ChessGame private constructor(
     fun movePiece(move: ValidMove): ChessGame =
         if (findMoves().contains(move)) {
             val turnBeforeMove = turn
-            var whiteCastling = false
-            var blackCastling = false
+            val piece = position.get(move.departureSquare)
             mutableMapOf<Square, Piece>().run {
                 putAll(position)
                 this[move.arrivalSquare] = getValue(move.departureSquare)
@@ -78,22 +73,18 @@ class ChessGame private constructor(
                 if (this[move.arrivalSquare] is WhiteKing && move == ValidMove("e1-c1")) {
                     this["d1"] = WhiteRook()
                     remove("a1")
-                    whiteCastling = true
                 }
                 if (this[move.arrivalSquare] is WhiteKing && move == ValidMove("e1-g1")) {
                     this["f1"] = WhiteRook()
                     remove("h1")
-                    whiteCastling = true
                 }
                 if (this[move.arrivalSquare] is BlackKing && move == ValidMove("e8-c8")) {
                     this["d8"] = BlackRook()
                     remove("a8")
-                    blackCastling = true
                 }
                 if (this[move.arrivalSquare] is BlackKing && move == ValidMove("e8-g8")) {
                     this["f8"] = BlackRook()
                     remove("h8")
-                    blackCastling = true
                 }
 
                 // Promotion
@@ -105,13 +96,13 @@ class ChessGame private constructor(
                 }
 
                 // En passant capturing
-                if (enPassant != null) {
-                    val lowerNeighbour = enPassant.lowerNeighbour()
-                    val upperNeighbour = enPassant.upperNeighbour()
+                if (enPassantSquare != null) {
+                    val lowerNeighbour = enPassantSquare.lowerNeighbour()
+                    val upperNeighbour = enPassantSquare.upperNeighbour()
                     if (turn == WhitePieces && upperNeighbour != null && this[upperNeighbour] is WhitePawn) {
-                        remove(enPassant)
+                        remove(enPassantSquare)
                     } else if (turn == BlackPieces && lowerNeighbour != null && this[lowerNeighbour] is BlackPawn) {
-                        remove(enPassant)
+                        remove(enPassantSquare)
                     }
                 }
                 this
@@ -131,30 +122,36 @@ class ChessGame private constructor(
                     } else {
                         numberOfNextMove
                     },
-                    enPassant = if (updatedTurn != turnBeforeMove) {
+                    enPassantSquare = if (updatedTurn != turnBeforeMove) {
                         enpassantSquareOfMove(move)
                     } else {
-                        enPassant
+                        enPassantSquare
                     },
                     white = white,
                     black = black,
                     status = if (!newPosition.containsWhiteAndBlackPieces()) {
                         "checkmate"
                     } else status,
-                    whiteCastlingOptions = if (whiteCastling) {
-                        CastlingOptions<WhitePieces>(false, false)
+                    whiteCastlingOptions = if(piece is WhiteRook && move.departureSquare == "a1") {
+                        CastlingOptions(queenSide = false, kingSide = whiteCastlingOptions.kingSide)
+                    } else if(piece is WhiteRook && move.departureSquare == "h1") {
+                        CastlingOptions(queenSide = whiteCastlingOptions.queenSide, kingSide = false)
+                    } else if(piece is WhiteKing && move.departureSquare == "e1") {
+                        CastlingOptions(queenSide = false, kingSide = false)
                     } else whiteCastlingOptions,
-                    blackCastlingOptions = if (blackCastling) {
-                        CastlingOptions<BlackPieces>(false, false)
+                    blackCastlingOptions = if(piece is BlackRook && move.departureSquare == "a8") {
+                        CastlingOptions(queenSide = false, kingSide = blackCastlingOptions.kingSide)
+                    } else if(piece is BlackRook && move.departureSquare == "h8") {
+                        CastlingOptions(queenSide = blackCastlingOptions.queenSide, kingSide = false)
+                    } else if(piece is BlackKing && move.departureSquare == "e8") {
+                        CastlingOptions(queenSide = false, kingSide = false)
                     } else blackCastlingOptions,
                 )
                 updatedGame
             }
         } else this
 
-    fun get(arrivalSquare: Square): Piece? {
-        return position.get(arrivalSquare)
-    }
+    fun pieceOn(arrivalSquare: Square): ChessPiece = position.get(arrivalSquare) ?: NoPiece
 
     fun getPosition() = position.toMap()
 
@@ -163,7 +160,7 @@ class ChessGame private constructor(
     }
 
     companion object {
-        val default = mutableMapOf(
+        val defaultPosition = mapOf(
             "a1" to WhiteRook(),
             "b1" to WhiteKnight(),
             "c1" to WhiteBishop(),

@@ -10,7 +10,7 @@ class WhiteKnightTest {
 
     @Test
     fun `finds valid knight movements`() {
-        val chessGame = ChessGame(mutableMapOf(
+        val chessGame = ChessGame(mapOf(
             "c2" to WhiteKnight(),
             "b4" to BlackPawn(),
             "e1" to WhiteKing()

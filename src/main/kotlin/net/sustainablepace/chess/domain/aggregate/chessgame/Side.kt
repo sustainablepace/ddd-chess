@@ -1,4 +1,4 @@
-package net.sustainablepace.chess.domain.aggregate.chessgame.position.piece
+package net.sustainablepace.chess.domain.aggregate.chessgame
 
 interface Colour
 interface White : Colour

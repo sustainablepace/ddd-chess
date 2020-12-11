@@ -3,7 +3,6 @@ package net.sustainablepace.chess.domain
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.Square
 
 sealed class CalculatedMove
-
 object NoMove : CalculatedMove()
 sealed class Move : CalculatedMove() {
     companion object {

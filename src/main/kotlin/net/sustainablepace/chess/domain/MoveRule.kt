@@ -1,9 +1,9 @@
 package net.sustainablepace.chess.domain
 
 import net.sustainablepace.chess.domain.CaptureType.*
+import net.sustainablepace.chess.domain.aggregate.chessgame.Black
+import net.sustainablepace.chess.domain.aggregate.chessgame.White
 import net.sustainablepace.chess.domain.aggregate.chessgame.position.*
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.Black
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.White
 
 class MoveRules(private val moveRules: Set<MoveRule>) {
     constructor(moveRule: MoveRule) : this(setOf(moveRule))
@@ -24,7 +24,7 @@ class MoveRules(private val moveRules: Set<MoveRule>) {
                         false -> if (rule.moveCondition == null) {
 
                             when (val arrivalSquare = departureSquare.add(rule.direction * step)) {
-                                is Square -> when (val blockingPiece = chessGame.get(arrivalSquare)) {
+                                is Square -> when (val blockingPiece = chessGame.pieceOn(arrivalSquare)) {
                                     is Piece -> {
                                         pieceIsBlocking = true
                                         if (movingPiece.colour != blockingPiece.colour && rule.captureType != DISALLOWED) {
@@ -58,6 +58,8 @@ data class MoveRule private constructor(
     val pieceCanTakeMultipleSteps: Boolean = false,
     val moveCondition: ((chessGame: ChessGame, departureSquare: Square, arrivalSquare: Square, piece: Piece) -> Boolean)? = null,
 ) {
+    operator fun unaryMinus(): MoveRule = copy(direction = !direction)
+
     companion object {
         operator fun invoke(
             direction: Direction,
@@ -85,7 +87,6 @@ enum class CaptureType {
     DISALLOWED, ALLOWED, MANDATORY
 }
 
-operator fun MoveRule.unaryMinus(): MoveRule = copy(direction = !direction)
 
 object PieceMoveRules {
 
@@ -143,40 +144,40 @@ object PieceMoveRules {
                 if (piece is WhiteKing) {
                     departureSquare == "e1" &&
                         arrivalSquare == "c1" &&
-                            chessGame.get("a1") is WhiteRook &&
-                            chessGame.whiteCastlingOptions.queenSide &&
-                            chessGame.get("b1") == null &&
-                            chessGame.get("c1") == null &&
-                            chessGame.get("d1") == null
-                } else if(piece is BlackKing) {
+                        chessGame.pieceOn("a1") is WhiteRook &&
+                        chessGame.whiteCastlingOptions.queenSide &&
+                        chessGame.pieceOn("b1") is NoPiece &&
+                        chessGame.pieceOn("c1") is NoPiece &&
+                        chessGame.pieceOn("d1") is NoPiece
+                } else if (piece is BlackKing) {
                     departureSquare == "e8" &&
                         arrivalSquare == "c8" &&
-                        chessGame.get("a8") is BlackRook &&
+                        chessGame.pieceOn("a8") is BlackRook &&
                         chessGame.whiteCastlingOptions.queenSide &&
-                        chessGame.get("b8") == null &&
-                        chessGame.get("c8") == null &&
-                        chessGame.get("d8") == null
+                        chessGame.pieceOn("b8") is NoPiece &&
+                        chessGame.pieceOn("c8") is NoPiece &&
+                        chessGame.pieceOn("d8") is NoPiece
                 } else false
             }
         ),
         MoveRule(
-            direction = Direction.castlingMove(),
+            direction = Direction.castlingMove(), // kingside
             captureType = DISALLOWED,
             moveCondition = { chessGame, departureSquare, arrivalSquare, piece ->
                 if (piece is WhiteKing) {
                     departureSquare == "e1" &&
                         arrivalSquare == "g1" &&
-                        chessGame.get("h1") is WhiteRook &&
+                        chessGame.pieceOn("h1") is WhiteRook &&
                         chessGame.whiteCastlingOptions.kingSide &&
-                        chessGame.get("f1") == null &&
-                        chessGame.get("g1") == null
-                } else if(piece is BlackKing) {
+                        chessGame.pieceOn("f1") is NoPiece &&
+                        chessGame.pieceOn("g1") is NoPiece
+                } else if (piece is BlackKing) {
                     departureSquare == "e8" &&
                         arrivalSquare == "g8" &&
-                        chessGame.get("h8") is BlackRook &&
+                        chessGame.pieceOn("h8") is BlackRook &&
                         chessGame.whiteCastlingOptions.queenSide &&
-                        chessGame.get("f8") == null &&
-                        chessGame.get("g8") == null
+                        chessGame.pieceOn("f8") is NoPiece &&
+                        chessGame.pieceOn("g8") is NoPiece
                 } else false
             }
         )
@@ -191,12 +192,13 @@ object PieceMoveRules {
             direction = Direction.initialPawnMove(),
             captureType = DISALLOWED,
             moveCondition = { chessGame, departureSquare, arrivalSquare, piece ->
-                departureSquare.rank() == '2' && piece is White &&
-                    chessGame.get(departureSquare.upperNeighbour()!!) == null &&
-                    chessGame.get(arrivalSquare) == null ||
-                    departureSquare.rank() == '7' && piece is Black &&
-                    chessGame.get(departureSquare.lowerNeighbour()!!) == null &&
-                    chessGame.get(arrivalSquare) == null
+                piece is White && departureSquare.rank() == '2' &&
+                    chessGame.pieceOn(departureSquare.upperNeighbour()!!) is NoPiece &&
+                    chessGame.pieceOn(arrivalSquare) is NoPiece
+                    ||
+                    piece is Black && departureSquare.rank() == '7' &&
+                    chessGame.pieceOn(departureSquare.lowerNeighbour()!!) is NoPiece &&
+                    chessGame.pieceOn(arrivalSquare) is NoPiece
             }
         ),
         MoveRule(
@@ -210,13 +212,13 @@ object PieceMoveRules {
         MoveRule(
             direction = Direction.diagonal(),
             captureType = MANDATORY,
-            moveCondition = { chessGame, departureSquare, arrivalSquare, piece ->
+            moveCondition = { chessGame, departureSquare, _, piece ->
                 val neighbourSquare = departureSquare.rightNeighbour()
                 if (
-                    chessGame.enPassant is Square &&
-                    chessGame.enPassant == neighbourSquare
+                    chessGame.enPassantSquare is Square &&
+                    chessGame.enPassantSquare == neighbourSquare
                 ) {
-                    val neighbourPiece = chessGame.get(neighbourSquare)
+                    val neighbourPiece = chessGame.pieceOn(neighbourSquare)
                     neighbourPiece is Pawn && piece.colour != neighbourPiece.colour
                 } else false
             }
@@ -224,13 +226,13 @@ object PieceMoveRules {
         MoveRule(
             direction = -Direction.diagonal(),
             captureType = MANDATORY,
-            moveCondition = { chessGame, departureSquare, arrivalSquare, piece ->
+            moveCondition = { chessGame, departureSquare, _, piece ->
                 val neighbourSquare = departureSquare.leftNeighbour()
                 if (
-                    chessGame.enPassant is Square &&
-                    chessGame.enPassant == neighbourSquare
+                    chessGame.enPassantSquare is Square &&
+                    chessGame.enPassantSquare == neighbourSquare
                 ) {
-                    val neighbourPiece = chessGame.get(neighbourSquare)
+                    val neighbourPiece = chessGame.pieceOn(neighbourSquare)
                     neighbourPiece is Pawn && piece.colour != neighbourPiece.colour
                 } else false
             }

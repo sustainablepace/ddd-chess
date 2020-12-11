@@ -1,31 +1,36 @@
 package net.sustainablepace.chess.domain.aggregate.chessgame.position
 
 import net.sustainablepace.chess.domain.PieceMoveRules
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.piece.*
+import net.sustainablepace.chess.domain.aggregate.chessgame.*
 
-sealed class Piece(): Colour {
+sealed class ChessPiece
+object NoPiece: ChessPiece()
+
+sealed class Piece(): ChessPiece(), Colour {
     val colour: Side = when (this) {
         is White -> WhitePieces
         is Black -> BlackPieces
         else -> throw IllegalStateException("Piece is neither white nor black.")
     }
 
-    val moveRules = when (this) {
-        is Rook -> PieceMoveRules.rookMoveRules
-        is Knight -> PieceMoveRules.knightMoveRules
-        is Bishop -> PieceMoveRules.bishopMoveRules
-        is Queen -> PieceMoveRules.queenMoveRules
-        is King -> PieceMoveRules.kingMoveRules
-        is Pawn -> PieceMoveRules.pawnMoveRules
-    }.let { moveRules ->
-        when(colour) {
-            is WhitePieces -> moveRules
-            is BlackPieces -> -moveRules
-        }
-    }
-
     init {
         check(colour in setOf(WhitePieces, BlackPieces))
+    }
+
+    val rules by lazy {
+        when (this) {
+            is Rook -> PieceMoveRules.rookMoveRules
+            is Knight -> PieceMoveRules.knightMoveRules
+            is Bishop -> PieceMoveRules.bishopMoveRules
+            is Queen -> PieceMoveRules.queenMoveRules
+            is King -> PieceMoveRules.kingMoveRules
+            is Pawn -> PieceMoveRules.pawnMoveRules
+        }.let { moveRules ->
+            when(colour) {
+                is WhitePieces -> moveRules
+                is BlackPieces -> -moveRules
+            }
+        }
     }
 
     override fun toString() = when(colour) {

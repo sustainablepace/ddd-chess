@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class WhiteBishopTest {
     @Test
     fun `finds valid bishop movements on empty board`() {
-        val chessGame = ChessGame(mutableMapOf(
+        val chessGame = ChessGame(mapOf(
             "e4" to WhiteBishop()
         ))
         val moves = chessGame.findMoves("e4")
@@ -32,7 +32,7 @@ class WhiteBishopTest {
 
     @Test
     fun `finds valid bishop movements on crowded board`() {
-        val chessGame = ChessGame(mutableMapOf(
+        val chessGame = ChessGame(mapOf(
             "e4" to WhiteBishop(),
             "d5" to BlackPawn(),
             "g2" to WhiteQueen()

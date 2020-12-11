@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 class WhitePawnTest {
     @Test
     fun `finds valid pawn movements on empty board in initial position`() {
-        val chessGame = ChessGame(mutableMapOf(
+        val chessGame = ChessGame(mapOf(
             "e2" to WhitePawn()
         ))
         val moves = chessGame.findMoves("e2")
@@ -22,7 +22,7 @@ class WhitePawnTest {
 
     @Test
     fun `finds valid pawn movements on empty board`() {
-        val chessGame = ChessGame(mutableMapOf(
+        val chessGame = ChessGame(mapOf(
             "e4" to WhitePawn()
         ))
         val moves = chessGame.findMoves("e4")
@@ -33,7 +33,7 @@ class WhitePawnTest {
 
     @Test
     fun `finds valid pawn movements on crowded board`() {
-        val chessGame = ChessGame(mutableMapOf(
+        val chessGame = ChessGame(mapOf(
             "e4" to WhitePawn(),
             "e5" to WhiteQueen(),
             "d5" to BlackPawn(),
@@ -48,7 +48,7 @@ class WhitePawnTest {
 
     @Test
     fun `finds valid initial pawn movements on crowded board`() {
-        val chessGame = ChessGame(mutableMapOf(
+        val chessGame = ChessGame(mapOf(
             "a2" to WhitePawn(),
             "a4" to BlackPawn()
         ))
@@ -59,7 +59,7 @@ class WhitePawnTest {
     }
     @Test
     fun `finds valid initial pawn movements on crowded board when blocked`() {
-        val chessGame = ChessGame(mutableMapOf(
+        val chessGame = ChessGame(mapOf(
             "a2" to WhitePawn(),
             "a3" to BlackPawn()
         ))
@@ -68,7 +68,7 @@ class WhitePawnTest {
     }
     @Test
     fun `finds en passant capture moves to the right`() {
-        val chessGame = ChessGame(mutableMapOf(
+        val chessGame = ChessGame(mapOf(
             "d4" to BlackPawn(),
             "e2" to WhitePawn()
         ))
@@ -81,7 +81,7 @@ class WhitePawnTest {
 
     @Test
     fun `finds en passant capture moves to the left`() {
-        val chessGame = ChessGame(mutableMapOf(
+        val chessGame = ChessGame(mapOf(
             "f4" to BlackPawn(),
             "e2" to WhitePawn()
         ))
@@ -94,12 +94,12 @@ class WhitePawnTest {
 
     @Test
     fun `promotion to queen`() {
-        val chessGame = ChessGame(mutableMapOf(
+        val chessGame = ChessGame(mapOf(
             "f7" to WhitePawn()
         ))
         val updatedChessGame = chessGame.movePiece(ValidMove("f7-f8") as ValidMove)
 
-        assertThat(updatedChessGame.get("f8")).isEqualTo(WhiteQueen())
+        assertThat(updatedChessGame.pieceOn("f8")).isEqualTo(WhiteQueen())
     }
 
     // TODO: Allow promotion to another piece

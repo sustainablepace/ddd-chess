@@ -7,17 +7,14 @@ typealias File = Char
 typealias Rank = Char
 
 fun Square.add(direction: Direction): Square? =
-    ((file() + direction.x) + "" + (rank() + direction.y)).checkSquareIsValid()
+    ((file() + direction.x) + "" + (rank() + direction.y)).validate()
 
 fun Square.file(): File = this[0]
 fun Square.rank(): Rank = this[1]
 
-fun Square.checkSquareIsValid() = if (matches(Regex("[a-h][1-8]"))) { this } else null
+fun Square.validate() = if (matches(Regex("[a-h][1-8]"))) { this } else null
 
-fun Square.leftNeighbour() : Square? = ((file()-1) + "" + rank()).checkSquareIsValid()
-fun Square.rightNeighbour() : Square? = ((file()+1) + "" + rank()).checkSquareIsValid()
-fun Square.upperNeighbour() : Square? = (file() + "" + (rank()+1)).checkSquareIsValid()
-fun Square.lowerNeighbour() : Square? = (file() + "" + (rank()-1)).checkSquareIsValid()
-
-fun Square.isLeftOf(other: Square) : Boolean = file() < other.file()
-fun Square.isRightOf(other: Square) : Boolean = file() > other.file()
+fun Square.leftNeighbour() : Square? = ((file()-1) + "" + rank()).validate()
+fun Square.rightNeighbour() : Square? = ((file()+1) + "" + rank()).validate()
+fun Square.upperNeighbour() : Square? = (file() + "" + (rank()+1)).validate()
+fun Square.lowerNeighbour() : Square? = (file() + "" + (rank()-1)).validate()
