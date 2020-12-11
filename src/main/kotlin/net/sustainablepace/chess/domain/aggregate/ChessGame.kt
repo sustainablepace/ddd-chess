@@ -8,13 +8,14 @@ import java.lang.Math.abs
 typealias EnPassentSquare = Square?
 
 typealias Position = MutableMap<Square, Piece>
-fun Position.containsWhiteAndBlackPieces(): Boolean =
+
+fun Map<Square, Piece>.containsWhiteAndBlackPieces(): Boolean =
     values.map { it.colour }.containsAll(listOf(WhitePieces, BlackPieces))
 
 
 class ChessGame private constructor(
     val id: ChessGameId,
-    val position: Position,
+    private val position: Position,
     val turn: Side,
     val white: Player,
     val black: Player,
@@ -47,31 +48,28 @@ class ChessGame private constructor(
         return squares.flatMap { findMoves(it) }.toSet()
     }
 
-    fun findMoves(departureSquare: Square): Set<ValidMove> {
-        val pieceToBeMoved = position.get(departureSquare)
-        if (pieceToBeMoved !is Piece) {
-            return emptySet()
-        }
-        return pieceToBeMoved.moveRules.findMoves(this, departureSquare, pieceToBeMoved)
-    }
-
-    fun enpassantSquareOfMove(move: ValidMove): EnPassentSquare {
-        val piece = position.get(move.departureSquare)
-        if (piece is Pawn) {
-            val diff = abs(move.departureSquare.rank() - move.arrivalSquare.rank())
-            if( diff == 2) {
-                return move.arrivalSquare
+    fun findMoves(departureSquare: Square): Set<ValidMove> =
+        position.get(departureSquare).let { pieceToBeMoved ->
+            if (pieceToBeMoved is Piece) {
+                pieceToBeMoved.moveRules.findMoves(this, departureSquare, pieceToBeMoved)
             }
+            else emptySet()
         }
-        return null
-    }
+
+    fun enpassantSquareOfMove(move: ValidMove): EnPassentSquare =
+        if (
+            position.get(move.departureSquare) is Pawn &&
+            abs(move.departureSquare.rank() - move.arrivalSquare.rank()) == 2
+        ) {
+            move.arrivalSquare
+        } else null
 
     fun movePiece(move: ValidMove): ChessGame =
         if (findMoves().contains(move)) {
             val turnBeforeMove = turn
             var whiteCastling = false
             var blackCastling = false
-            mutableMapOf<Square, Piece>().run<MutableMap<Square, Piece>, MutableMap<Square, Piece>> {
+            mutableMapOf<Square, Piece>().run {
                 putAll(position)
                 this[move.arrivalSquare] = getValue(move.departureSquare)
                 remove(move.departureSquare)
@@ -143,16 +141,22 @@ class ChessGame private constructor(
                     status = if (!newPosition.containsWhiteAndBlackPieces()) {
                         "checkmate"
                     } else status,
-                    whiteCastlingOptions = if(whiteCastling) {
+                    whiteCastlingOptions = if (whiteCastling) {
                         CastlingOptions<WhitePieces>(false, false)
                     } else whiteCastlingOptions,
-                    blackCastlingOptions = if(blackCastling) {
+                    blackCastlingOptions = if (blackCastling) {
                         CastlingOptions<BlackPieces>(false, false)
                     } else blackCastlingOptions,
                 )
                 updatedGame
             }
         } else this
+
+    fun get(arrivalSquare: Square): Piece? {
+        return position.get(arrivalSquare)
+    }
+
+    fun getPosition() = position.toMap()
 
     val allSquares = ('a'..'h').flatMap { column ->
         ('1'..'8').map { column + "" + it }
@@ -192,6 +196,6 @@ class ChessGame private constructor(
             "f7" to BlackPawn(),
             "g7" to BlackPawn(),
             "h7" to BlackPawn()
-        ) as Position
+        )
     }
 }

@@ -17,8 +17,8 @@ class BlackKingTest {
         Assertions.assertThat(chessGame.blackCastlingOptions.queenSide).isTrue()
 
         val updatedGame = chessGame.movePiece(ValidMove("e8-c8") as ValidMove)
-        Assertions.assertThat(updatedGame.position.get("c8")).isEqualTo(BlackKing())
-        Assertions.assertThat(updatedGame.position.get("d8")).isEqualTo(BlackRook())
+        Assertions.assertThat(updatedGame.get("c8")).isEqualTo(BlackKing())
+        Assertions.assertThat(updatedGame.get("d8")).isEqualTo(BlackRook())
         Assertions.assertThat(updatedGame.blackCastlingOptions.kingSide).isFalse()
         Assertions.assertThat(updatedGame.blackCastlingOptions.queenSide).isFalse()
     }
@@ -33,8 +33,8 @@ class BlackKingTest {
         Assertions.assertThat(chessGame.blackCastlingOptions.queenSide).isTrue()
 
         val updatedGame = chessGame.movePiece(ValidMove("e8-g8") as ValidMove)
-        Assertions.assertThat(updatedGame.position.get("g8")).isEqualTo(BlackKing())
-        Assertions.assertThat(updatedGame.position.get("f8")).isEqualTo(BlackRook())
+        Assertions.assertThat(updatedGame.get("g8")).isEqualTo(BlackKing())
+        Assertions.assertThat(updatedGame.get("f8")).isEqualTo(BlackRook())
         Assertions.assertThat(updatedGame.blackCastlingOptions.kingSide).isFalse()
         Assertions.assertThat(updatedGame.blackCastlingOptions.queenSide).isFalse()
     }

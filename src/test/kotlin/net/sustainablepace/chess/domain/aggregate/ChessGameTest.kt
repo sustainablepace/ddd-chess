@@ -21,7 +21,7 @@ class ChessGameTest {
         assertThat(game.turn).isEqualTo(WhitePieces)
         assertThat(game.white).isInstanceOf(HumanPlayer::class.java)
         assertThat(game.black).isInstanceOf(ComputerPlayer::class.java)
-        assertThat(game.position).isEqualTo(default)
+        assertThat(game.getPosition()).isEqualTo(default.toMap())
         assertThat(game.numberOfNextMove).isEqualTo(1)
         assertThat(game.enPassant).isEqualTo(null)
     }
@@ -30,8 +30,8 @@ class ChessGameTest {
     fun `move e2-e4`() {
         val game = ChessGame()
 
-        assertThat(game.position.get("e2")).isEqualTo(WhitePawn())
-        assertThat(game.position.get("e3")).isNull()
+        assertThat(game.get("e2")).isEqualTo(WhitePawn())
+        assertThat(game.get("e3")).isNull()
 
         val move = Move("e2-e3") as ValidMove
 
@@ -39,8 +39,8 @@ class ChessGameTest {
 
         assertThat(updatedGame.turn).isEqualTo(BlackPieces)
         assertThat(updatedGame.numberOfNextMove).isEqualTo(2)
-        assertThat(updatedGame.position.get("e2")).isNull()
-        assertThat(updatedGame.position.get("e3")).isEqualTo(WhitePawn())
+        assertThat(updatedGame.get("e2")).isNull()
+        assertThat(updatedGame.get("e3")).isEqualTo(WhitePawn())
     }
 
     @Test
@@ -142,8 +142,8 @@ class ChessGameTest {
             .movePiece(ValidMove("e2-e4") as ValidMove)
             .movePiece(ValidMove("f4-e3") as ValidMove)
 
-        assertThat(updatedChessGame.position.get("e3")).isEqualTo(BlackPawn())
-        assertThat(updatedChessGame.position.get("e4")).isNull()
+        assertThat(updatedChessGame.get("e3")).isEqualTo(BlackPawn())
+        assertThat(updatedChessGame.get("e4")).isNull()
     }
 
     @Test
@@ -156,8 +156,8 @@ class ChessGameTest {
             .movePiece(ValidMove("e2-e4") as ValidMove)
             .movePiece(ValidMove("d4-e3") as ValidMove)
 
-        assertThat(updatedChessGame.position.get("e3")).isEqualTo(BlackPawn())
-        assertThat(updatedChessGame.position.get("e4")).isNull()
+        assertThat(updatedChessGame.get("e3")).isEqualTo(BlackPawn())
+        assertThat(updatedChessGame.get("e4")).isNull()
     }
 
     @Test
@@ -170,8 +170,8 @@ class ChessGameTest {
             .movePiece(ValidMove("e7-e5") as ValidMove)
             .movePiece(ValidMove("d5-e6") as ValidMove)
 
-        assertThat(updatedChessGame.position.get("e6")).isEqualTo(WhitePawn())
-        assertThat(updatedChessGame.position.get("e5")).isNull()
+        assertThat(updatedChessGame.get("e6")).isEqualTo(WhitePawn())
+        assertThat(updatedChessGame.get("e5")).isNull()
     }
 
     @Test
@@ -184,7 +184,7 @@ class ChessGameTest {
             .movePiece(ValidMove("e7-e5") as ValidMove)
             .movePiece(ValidMove("f5-e6") as ValidMove)
 
-        assertThat(updatedChessGame.position.get("e6")).isEqualTo(WhitePawn())
-        assertThat(updatedChessGame.position.get("e5")).isNull()
+        assertThat(updatedChessGame.get("e6")).isEqualTo(WhitePawn())
+        assertThat(updatedChessGame.get("e5")).isNull()
     }
 }

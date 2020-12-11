@@ -99,7 +99,7 @@ class WhitePawnTest {
         ))
         val updatedChessGame = chessGame.movePiece(ValidMove("f7-f8") as ValidMove)
 
-        assertThat(updatedChessGame.position.get("f8")).isEqualTo(WhiteQueen())
+        assertThat(updatedChessGame.get("f8")).isEqualTo(WhiteQueen())
     }
 
     // TODO: Allow promotion to another piece

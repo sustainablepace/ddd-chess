@@ -64,6 +64,6 @@ class BlackPawnTest {
         ))
         val updatedChessGame = chessGame.movePiece(ValidMove("f2-f1") as ValidMove)
 
-        Assertions.assertThat(updatedChessGame.position.get("f1")).isEqualTo(BlackQueen())
+        Assertions.assertThat(updatedChessGame.get("f1")).isEqualTo(BlackQueen())
     }
 }

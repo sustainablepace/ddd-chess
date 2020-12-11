@@ -56,8 +56,8 @@ class WhiteKingTest {
         assertThat(chessGame.whiteCastlingOptions.queenSide).isTrue()
 
         val updatedGame = chessGame.movePiece(ValidMove("e1-c1") as ValidMove)
-        assertThat(updatedGame.position.get("c1")).isEqualTo(WhiteKing())
-        assertThat(updatedGame.position.get("d1")).isEqualTo(WhiteRook())
+        assertThat(updatedGame.get("c1")).isEqualTo(WhiteKing())
+        assertThat(updatedGame.get("d1")).isEqualTo(WhiteRook())
         assertThat(updatedGame.whiteCastlingOptions.kingSide).isFalse()
         assertThat(updatedGame.whiteCastlingOptions.queenSide).isFalse()
     }
@@ -72,8 +72,8 @@ class WhiteKingTest {
         assertThat(chessGame.whiteCastlingOptions.queenSide).isTrue()
 
         val updatedGame = chessGame.movePiece(ValidMove("e1-g1") as ValidMove)
-        assertThat(updatedGame.position.get("g1")).isEqualTo(WhiteKing())
-        assertThat(updatedGame.position.get("f1")).isEqualTo(WhiteRook())
+        assertThat(updatedGame.get("g1")).isEqualTo(WhiteKing())
+        assertThat(updatedGame.get("f1")).isEqualTo(WhiteRook())
         assertThat(updatedGame.whiteCastlingOptions.kingSide).isFalse()
         assertThat(updatedGame.whiteCastlingOptions.queenSide).isFalse()
     }

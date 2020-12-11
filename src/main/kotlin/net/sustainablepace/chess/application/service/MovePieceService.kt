@@ -13,7 +13,7 @@ class MovePieceService(val chessGameRepository: ChessGameRepository) : Applicati
     override fun process(intent: MovePiece): PieceMovedOrNot = with(intent) {
         chessGameRepository.findById(chessGameId)?.let { chessGame ->
             chessGame.movePiece(move).let { updatedChessGame ->
-                if(updatedChessGame.position != chessGame.position) {
+                if(updatedChessGame.numberOfNextMove > chessGame.numberOfNextMove) {
                     chessGameRepository.save(updatedChessGame)
                     PieceMoved(move, updatedChessGame)
                 } else {
