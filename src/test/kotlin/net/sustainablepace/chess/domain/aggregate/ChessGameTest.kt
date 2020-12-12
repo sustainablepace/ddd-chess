@@ -1,16 +1,9 @@
 package net.sustainablepace.chess.domain.aggregate
 
-import net.sustainablepace.chess.domain.ChessGame
-import net.sustainablepace.chess.domain.ChessGame.Companion.defaultPosition
-import net.sustainablepace.chess.domain.Move
-import net.sustainablepace.chess.domain.ValidMove
-import net.sustainablepace.chess.domain.aggregate.chessgame.BlackPieces
-import net.sustainablepace.chess.domain.aggregate.chessgame.ComputerPlayer
-import net.sustainablepace.chess.domain.aggregate.chessgame.HumanPlayer
-import net.sustainablepace.chess.domain.aggregate.chessgame.WhitePieces
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.BlackPawn
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.NoPiece
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.WhitePawn
+import net.sustainablepace.chess.domain.aggregate.ChessGame.Companion.defaultPosition
+import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.domain.move.Move
+import net.sustainablepace.chess.domain.move.ValidMove
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -21,7 +14,7 @@ class ChessGameTest {
 
         assertThat(game.id).isNotEmpty()
         assertThat(game.status).isEqualTo("in progress")
-        assertThat(game.turn).isEqualTo(WhitePieces)
+        assertThat(game.turn).isEqualTo(White)
         assertThat(game.white).isInstanceOf(HumanPlayer::class.java)
         assertThat(game.black).isInstanceOf(ComputerPlayer::class.java)
         assertThat(game.position).isEqualTo(defaultPosition)
@@ -33,24 +26,24 @@ class ChessGameTest {
     fun `move e2-e4`() {
         val game = ChessGame()
 
-        assertThat(game.pieceOn("e2")).isEqualTo(WhitePawn())
+        assertThat(game.pieceOn("e2")).isEqualTo(WhitePawn)
         assertThat(game.pieceOn("e3")).isEqualTo(NoPiece)
 
         val move = Move("e2-e3") as ValidMove
 
         val updatedGame = game.movePiece(move)
 
-        assertThat(updatedGame.turn).isEqualTo(BlackPieces)
+        assertThat(updatedGame.turn).isEqualTo(Black)
         assertThat(updatedGame.numberOfNextMove).isEqualTo(2)
         assertThat(updatedGame.pieceOn("e2")).isEqualTo(NoPiece)
-        assertThat(updatedGame.pieceOn("e3")).isEqualTo(WhitePawn())
+        assertThat(updatedGame.pieceOn("e3")).isEqualTo(WhitePawn)
     }
 
     @Test
     fun `find moves for white in default position`() {
         val game = ChessGame()
 
-        val moves = game.findMoves()
+        val moves = game.moveOptions()
 
         assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("a2-a3") as ValidMove,
@@ -78,9 +71,9 @@ class ChessGameTest {
 
     @Test
     fun `find moves for black in default position`() {
-        val game = ChessGame(BlackPieces)
+        val game = ChessGame(Black)
 
-        val moves = game.findMoves()
+        val moves = game.moveOptions()
 
         assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("a7-a6") as ValidMove,
@@ -122,7 +115,7 @@ class ChessGameTest {
 
     @Test
     fun `en passant (black)`() {
-        val chessGame = ChessGame(BlackPieces)
+        val chessGame = ChessGame(Black)
         assertThat(chessGame.enPassantSquare).isNull()
 
         chessGame.movePiece(ValidMove("e7-e6") as ValidMove).let {
@@ -138,56 +131,56 @@ class ChessGameTest {
     @Test
     fun `en passent capturing works for black (left)`() {
         val chessGame = ChessGame(mapOf(
-            "f4" to BlackPawn(),
-            "e2" to WhitePawn()
+            "f4" to BlackPawn,
+            "e2" to WhitePawn
         ))
         val updatedChessGame = chessGame
             .movePiece(ValidMove("e2-e4") as ValidMove)
             .movePiece(ValidMove("f4-e3") as ValidMove)
 
-        assertThat(updatedChessGame.pieceOn("e3")).isEqualTo(BlackPawn())
+        assertThat(updatedChessGame.pieceOn("e3")).isEqualTo(BlackPawn)
         assertThat(updatedChessGame.pieceOn("e4")).isEqualTo(NoPiece)
     }
 
     @Test
     fun `en passent capturing works for black (right)`() {
         val chessGame = ChessGame(mapOf(
-            "d4" to BlackPawn(),
-            "e2" to WhitePawn()
+            "d4" to BlackPawn,
+            "e2" to WhitePawn
         ))
         val updatedChessGame = chessGame
             .movePiece(ValidMove("e2-e4") as ValidMove)
             .movePiece(ValidMove("d4-e3") as ValidMove)
 
-        assertThat(updatedChessGame.pieceOn("e3")).isEqualTo(BlackPawn())
+        assertThat(updatedChessGame.pieceOn("e3")).isEqualTo(BlackPawn)
         assertThat(updatedChessGame.pieceOn("e4")).isEqualTo(NoPiece)
     }
 
     @Test
     fun `en passent capturing works for white (left)`() {
-        val chessGame = ChessGame(BlackPieces, mapOf(
-            "e7" to BlackPawn(),
-            "d5" to WhitePawn()
+        val chessGame = ChessGame(Black, mapOf(
+            "e7" to BlackPawn,
+            "d5" to WhitePawn
         ))
         val updatedChessGame = chessGame
             .movePiece(ValidMove("e7-e5") as ValidMove)
             .movePiece(ValidMove("d5-e6") as ValidMove)
 
-        assertThat(updatedChessGame.pieceOn("e6")).isEqualTo(WhitePawn())
+        assertThat(updatedChessGame.pieceOn("e6")).isEqualTo(WhitePawn)
         assertThat(updatedChessGame.pieceOn("e5")).isEqualTo(NoPiece)
     }
 
     @Test
     fun `en passent capturing works for white (right)`() {
-        val chessGame = ChessGame(BlackPieces, mapOf(
-            "e7" to BlackPawn(),
-            "f5" to WhitePawn()
+        val chessGame = ChessGame(Black, mapOf(
+            "e7" to BlackPawn,
+            "f5" to WhitePawn
         ))
         val updatedChessGame = chessGame
             .movePiece(ValidMove("e7-e5") as ValidMove)
             .movePiece(ValidMove("f5-e6") as ValidMove)
 
-        assertThat(updatedChessGame.pieceOn("e6")).isEqualTo(WhitePawn())
+        assertThat(updatedChessGame.pieceOn("e6")).isEqualTo(WhitePawn)
         assertThat(updatedChessGame.pieceOn("e5")).isEqualTo(NoPiece)
     }
 }

@@ -1,9 +1,7 @@
 package net.sustainablepace.chess.domain.readmodel
 
-import net.sustainablepace.chess.domain.ChessGame
+import net.sustainablepace.chess.domain.aggregate.ChessGame
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.*
-
 
 data class ChessGameReadModel(
     val id: ChessGameId,
@@ -17,9 +15,9 @@ data class ChessGameReadModel(
     companion object {
 
         private fun Piece.stringify(): String =
-            when (colour) {
-                is WhitePieces -> "w"
-                is BlackPieces -> "b"
+            when (side) {
+                is White -> "w"
+                is Black -> "b"
             } + when (this) {
                 is Pawn -> "P"
                 is Knight -> "N"
@@ -35,8 +33,8 @@ data class ChessGameReadModel(
                     id = id,
                     position = position.mapValues { it.value.stringify() },
                     turn = when (turn) {
-                        WhitePieces -> "white"
-                        BlackPieces -> "black"
+                        White -> "white"
+                        Black -> "black"
                     },
                     white = when (white) {
                         is HumanPlayer -> "human"
@@ -48,8 +46,8 @@ data class ChessGameReadModel(
                     },
                     status = status,
                     computerTurn = when (turn) {
-                        WhitePieces -> white is ComputerPlayer
-                        BlackPieces -> black is ComputerPlayer
+                        White -> white is ComputerPlayer
+                        Black -> black is ComputerPlayer
                     }
                 )
             }

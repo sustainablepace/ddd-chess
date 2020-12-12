@@ -1,7 +1,7 @@
 package net.sustainablepace.chess.adapter.database
 
 import net.sustainablepace.chess.application.port.out.ChessGameRepository
-import net.sustainablepace.chess.domain.ChessGame
+import net.sustainablepace.chess.domain.aggregate.ChessGame
 import net.sustainablepace.chess.domain.aggregate.chessgame.ChessGameId
 import org.springframework.stereotype.Repository
 
@@ -20,7 +20,7 @@ class ChessGameRepositoryAdapter: ChessGameRepository, MutableMap<ChessGameId, C
 
     override fun containsValue(value: ChessGame): Boolean = games.containsValue(value)
 
-    override fun get(key: ChessGameId): ChessGame? = games.get(key)
+    override fun get(key: ChessGameId): ChessGame? = games[key]
 
     override fun isEmpty(): Boolean = games.isEmpty()
     override val entries: MutableSet<MutableMap.MutableEntry<ChessGameId, ChessGame>>

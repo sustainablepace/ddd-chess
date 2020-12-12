@@ -1,13 +1,8 @@
-package net.sustainablepace.chess.domain.aggregate.chessgame.position
-
-import net.sustainablepace.chess.domain.Direction
+package net.sustainablepace.chess.domain.aggregate.chessgame
 
 typealias Square = String
 typealias File = Char
 typealias Rank = Char
-
-fun Square.add(direction: Direction): Square? =
-    ((file() + direction.x) + "" + (rank() + direction.y)).validate()
 
 fun Square.file(): File = this[0]
 fun Square.rank(): Rank = this[1]

@@ -1,17 +1,17 @@
-package net.sustainablepace.chess.domain
+package net.sustainablepace.chess.domain.aggregate
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.add
+import net.sustainablepace.chess.domain.move.rules.Direction
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
 class DirectionTest {
     @Test
     fun `test add`() {
-        Assertions.assertThat("a1".add(Direction.straightLine())).isEqualTo("a2")
-        Assertions.assertThat("a1".add(Direction.straightLine().rotate(1))).isEqualTo("b1")
-        Assertions.assertThat("a1".add(Direction.diagonal())).isEqualTo("b2")
-        Assertions.assertThat("a1".add(Direction.straightLine().rotate(3))).isNull()
-        Assertions.assertThat("a1".add(Direction.straightLine().rotate(2))).isNull()
+        Assertions.assertThat(Direction.straightLine().from("a1")).isEqualTo("a2")
+        Assertions.assertThat(Direction.straightLine().rotate(1).from("a1")).isEqualTo("b1")
+        Assertions.assertThat(Direction.diagonal().from("a1")).isEqualTo("b2")
+        Assertions.assertThat(Direction.straightLine().rotate(3).from("a1")).isNull()
+        Assertions.assertThat(Direction.straightLine().rotate(2).from("a1")).isNull()
     }
 
     @Test

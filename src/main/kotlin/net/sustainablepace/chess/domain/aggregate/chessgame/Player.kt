@@ -1,9 +1,9 @@
 package net.sustainablepace.chess.domain.aggregate.chessgame
 
-import net.sustainablepace.chess.domain.CalculatedMove
-import net.sustainablepace.chess.domain.ChessGame
-import net.sustainablepace.chess.domain.Move
-import net.sustainablepace.chess.domain.NoMove
+import net.sustainablepace.chess.domain.aggregate.ChessGame
+import net.sustainablepace.chess.domain.move.CalculatedMove
+import net.sustainablepace.chess.domain.move.Move
+import net.sustainablepace.chess.domain.move.NoMove
 import kotlin.random.Random.Default.nextInt
 
 sealed class Player
@@ -14,7 +14,7 @@ abstract class ComputerPlayer : Player() {
 
 object StupidComputerPlayer : ComputerPlayer() {
     override fun calculateMove(chessGame: ChessGame): CalculatedMove = with(chessGame) {
-        findMoves().toList().let { moves ->
+        moveOptions().toList().let { moves ->
             if(moves.isNotEmpty()) {
                 moves[nextInt(0, moves.size)].run {
                     Move("$departureSquare-$arrivalSquare")

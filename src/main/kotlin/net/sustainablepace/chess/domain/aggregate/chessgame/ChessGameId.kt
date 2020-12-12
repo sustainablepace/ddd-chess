@@ -6,7 +6,7 @@ typealias ChessGameId = String
 
 fun chessGameId(): ChessGameId =
     (('a'..'z').toSet() + ('1'..'9').toSet()).let { chars ->
-        (1..7).map { _ ->
+        (1..7).map {
             chars.elementAt(nextInt(0, chars.size))
         }.joinToString("")
     }

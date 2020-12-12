@@ -1,9 +1,8 @@
 package net.sustainablepace.chess.adapter.web
 
+import net.sustainablepace.chess.application.ApplicationService
 import net.sustainablepace.chess.application.port.`in`.command.MovePiece
 import net.sustainablepace.chess.application.port.`in`.command.MoveString
-import net.sustainablepace.chess.application.ApplicationService
-import net.sustainablepace.chess.domain.ChessGame
 import net.sustainablepace.chess.domain.PieceMoved
 import net.sustainablepace.chess.domain.PieceMovedOrNot
 import net.sustainablepace.chess.domain.PieceNotMoved

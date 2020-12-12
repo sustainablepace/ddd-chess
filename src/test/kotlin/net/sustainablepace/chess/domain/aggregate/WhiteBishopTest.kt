@@ -1,8 +1,9 @@
-package net.sustainablepace.chess.domain
+package net.sustainablepace.chess.domain.aggregate
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.BlackPawn
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.WhiteBishop
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.WhiteQueen
+import net.sustainablepace.chess.domain.aggregate.chessgame.BlackPawn
+import net.sustainablepace.chess.domain.aggregate.chessgame.WhiteBishop
+import net.sustainablepace.chess.domain.aggregate.chessgame.WhiteQueen
+import net.sustainablepace.chess.domain.move.ValidMove
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -10,9 +11,9 @@ class WhiteBishopTest {
     @Test
     fun `finds valid bishop movements on empty board`() {
         val chessGame = ChessGame(mapOf(
-            "e4" to WhiteBishop()
+            "e4" to WhiteBishop
         ))
-        val moves = chessGame.findMoves("e4")
+        val moves = chessGame.moveOptions("e4")
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("e4-d3") as ValidMove,
             ValidMove("e4-c2") as ValidMove,
@@ -33,11 +34,11 @@ class WhiteBishopTest {
     @Test
     fun `finds valid bishop movements on crowded board`() {
         val chessGame = ChessGame(mapOf(
-            "e4" to WhiteBishop(),
-            "d5" to BlackPawn(),
-            "g2" to WhiteQueen()
+            "e4" to WhiteBishop,
+            "d5" to BlackPawn,
+            "g2" to WhiteQueen
         ))
-        val moves = chessGame.findMoves("e4")
+        val moves = chessGame.moveOptions("e4")
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("e4-d3") as ValidMove,
             ValidMove("e4-c2") as ValidMove,

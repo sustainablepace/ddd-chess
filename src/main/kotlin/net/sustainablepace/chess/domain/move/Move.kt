@@ -1,6 +1,6 @@
-package net.sustainablepace.chess.domain
+package net.sustainablepace.chess.domain.move
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.Square
+import net.sustainablepace.chess.domain.aggregate.chessgame.Square
 
 sealed class CalculatedMove
 object NoMove : CalculatedMove()

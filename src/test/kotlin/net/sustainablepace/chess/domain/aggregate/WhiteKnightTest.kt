@@ -1,8 +1,9 @@
-package net.sustainablepace.chess.domain
+package net.sustainablepace.chess.domain.aggregate
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.BlackPawn
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.WhiteKing
-import net.sustainablepace.chess.domain.aggregate.chessgame.position.WhiteKnight
+import net.sustainablepace.chess.domain.aggregate.chessgame.BlackPawn
+import net.sustainablepace.chess.domain.aggregate.chessgame.WhiteKing
+import net.sustainablepace.chess.domain.aggregate.chessgame.WhiteKnight
+import net.sustainablepace.chess.domain.move.ValidMove
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -11,11 +12,11 @@ class WhiteKnightTest {
     @Test
     fun `finds valid knight movements`() {
         val chessGame = ChessGame(mapOf(
-            "c2" to WhiteKnight(),
-            "b4" to BlackPawn(),
-            "e1" to WhiteKing()
+            "c2" to WhiteKnight,
+            "b4" to BlackPawn,
+            "e1" to WhiteKing
         ))
-        val moves = chessGame.findMoves("c2")
+        val moves = chessGame.moveOptions("c2")
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             ValidMove("c2-d4") as ValidMove,
             ValidMove("c2-b4") as ValidMove,
