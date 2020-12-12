@@ -42,9 +42,9 @@ class ChessGame private constructor(
 
     fun moveOptions(departureSquare: Square): Set<ValidMove> =
         position[departureSquare].let { pieceToBeMoved ->
-            if (pieceToBeMoved is Piece) {
+            if (pieceToBeMoved is Piece && pieceToBeMoved.side == turn) {
                 MoveRuleSet.getRulesForPiece(pieceToBeMoved).moveRules.flatMap { rule ->
-                    rule.findMoves(this, departureSquare, pieceToBeMoved)
+                    rule.findMoves(this, departureSquare)
                 }.toSet()
             } else emptySet()
         }
@@ -52,7 +52,7 @@ class ChessGame private constructor(
     private fun enpassantSquareOfMove(move: ValidMove): EnPassantSquare =
         if (
             position[move.departureSquare] is Pawn &&
-            abs(move.departureSquare.rank() - move.arrivalSquare.rank()) == 2
+            abs(move.departureSquare.rank - move.arrivalSquare.rank) == 2
         ) {
             move.arrivalSquare
         } else null
@@ -65,27 +65,27 @@ class ChessGame private constructor(
 
             // castling
             if (this[move.arrivalSquare] is WhiteKing && move == ValidMove("e1-c1")) {
-                this["d1"] = WhiteRook
-                remove("a1")
+                this[D1] = WhiteRook
+                remove(A1)
             }
             if (this[move.arrivalSquare] is WhiteKing && move == ValidMove("e1-g1")) {
-                this["f1"] = WhiteRook
-                remove("h1")
+                this[F1] = WhiteRook
+                remove(H1)
             }
             if (this[move.arrivalSquare] is BlackKing && move == ValidMove("e8-c8")) {
-                this["d8"] = BlackRook
-                remove("a8")
+                this[D8] = BlackRook
+                remove(A8)
             }
             if (this[move.arrivalSquare] is BlackKing && move == ValidMove("e8-g8")) {
-                this["f8"] = BlackRook
-                remove("h8")
+                this[F8] = BlackRook
+                remove(H8)
             }
 
             // Promotion
-            if (this[move.arrivalSquare] is WhitePawn && move.arrivalSquare.rank() == '8') {
+            if (this[move.arrivalSquare] is WhitePawn && move.arrivalSquare.rank == '8') {
                 this[move.arrivalSquare] = WhiteQueen
             }
-            if (this[move.arrivalSquare] is BlackPawn && move.arrivalSquare.rank() == '1') {
+            if (this[move.arrivalSquare] is BlackPawn && move.arrivalSquare.rank == '1') {
                 this[move.arrivalSquare] = BlackQueen
             }
 
@@ -131,38 +131,38 @@ class ChessGame private constructor(
 
     companion object {
         val defaultPosition = mapOf(
-            "a1" to WhiteRook,
-            "b1" to WhiteKnight,
-            "c1" to WhiteBishop,
-            "d1" to WhiteQueen,
-            "e1" to WhiteKing,
-            "f1" to WhiteBishop,
-            "g1" to WhiteKnight,
-            "h1" to WhiteRook,
-            "a2" to WhitePawn,
-            "b2" to WhitePawn,
-            "c2" to WhitePawn,
-            "d2" to WhitePawn,
-            "e2" to WhitePawn,
-            "f2" to WhitePawn,
-            "g2" to WhitePawn,
-            "h2" to WhitePawn,
-            "a8" to BlackRook,
-            "b8" to BlackKnight,
-            "c8" to BlackBishop,
-            "d8" to BlackQueen,
-            "e8" to BlackKing,
-            "f8" to BlackBishop,
-            "g8" to BlackKnight,
-            "h8" to BlackRook,
-            "a7" to BlackPawn,
-            "b7" to BlackPawn,
-            "c7" to BlackPawn,
-            "d7" to BlackPawn,
-            "e7" to BlackPawn,
-            "f7" to BlackPawn,
-            "g7" to BlackPawn,
-            "h7" to BlackPawn
+            A1 to WhiteRook,
+            B1 to WhiteKnight,
+            C1 to WhiteBishop,
+            D1 to WhiteQueen,
+            E1 to WhiteKing,
+            F1 to WhiteBishop,
+            G1 to WhiteKnight,
+            H1 to WhiteRook,
+            A2 to WhitePawn,
+            B2 to WhitePawn,
+            C2 to WhitePawn,
+            D2 to WhitePawn,
+            E2 to WhitePawn,
+            F2 to WhitePawn,
+            G2 to WhitePawn,
+            H2 to WhitePawn,
+            A8 to BlackRook,
+            B8 to BlackKnight,
+            C8 to BlackBishop,
+            D8 to BlackQueen,
+            E8 to BlackKing,
+            F8 to BlackBishop,
+            G8 to BlackKnight,
+            H8 to BlackRook,
+            A7 to BlackPawn,
+            B7 to BlackPawn,
+            C7 to BlackPawn,
+            D7 to BlackPawn,
+            E7 to BlackPawn,
+            F7 to BlackPawn,
+            G7 to BlackPawn,
+            H7 to BlackPawn
         )
     }
 }

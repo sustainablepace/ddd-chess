@@ -27,7 +27,6 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
         private val rookMoveRules = MoveRuleSet(
             MoveRule(
                 direction = Direction.straightLine(),
-                captureType = CaptureType.ALLOWED,
                 pieceCanTakeMultipleSteps = true,
                 rotations = true
             )
@@ -36,12 +35,10 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
         private val knightMoveRules = MoveRuleSet(
             MoveRule(
                 direction = Direction.lShaped(),
-                captureType = CaptureType.ALLOWED,
                 rotations = true
             ),
             MoveRule(
                 direction = -Direction.lShaped(),
-                captureType = CaptureType.ALLOWED,
                 rotations = true
             )
         )
@@ -49,7 +46,6 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
         private val bishopMoveRules = MoveRuleSet(
             MoveRule(
                 direction = Direction.diagonal(),
-                captureType = CaptureType.ALLOWED,
                 pieceCanTakeMultipleSteps = true,
                 rotations = true
             )
@@ -63,54 +59,50 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
         private val kingMoveRules = MoveRuleSet(
             MoveRule(
                 direction = Direction.diagonal(),
-                captureType = CaptureType.ALLOWED,
                 rotations = true
             ),
             MoveRule(
                 direction = Direction.straightLine(),
-                captureType = CaptureType.ALLOWED,
                 rotations = true
             ),
             MoveRule(
                 direction = -Direction.castlingMove(), // queenside
-                captureType = CaptureType.DISALLOWED,
-                moveCondition = { chessGame, departureSquare, arrivalSquare, piece ->
-                    when (piece) {
-                        is WhiteKing -> departureSquare == "e1" &&
-                            arrivalSquare == "c1" &&
-                            chessGame.pieceOn("a1") is WhiteRook &&
+                moveCondition = { chessGame, departureSquare, arrivalSquare ->
+                    when (chessGame.pieceOn(departureSquare)) {
+                        is WhiteKing -> departureSquare == E1 &&
+                            arrivalSquare == C1 &&
+                            chessGame.pieceOn(A1) is WhiteRook &&
                             chessGame.whiteCastlingOptions.queenSide &&
-                            chessGame.pieceOn("b1") is NoPiece &&
-                            chessGame.pieceOn("c1") is NoPiece &&
-                            chessGame.pieceOn("d1") is NoPiece
-                        is BlackKing -> departureSquare == "e8" &&
-                            arrivalSquare == "c8" &&
-                            chessGame.pieceOn("a8") is BlackRook &&
+                            chessGame.pieceOn(B1) is NoPiece &&
+                            chessGame.pieceOn(C1) is NoPiece &&
+                            chessGame.pieceOn(D1) is NoPiece
+                        is BlackKing -> departureSquare == E8 &&
+                            arrivalSquare == C8 &&
+                            chessGame.pieceOn(A8) is BlackRook &&
                             chessGame.whiteCastlingOptions.queenSide &&
-                            chessGame.pieceOn("b8") is NoPiece &&
-                            chessGame.pieceOn("c8") is NoPiece &&
-                            chessGame.pieceOn("d8") is NoPiece
+                            chessGame.pieceOn(B8) is NoPiece &&
+                            chessGame.pieceOn(C8) is NoPiece &&
+                            chessGame.pieceOn(D8) is NoPiece
                         else -> false
                     }
                 }
             ),
             MoveRule(
                 direction = Direction.castlingMove(), // kingside
-                captureType = CaptureType.DISALLOWED,
-                moveCondition = { chessGame, departureSquare, arrivalSquare, piece ->
-                    when (piece) {
-                        is WhiteKing -> departureSquare == "e1" &&
-                            arrivalSquare == "g1" &&
-                            chessGame.pieceOn("h1") is WhiteRook &&
+                moveCondition = { chessGame, departureSquare, arrivalSquare ->
+                    when (chessGame.pieceOn(departureSquare)) {
+                        is WhiteKing -> departureSquare == E1 &&
+                            arrivalSquare == G1 &&
+                            chessGame.pieceOn(H1) is WhiteRook &&
                             chessGame.whiteCastlingOptions.kingSide &&
-                            chessGame.pieceOn("f1") is NoPiece &&
-                            chessGame.pieceOn("g1") is NoPiece
-                        is BlackKing -> departureSquare == "e8" &&
-                            arrivalSquare == "g8" &&
-                            chessGame.pieceOn("h8") is BlackRook &&
+                            chessGame.pieceOn(F1) is NoPiece &&
+                            chessGame.pieceOn(G1) is NoPiece
+                        is BlackKing -> departureSquare == E8 &&
+                            arrivalSquare == G8 &&
+                            chessGame.pieceOn(H8) is BlackRook &&
                             chessGame.whiteCastlingOptions.queenSide &&
-                            chessGame.pieceOn("f8") is NoPiece &&
-                            chessGame.pieceOn("g8") is NoPiece
+                            chessGame.pieceOn(F8) is NoPiece &&
+                            chessGame.pieceOn(G8) is NoPiece
                         else -> false
                     }
                 }
@@ -124,13 +116,12 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
             ),
             MoveRule(
                 direction = Direction.initialPawnMove(),
-                captureType = CaptureType.DISALLOWED,
-                moveCondition = { chessGame, departureSquare, arrivalSquare, piece ->
-                    when (piece.side) {
-                        White -> departureSquare.rank() == '2' &&
+                moveCondition = { chessGame, departureSquare, arrivalSquare ->
+                    when (chessGame.turn) {
+                        White -> departureSquare.rank == '2' &&
                             chessGame.pieceOn(departureSquare.upperNeighbour()!!) is NoPiece &&
                             chessGame.pieceOn(arrivalSquare) is NoPiece
-                        Black -> departureSquare.rank() == '7' &&
+                        Black -> departureSquare.rank == '7' &&
                             chessGame.pieceOn(departureSquare.lowerNeighbour()!!) is NoPiece &&
                             chessGame.pieceOn(arrivalSquare) is NoPiece
                     }
@@ -147,28 +138,28 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
             MoveRule(
                 direction = Direction.diagonal(),
                 captureType = CaptureType.MANDATORY,
-                moveCondition = { chessGame, departureSquare, _, piece ->
+                moveCondition = { chessGame, departureSquare, _ ->
                     val neighbourSquare = departureSquare.rightNeighbour()
                     if (
                         chessGame.enPassantSquare is Square &&
                         chessGame.enPassantSquare == neighbourSquare
                     ) {
                         val neighbourPiece = chessGame.pieceOn(neighbourSquare)
-                        neighbourPiece is Pawn && piece.side != neighbourPiece.side
+                        neighbourPiece is Pawn && chessGame.turn != neighbourPiece.side
                     } else false
                 }
             ),
             MoveRule(
                 direction = -Direction.diagonal(),
                 captureType = CaptureType.MANDATORY,
-                moveCondition = { chessGame, departureSquare, _, piece ->
+                moveCondition = { chessGame, departureSquare, _ ->
                     val neighbourSquare = departureSquare.leftNeighbour()
                     if (
                         chessGame.enPassantSquare is Square &&
                         chessGame.enPassantSquare == neighbourSquare
                     ) {
                         val neighbourPiece = chessGame.pieceOn(neighbourSquare)
-                        neighbourPiece is Pawn && piece.side != neighbourPiece.side
+                        neighbourPiece is Pawn && chessGame.turn != neighbourPiece.side
                     } else false
                 }
             )

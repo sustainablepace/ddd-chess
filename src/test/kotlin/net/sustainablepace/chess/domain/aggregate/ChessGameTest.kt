@@ -2,7 +2,6 @@ package net.sustainablepace.chess.domain.aggregate
 
 import net.sustainablepace.chess.domain.aggregate.ChessGame.Companion.defaultPosition
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
-import net.sustainablepace.chess.domain.move.Move
 import net.sustainablepace.chess.domain.move.ValidMove
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -26,17 +25,17 @@ class ChessGameTest {
     fun `move e2-e4`() {
         val game = ChessGame()
 
-        assertThat(game.pieceOn("e2")).isEqualTo(WhitePawn)
-        assertThat(game.pieceOn("e3")).isEqualTo(NoPiece)
+        assertThat(game.pieceOn(E2)).isEqualTo(WhitePawn)
+        assertThat(game.pieceOn(E3)).isEqualTo(NoPiece)
 
-        val move = Move("e2-e3") as ValidMove
+        val move = ValidMove(E2, E3)
 
         val updatedGame = game.movePiece(move)
 
         assertThat(updatedGame.turn).isEqualTo(Black)
         assertThat(updatedGame.numberOfNextMove).isEqualTo(2)
-        assertThat(updatedGame.pieceOn("e2")).isEqualTo(NoPiece)
-        assertThat(updatedGame.pieceOn("e3")).isEqualTo(WhitePawn)
+        assertThat(updatedGame.pieceOn(E2)).isEqualTo(NoPiece)
+        assertThat(updatedGame.pieceOn(E3)).isEqualTo(WhitePawn)
     }
 
     @Test
@@ -46,26 +45,26 @@ class ChessGameTest {
         val moves = game.moveOptions()
 
         assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove("a2-a3") as ValidMove,
-            ValidMove("b2-b3") as ValidMove,
-            ValidMove("c2-c3") as ValidMove,
-            ValidMove("d2-d3") as ValidMove,
-            ValidMove("e2-e3") as ValidMove,
-            ValidMove("f2-f3") as ValidMove,
-            ValidMove("g2-g3") as ValidMove,
-            ValidMove("h2-h3") as ValidMove,
-            ValidMove("a2-a4") as ValidMove,
-            ValidMove("b2-b4") as ValidMove,
-            ValidMove("c2-c4") as ValidMove,
-            ValidMove("d2-d4") as ValidMove,
-            ValidMove("e2-e4") as ValidMove,
-            ValidMove("f2-f4") as ValidMove,
-            ValidMove("g2-g4") as ValidMove,
-            ValidMove("h2-h4") as ValidMove,
-            ValidMove("b1-a3") as ValidMove,
-            ValidMove("b1-c3") as ValidMove,
-            ValidMove("g1-f3") as ValidMove,
-            ValidMove("g1-h3") as ValidMove
+            ValidMove(A2, A3),
+            ValidMove(B2, B3),
+            ValidMove(C2, C3),
+            ValidMove(D2, D3),
+            ValidMove(E2, E3),
+            ValidMove(F2, F3),
+            ValidMove(G2, G3),
+            ValidMove(H2, H3),
+            ValidMove(A2, A4),
+            ValidMove(B2, B4),
+            ValidMove(C2, C4),
+            ValidMove(D2, D4),
+            ValidMove(E2, E4),
+            ValidMove(F2, F4),
+            ValidMove(G2, G4),
+            ValidMove(H2, H4),
+            ValidMove(B1, A3),
+            ValidMove(B1, C3),
+            ValidMove(G1, F3),
+            ValidMove(G1, H3)
         )
     }
 
@@ -76,26 +75,26 @@ class ChessGameTest {
         val moves = game.moveOptions()
 
         assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove("a7-a6") as ValidMove,
-            ValidMove("b7-b6") as ValidMove,
-            ValidMove("c7-c6") as ValidMove,
-            ValidMove("d7-d6") as ValidMove,
-            ValidMove("e7-e6") as ValidMove,
-            ValidMove("f7-f6") as ValidMove,
-            ValidMove("g7-g6") as ValidMove,
-            ValidMove("h7-h6") as ValidMove,
-            ValidMove("a7-a5") as ValidMove,
-            ValidMove("b7-b5") as ValidMove,
-            ValidMove("c7-c5") as ValidMove,
-            ValidMove("d7-d5") as ValidMove,
-            ValidMove("e7-e5") as ValidMove,
-            ValidMove("f7-f5") as ValidMove,
-            ValidMove("g7-g5") as ValidMove,
-            ValidMove("h7-h5") as ValidMove,
-            ValidMove("b8-a6") as ValidMove,
-            ValidMove("b8-c6") as ValidMove,
-            ValidMove("g8-f6") as ValidMove,
-            ValidMove("g8-h6") as ValidMove
+            ValidMove(A7, A6),
+            ValidMove(B7, B6),
+            ValidMove(C7, C6),
+            ValidMove(D7, D6),
+            ValidMove(E7, E6),
+            ValidMove(F7, F6),
+            ValidMove(G7, G6),
+            ValidMove(H7, H6),
+            ValidMove(A7, A5),
+            ValidMove(B7, B5),
+            ValidMove(C7, C5),
+            ValidMove(D7, D5),
+            ValidMove(E7, E5),
+            ValidMove(F7, F5),
+            ValidMove(G7, G5),
+            ValidMove(H7, H5),
+            ValidMove(B8, A6),
+            ValidMove(B8, C6),
+            ValidMove(G8, F6),
+            ValidMove(G8, H6)
         )
     }
 
@@ -104,11 +103,11 @@ class ChessGameTest {
         val chessGame = ChessGame()
         assertThat(chessGame.enPassantSquare).isNull()
 
-        chessGame.movePiece(ValidMove("e2-e4") as ValidMove).let {
-            assertThat(it.enPassantSquare).isEqualTo("e4")
+        chessGame.movePiece(ValidMove(E2, E4)).let {
+            assertThat(it.enPassantSquare).isEqualTo(E4)
         }
 
-        chessGame.movePiece(ValidMove("e2-e3") as ValidMove).let {
+        chessGame.movePiece(ValidMove(E2, E3)).let {
             assertThat(it.enPassantSquare).isNull()
         }
     }
@@ -118,69 +117,77 @@ class ChessGameTest {
         val chessGame = ChessGame(Black)
         assertThat(chessGame.enPassantSquare).isNull()
 
-        chessGame.movePiece(ValidMove("e7-e6") as ValidMove).let {
+        chessGame.movePiece(ValidMove(E7, E6)).let {
             assertThat(it.enPassantSquare).isNull()
         }
 
-        chessGame.movePiece(ValidMove("e7-e5") as ValidMove).let {
-            assertThat(it.enPassantSquare).isEqualTo("e5")
+        chessGame.movePiece(ValidMove(E7, E5)).let {
+            assertThat(it.enPassantSquare).isEqualTo(E5)
         }
 
     }
 
     @Test
     fun `en passent capturing works for black (left)`() {
-        val chessGame = ChessGame(mapOf(
-            "f4" to BlackPawn,
-            "e2" to WhitePawn
-        ))
+        val chessGame = ChessGame(
+            mapOf(
+                F4 to BlackPawn,
+                E2 to WhitePawn
+            )
+        )
         val updatedChessGame = chessGame
-            .movePiece(ValidMove("e2-e4") as ValidMove)
-            .movePiece(ValidMove("f4-e3") as ValidMove)
+            .movePiece(ValidMove(E2, E4))
+            .movePiece(ValidMove(F4, E3))
 
-        assertThat(updatedChessGame.pieceOn("e3")).isEqualTo(BlackPawn)
-        assertThat(updatedChessGame.pieceOn("e4")).isEqualTo(NoPiece)
+        assertThat(updatedChessGame.pieceOn(E3)).isEqualTo(BlackPawn)
+        assertThat(updatedChessGame.pieceOn(E4)).isEqualTo(NoPiece)
     }
 
     @Test
     fun `en passent capturing works for black (right)`() {
-        val chessGame = ChessGame(mapOf(
-            "d4" to BlackPawn,
-            "e2" to WhitePawn
-        ))
+        val chessGame = ChessGame(
+            mapOf(
+                D4 to BlackPawn,
+                E2 to WhitePawn
+            )
+        )
         val updatedChessGame = chessGame
-            .movePiece(ValidMove("e2-e4") as ValidMove)
-            .movePiece(ValidMove("d4-e3") as ValidMove)
+            .movePiece(ValidMove(E2, E4))
+            .movePiece(ValidMove(D4, E3))
 
-        assertThat(updatedChessGame.pieceOn("e3")).isEqualTo(BlackPawn)
-        assertThat(updatedChessGame.pieceOn("e4")).isEqualTo(NoPiece)
+        assertThat(updatedChessGame.pieceOn(E3)).isEqualTo(BlackPawn)
+        assertThat(updatedChessGame.pieceOn(E4)).isEqualTo(NoPiece)
     }
 
     @Test
     fun `en passent capturing works for white (left)`() {
-        val chessGame = ChessGame(Black, mapOf(
-            "e7" to BlackPawn,
-            "d5" to WhitePawn
-        ))
+        val chessGame = ChessGame(
+            Black, mapOf(
+                E7 to BlackPawn,
+                D5 to WhitePawn
+            )
+        )
         val updatedChessGame = chessGame
-            .movePiece(ValidMove("e7-e5") as ValidMove)
-            .movePiece(ValidMove("d5-e6") as ValidMove)
+            .movePiece(ValidMove(E7, E5))
+            .movePiece(ValidMove(D5, E6))
 
-        assertThat(updatedChessGame.pieceOn("e6")).isEqualTo(WhitePawn)
-        assertThat(updatedChessGame.pieceOn("e5")).isEqualTo(NoPiece)
+        assertThat(updatedChessGame.pieceOn(E6)).isEqualTo(WhitePawn)
+        assertThat(updatedChessGame.pieceOn(E5)).isEqualTo(NoPiece)
     }
 
     @Test
     fun `en passent capturing works for white (right)`() {
-        val chessGame = ChessGame(Black, mapOf(
-            "e7" to BlackPawn,
-            "f5" to WhitePawn
-        ))
+        val chessGame = ChessGame(
+            Black, mapOf(
+                E7 to BlackPawn,
+                F5 to WhitePawn
+            )
+        )
         val updatedChessGame = chessGame
-            .movePiece(ValidMove("e7-e5") as ValidMove)
-            .movePiece(ValidMove("f5-e6") as ValidMove)
+            .movePiece(ValidMove(E7, E5))
+            .movePiece(ValidMove(F5, E6))
 
-        assertThat(updatedChessGame.pieceOn("e6")).isEqualTo(WhitePawn)
-        assertThat(updatedChessGame.pieceOn("e5")).isEqualTo(NoPiece)
+        assertThat(updatedChessGame.pieceOn(E6)).isEqualTo(WhitePawn)
+        assertThat(updatedChessGame.pieceOn(E5)).isEqualTo(NoPiece)
     }
 }

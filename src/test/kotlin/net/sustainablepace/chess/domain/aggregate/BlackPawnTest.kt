@@ -1,9 +1,6 @@
 package net.sustainablepace.chess.domain.aggregate
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.Black
-import net.sustainablepace.chess.domain.aggregate.chessgame.BlackPawn
-import net.sustainablepace.chess.domain.aggregate.chessgame.BlackQueen
-import net.sustainablepace.chess.domain.aggregate.chessgame.WhitePawn
+import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.move.ValidMove
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -11,69 +8,69 @@ import org.junit.jupiter.api.Test
 class BlackPawnTest {
     @Test
     fun `finds valid pawn movements on empty board in initial position`() {
-        val chessGame = ChessGame(mapOf(
-            "e7" to BlackPawn
+        val chessGame = ChessGame(Black, mapOf(
+            E7 to BlackPawn
         ))
-        val moves = chessGame.moveOptions("e7")
+        val moves = chessGame.moveOptions(E7)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove("e7-e6") as ValidMove,
-            ValidMove("e7-e5") as ValidMove
+            ValidMove(E7, E6),
+            ValidMove(E7, E5)
         )
     }
 
     @Test
     fun `finds valid pawn movements on empty board`() {
-        val chessGame = ChessGame(mapOf(
-            "e5" to BlackPawn
+        val chessGame = ChessGame(Black, mapOf(
+            E5 to BlackPawn
         ))
-        val moves = chessGame.moveOptions("e5")
+        val moves = chessGame.moveOptions(E5)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove("e5-e4") as ValidMove
+            ValidMove(E5, E4)
         )
     }
 
     @Test
     fun `finds en passant capture moves to the right`() {
         val chessGame = ChessGame(Black, mapOf(
-            "f7" to BlackPawn,
-            "e5" to WhitePawn
+            F7 to BlackPawn,
+            E5 to WhitePawn
         ))
-        val updatedChessGame = chessGame.movePiece(ValidMove("f7-f5") as ValidMove)
+        val updatedChessGame = chessGame.movePiece(ValidMove(F7, F5))
 
         Assertions.assertThat(updatedChessGame.moveOptions()).contains(
-            ValidMove("e5-f6") as ValidMove
+            ValidMove(E5, F6)
         )
     }
 
     @Test
     fun `finds en passant capture moves to the left`() {
         val chessGame = ChessGame(Black, mapOf(
-            "d7" to BlackPawn,
-            "e5" to WhitePawn
+            D7 to BlackPawn,
+            E5 to WhitePawn
         ))
-        val updatedChessGame = chessGame.movePiece(ValidMove("d7-d5") as ValidMove)
+        val updatedChessGame = chessGame.movePiece(ValidMove(D7, D5))
 
         Assertions.assertThat(updatedChessGame.moveOptions()).contains(
-            ValidMove("e5-d6") as ValidMove
+            ValidMove(E5, D6)
         )
     }
 
     @Test
     fun `promotion to queen`() {
         val chessGame = ChessGame(Black, mapOf(
-            "f2" to BlackPawn
+            F2 to BlackPawn
         ))
-        val updatedChessGame = chessGame.movePiece(ValidMove("f2-f1") as ValidMove)
+        val updatedChessGame = chessGame.movePiece(ValidMove(F2, F1))
 
-        Assertions.assertThat(updatedChessGame.pieceOn("f1")).isEqualTo(BlackQueen)
+        Assertions.assertThat(updatedChessGame.pieceOn(F1)).isEqualTo(BlackQueen)
     }
 
     @Test
     fun `moving left rook makes castling unavailable`() {
         val chessGame = ChessGame(Black)
-            .movePiece(ValidMove("a7-a5") as ValidMove)
-            .movePiece(ValidMove("a2-a3") as ValidMove)
-            .movePiece(ValidMove("a8-a6") as ValidMove)
+            .movePiece(ValidMove(A7, A5))
+            .movePiece(ValidMove(A2, A3))
+            .movePiece(ValidMove(A8, A6))
 
         Assertions.assertThat(chessGame.blackCastlingOptions.queenSide).isFalse()
         Assertions.assertThat(chessGame.blackCastlingOptions.kingSide).isTrue()
@@ -82,9 +79,9 @@ class BlackPawnTest {
     @Test
     fun `moving right rook makes castling unavailable`() {
         val chessGame = ChessGame(Black)
-            .movePiece(ValidMove("h7-h5") as ValidMove)
-            .movePiece(ValidMove("h2-h3") as ValidMove)
-            .movePiece(ValidMove("h8-h6") as ValidMove)
+            .movePiece(ValidMove(H7, H5))
+            .movePiece(ValidMove(H2, H3))
+            .movePiece(ValidMove(H8, H6))
 
         Assertions.assertThat(chessGame.blackCastlingOptions.queenSide).isTrue()
         Assertions.assertThat(chessGame.blackCastlingOptions.kingSide).isFalse()

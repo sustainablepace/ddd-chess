@@ -31,7 +31,7 @@ data class ChessGameReadModel(
             return with(chessGame) {
                 ChessGameReadModel(
                     id = id,
-                    position = position.mapValues { it.value.stringify() },
+                    position = position.map { it.key.toString() to it.value.stringify() }.toMap(),
                     turn = when (turn) {
                         White -> "white"
                         Black -> "black"

@@ -1,9 +1,6 @@
 package net.sustainablepace.chess.domain.move.rules
 
 import net.sustainablepace.chess.domain.aggregate.chessgame.Square
-import net.sustainablepace.chess.domain.aggregate.chessgame.file
-import net.sustainablepace.chess.domain.aggregate.chessgame.rank
-import net.sustainablepace.chess.domain.aggregate.chessgame.validate
 
 class Direction private constructor(val x: Int, val y: Int) {
 
@@ -14,7 +11,7 @@ class Direction private constructor(val x: Int, val y: Int) {
     }
 
     fun from(square: Square): Square? =
-        ((square.file() + x) + "" + (square.rank() + y)).validate()
+        Square((square.file + x) + "" + (square.rank + y))
 
     operator fun times(scale: Int): Direction = Direction(x * scale, y * scale)
     operator fun unaryMinus() = Direction(-x, y)
