@@ -1,6 +1,5 @@
 package net.sustainablepace.chess.domain.aggregate
 
-import net.sustainablepace.chess.domain.aggregate.ChessGame.Companion.defaultPosition
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.move.ValidMove
 import org.assertj.core.api.Assertions.assertThat
@@ -16,9 +15,9 @@ class ChessGameTest {
         assertThat(game.turn).isEqualTo(White)
         assertThat(game.white).isInstanceOf(HumanPlayer::class.java)
         assertThat(game.black).isInstanceOf(ComputerPlayer::class.java)
-        assertThat(game.position).isEqualTo(defaultPosition)
+        assertThat(game.position).isEqualTo(Position())
         assertThat(game.numberOfNextMove).isEqualTo(1)
-        assertThat(game.enPassantSquare).isEqualTo(null)
+        assertThat(game.position.enPassantSquare).isEqualTo(null)
     }
 
     @Test
@@ -101,28 +100,28 @@ class ChessGameTest {
     @Test
     fun `en passant (white)`() {
         val chessGame = ChessGame()
-        assertThat(chessGame.enPassantSquare).isNull()
+        assertThat(chessGame.position.enPassantSquare).isNull()
 
         chessGame.movePiece(ValidMove(E2, E4)).let {
-            assertThat(it.enPassantSquare).isEqualTo(E4)
+            assertThat(it.position.enPassantSquare).isEqualTo(E4)
         }
 
         chessGame.movePiece(ValidMove(E2, E3)).let {
-            assertThat(it.enPassantSquare).isNull()
+            assertThat(it.position.enPassantSquare).isNull()
         }
     }
 
     @Test
     fun `en passant (black)`() {
         val chessGame = ChessGame(Black)
-        assertThat(chessGame.enPassantSquare).isNull()
+        assertThat(chessGame.position.enPassantSquare).isNull()
 
         chessGame.movePiece(ValidMove(E7, E6)).let {
-            assertThat(it.enPassantSquare).isNull()
+            assertThat(it.position.enPassantSquare).isNull()
         }
 
         chessGame.movePiece(ValidMove(E7, E5)).let {
-            assertThat(it.enPassantSquare).isEqualTo(E5)
+            assertThat(it.position.enPassantSquare).isEqualTo(E5)
         }
 
     }
@@ -130,10 +129,10 @@ class ChessGameTest {
     @Test
     fun `en passent capturing works for black (left)`() {
         val chessGame = ChessGame(
-            mapOf(
+            Position(mapOf(
                 F4 to BlackPawn,
                 E2 to WhitePawn
-            )
+            ))
         )
         val updatedChessGame = chessGame
             .movePiece(ValidMove(E2, E4))
@@ -146,10 +145,10 @@ class ChessGameTest {
     @Test
     fun `en passent capturing works for black (right)`() {
         val chessGame = ChessGame(
-            mapOf(
+            Position(mapOf(
                 D4 to BlackPawn,
                 E2 to WhitePawn
-            )
+            ))
         )
         val updatedChessGame = chessGame
             .movePiece(ValidMove(E2, E4))
@@ -162,10 +161,10 @@ class ChessGameTest {
     @Test
     fun `en passent capturing works for white (left)`() {
         val chessGame = ChessGame(
-            Black, mapOf(
+            Black, Position(mapOf(
                 E7 to BlackPawn,
                 D5 to WhitePawn
-            )
+            ))
         )
         val updatedChessGame = chessGame
             .movePiece(ValidMove(E7, E5))
@@ -178,10 +177,10 @@ class ChessGameTest {
     @Test
     fun `en passent capturing works for white (right)`() {
         val chessGame = ChessGame(
-            Black, mapOf(
+            Black, Position(mapOf(
                 E7 to BlackPawn,
                 F5 to WhitePawn
-            )
+            ))
         )
         val updatedChessGame = chessGame
             .movePiece(ValidMove(E7, E5))
@@ -194,35 +193,35 @@ class ChessGameTest {
     @Test
     fun `castling sets the game stats accordingly`() {
         val chessGame = ChessGame(
-            mapOf(
+            Position(mapOf(
                 E1 to WhiteKing,
                 A1 to WhiteRook,
                 E8 to BlackKing,
                 A8 to BlackRook
-            )
+            ))
         )
-        assertThat(chessGame.whiteCastlingOptions.kingSide).isTrue()
-        assertThat(chessGame.whiteCastlingOptions.queenSide).isTrue()
-        assertThat(chessGame.blackCastlingOptions.kingSide).isTrue()
-        assertThat(chessGame.blackCastlingOptions.queenSide).isTrue()
+        assertThat(chessGame.position.whiteCastlingOptions.kingSide).isTrue()
+        assertThat(chessGame.position.whiteCastlingOptions.queenSide).isTrue()
+        assertThat(chessGame.position.blackCastlingOptions.kingSide).isTrue()
+        assertThat(chessGame.position.blackCastlingOptions.queenSide).isTrue()
 
         val gameAfterWhiteCastling = chessGame
             .movePiece(ValidMove(E1, C1))
         assertThat(gameAfterWhiteCastling.pieceOn(C1)).isEqualTo(WhiteKing)
         assertThat(gameAfterWhiteCastling.pieceOn(D1)).isEqualTo(WhiteRook)
-        assertThat(gameAfterWhiteCastling.whiteCastlingOptions.kingSide).isFalse()
-        assertThat(gameAfterWhiteCastling.whiteCastlingOptions.queenSide).isFalse()
-        assertThat(gameAfterWhiteCastling.blackCastlingOptions.kingSide).isTrue()
-        assertThat(gameAfterWhiteCastling.blackCastlingOptions.queenSide).isTrue()
+        assertThat(gameAfterWhiteCastling.position.whiteCastlingOptions.kingSide).isFalse()
+        assertThat(gameAfterWhiteCastling.position.whiteCastlingOptions.queenSide).isFalse()
+        assertThat(gameAfterWhiteCastling.position.blackCastlingOptions.kingSide).isTrue()
+        assertThat(gameAfterWhiteCastling.position.blackCastlingOptions.queenSide).isTrue()
 
         val gameAfterBlackCastling = gameAfterWhiteCastling
             .movePiece(ValidMove(E8, C8))
         assertThat(gameAfterBlackCastling.pieceOn(C8)).isEqualTo(BlackKing)
         assertThat(gameAfterBlackCastling.pieceOn(D8)).isEqualTo(BlackRook)
-        assertThat(gameAfterWhiteCastling.whiteCastlingOptions.kingSide).isFalse()
-        assertThat(gameAfterWhiteCastling.whiteCastlingOptions.queenSide).isFalse()
-        assertThat(gameAfterBlackCastling.blackCastlingOptions.kingSide).isFalse()
-        assertThat(gameAfterBlackCastling.blackCastlingOptions.queenSide).isFalse()
+        assertThat(gameAfterWhiteCastling.position.whiteCastlingOptions.kingSide).isFalse()
+        assertThat(gameAfterWhiteCastling.position.whiteCastlingOptions.queenSide).isFalse()
+        assertThat(gameAfterBlackCastling.position.blackCastlingOptions.kingSide).isFalse()
+        assertThat(gameAfterBlackCastling.position.blackCastlingOptions.queenSide).isFalse()
     }
 
     @Test

@@ -8,12 +8,11 @@ import org.junit.jupiter.api.Test
 class WhiteBishopTest {
     @Test
     fun `finds valid bishop movements on empty board`() {
-        val chessGame = ChessGame(
-            mapOf(
+        val position = Position(mapOf(
                 E4 to WhiteBishop
             )
         )
-        val moves = chessGame.moveOptions(E4)
+        val moves = position.moveOptions(E4)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             ValidMove(E4, D3),
             ValidMove(E4, C2),
@@ -33,14 +32,13 @@ class WhiteBishopTest {
 
     @Test
     fun `finds valid bishop movements on crowded board`() {
-        val chessGame = ChessGame(
-            mapOf(
+        val position = Position(mapOf(
                 E4 to WhiteBishop,
                 D5 to BlackPawn,
                 G2 to WhiteQueen
             )
         )
-        val moves = chessGame.moveOptions(E4)
+        val moves = position.moveOptions(E4)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             ValidMove(E4,D3),
             ValidMove(E4,C2),

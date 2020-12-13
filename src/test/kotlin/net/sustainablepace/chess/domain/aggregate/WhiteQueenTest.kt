@@ -9,12 +9,11 @@ class WhiteQueenTest {
 
     @Test
     fun `finds valid queen movements on empty board`() {
-        val chessGame = ChessGame(
-            mapOf(
+        val position = Position(mapOf(
                 E4 to WhiteQueen
             )
         )
-        val moves = chessGame.moveOptions(E4)
+        val moves = position.moveOptions(E4)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             ValidMove(E4, D3),
             ValidMove(E4, C2),
@@ -49,8 +48,7 @@ class WhiteQueenTest {
 
     @Test
     fun `finds valid queen movements on crowded board`() {
-        val chessGame = ChessGame(
-            mapOf(
+        val position = Position(mapOf(
                 E4 to WhiteQueen,
                 D5 to BlackPawn,
                 G2 to WhiteBishop,
@@ -60,7 +58,7 @@ class WhiteQueenTest {
                 E6 to BlackQueen
             )
         )
-        val moves = chessGame.moveOptions(E4)
+        val moves = position.moveOptions(E4)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             ValidMove(E4, D3),
             ValidMove(E4, C2),

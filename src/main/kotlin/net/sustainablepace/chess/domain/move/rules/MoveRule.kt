@@ -1,7 +1,9 @@
 package net.sustainablepace.chess.domain.move.rules
 
-import net.sustainablepace.chess.domain.aggregate.EnPassantSquare
-import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.domain.aggregate.chessgame.NoPiece
+import net.sustainablepace.chess.domain.aggregate.chessgame.Piece
+import net.sustainablepace.chess.domain.aggregate.chessgame.Position
+import net.sustainablepace.chess.domain.aggregate.chessgame.Square
 import net.sustainablepace.chess.domain.move.ValidMove
 import net.sustainablepace.chess.domain.move.rules.CaptureType.*
 
@@ -9,10 +11,7 @@ sealed class MoveRule {
     abstract fun findMoves(
         departureSquare: Square,
         movingPiece: Piece,
-        position: Position,
-        enPassantSquare: EnPassantSquare,
-        whiteCastlingOptions: CastlingOptions,
-        blackCastlingOptions: CastlingOptions
+        position: Position
     ): Set<ValidMove>
 
     abstract operator fun unaryMinus(): MoveRule
@@ -26,10 +25,7 @@ sealed class MoveRule {
             moveCondition: ((
                 departureSquare: Square,
                 arrivalSquare: Square,
-                position: Position,
-                enPassantSquare: EnPassantSquare,
-                whiteCastlingOptions: CastlingOptions,
-                blackCastlingOptions: CastlingOptions
+                position: Position
             ) -> Boolean)? = null
         ): Set<MoveRule> =
             when (moveCondition) {
@@ -56,10 +52,7 @@ class ParameterizedRule(
     override fun findMoves(
         departureSquare: Square,
         movingPiece: Piece,
-        position: Position,
-        enPassantSquare: EnPassantSquare,
-        whiteCastlingOptions: CastlingOptions,
-        blackCastlingOptions: CastlingOptions
+        position: Position
     ): Set<ValidMove> =
         when (pieceCanTakeMultipleSteps) {
             true -> mutableListOf<Square>().run {
@@ -96,28 +89,19 @@ class CustomizedRule(
     private val moveCondition: (
         departureSquare: Square,
         arrivalSquare: Square,
-        position: Position,
-        enPassantSquare: EnPassantSquare,
-        whiteCastlingOptions: CastlingOptions,
-        blackCastlingOptions: CastlingOptions
+        position: Position
     ) -> Boolean
 ) : MoveRule() {
     override fun findMoves(
         departureSquare: Square,
         movingPiece: Piece,
-        position: Position,
-        enPassantSquare: EnPassantSquare,
-        whiteCastlingOptions: CastlingOptions,
-        blackCastlingOptions: CastlingOptions
+        position: Position
     ): Set<ValidMove> =
         when (val arrivalSquare = direction.from(departureSquare)) {
             is Square -> if (moveCondition(
                     departureSquare,
                     arrivalSquare,
-                    position,
-                    enPassantSquare,
-                    whiteCastlingOptions,
-                    blackCastlingOptions
+                    position
                 )
             ) {
                 setOf(ValidMove(departureSquare, arrivalSquare))

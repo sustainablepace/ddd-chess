@@ -9,15 +9,14 @@ class WhiteRookTest {
 
     @Test
     fun `finds valid rook movements`() {
-        val chessGame = ChessGame(
-            mapOf(
+        val position = Position(mapOf(
                 C3 to WhiteRook,
                 C7 to BlackPawn,
                 E3 to WhitePawn
             )
         )
 
-        val moves = chessGame.moveOptions(C3)
+        val moves = position.moveOptions(C3)
         assertThat(moves).containsExactlyInAnyOrder(
             ValidMove(C3, C4),
             ValidMove(C3, C5),
@@ -33,23 +32,21 @@ class WhiteRookTest {
 
     @Test
     fun `moving left rook makes castling unavailable`() {
-        val chessGame = ChessGame()
-            .movePiece(ValidMove(A2, A4))
+        val position = Position().movePiece(ValidMove(A2, A4))
             .movePiece(ValidMove(A7, A6))
             .movePiece(ValidMove(A1, A3))
 
-        assertThat(chessGame.whiteCastlingOptions.queenSide).isFalse()
-        assertThat(chessGame.whiteCastlingOptions.kingSide).isTrue()
+        assertThat(position.whiteCastlingOptions.queenSide).isFalse()
+        assertThat(position.whiteCastlingOptions.kingSide).isTrue()
     }
 
     @Test
     fun `moving right rook makes castling unavailable`() {
-        val chessGame = ChessGame()
-            .movePiece(ValidMove(H2, H4))
+        val position = Position().movePiece(ValidMove(H2, H4))
             .movePiece(ValidMove(H7, H6))
             .movePiece(ValidMove(H1, H3))
 
-        assertThat(chessGame.whiteCastlingOptions.queenSide).isTrue()
-        assertThat(chessGame.whiteCastlingOptions.kingSide).isFalse()
+        assertThat(position.whiteCastlingOptions.queenSide).isTrue()
+        assertThat(position.whiteCastlingOptions.kingSide).isFalse()
     }
 }

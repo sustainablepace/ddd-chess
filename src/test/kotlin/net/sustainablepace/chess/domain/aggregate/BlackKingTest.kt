@@ -2,52 +2,51 @@ package net.sustainablepace.chess.domain.aggregate
 
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.move.ValidMove
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class BlackKingTest {
     @Test
     fun `castling queenside on empty board`() {
-        val chessGame = ChessGame(Black, mapOf(
+        val position = Position(mapOf(
             E8 to BlackKing,
             A8 to BlackRook
         ))
-        Assertions.assertThat(chessGame.blackCastlingOptions.kingSide).isTrue()
-        Assertions.assertThat(chessGame.blackCastlingOptions.queenSide).isTrue()
+        assertThat(position.blackCastlingOptions.kingSide).isTrue()
+        assertThat(position.blackCastlingOptions.queenSide).isTrue()
 
-        val updatedGame = chessGame.movePiece(ValidMove(E8, C8))
-        Assertions.assertThat(updatedGame.pieceOn(C8)).isEqualTo(BlackKing)
-        Assertions.assertThat(updatedGame.pieceOn(D8)).isEqualTo(BlackRook)
-        Assertions.assertThat(updatedGame.blackCastlingOptions.kingSide).isFalse()
-        Assertions.assertThat(updatedGame.blackCastlingOptions.queenSide).isFalse()
+        val updatedPosition = position.movePiece(ValidMove(E8, C8))
+        assertThat(updatedPosition.pieceOn(C8)).isEqualTo(BlackKing)
+        assertThat(updatedPosition.pieceOn(D8)).isEqualTo(BlackRook)
+        assertThat(updatedPosition.blackCastlingOptions.kingSide).isFalse()
+        assertThat(updatedPosition.blackCastlingOptions.queenSide).isFalse()
     }
 
     @Test
     fun `castling kingside on empty board`() {
-        val chessGame = ChessGame(Black, mapOf(
+        val position = Position(mapOf(
             E8 to BlackKing,
             H8 to BlackRook
         ))
-        assertThat(chessGame.blackCastlingOptions.kingSide).isTrue()
-        assertThat(chessGame.blackCastlingOptions.queenSide).isTrue()
+        assertThat(position.blackCastlingOptions.kingSide).isTrue()
+        assertThat(position.blackCastlingOptions.queenSide).isTrue()
 
-        val updatedGame = chessGame.movePiece(ValidMove(E8, G8))
-        assertThat(updatedGame.pieceOn(G8)).isEqualTo(BlackKing)
-        assertThat(updatedGame.pieceOn(F8)).isEqualTo(BlackRook)
-        assertThat(updatedGame.blackCastlingOptions.kingSide).isFalse()
-        assertThat(updatedGame.blackCastlingOptions.queenSide).isFalse()
+        val updatedPosition = position.movePiece(ValidMove(E8, G8))
+        assertThat(updatedPosition.pieceOn(G8)).isEqualTo(BlackKing)
+        assertThat(updatedPosition.pieceOn(F8)).isEqualTo(BlackRook)
+        assertThat(updatedPosition.blackCastlingOptions.kingSide).isFalse()
+        assertThat(updatedPosition.blackCastlingOptions.queenSide).isFalse()
     }
 
     @Test
     fun `moving king makes castling unavailable`() {
-        val chessGame = ChessGame(Black)
+        val position = Position()
             .movePiece(ValidMove(E7, E5))
             .movePiece(ValidMove(E2, E3))
             .movePiece(ValidMove(E8, E7))
 
-        assertThat(chessGame.blackCastlingOptions.queenSide).isFalse()
-        assertThat(chessGame.blackCastlingOptions.kingSide).isFalse()
+        assertThat(position.blackCastlingOptions.queenSide).isFalse()
+        assertThat(position.blackCastlingOptions.kingSide).isFalse()
     }
 
 }

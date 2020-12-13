@@ -9,14 +9,13 @@ class WhiteKnightTest {
 
     @Test
     fun `finds valid knight movements`() {
-        val chessGame = ChessGame(
-            mapOf(
+        val position = Position(mapOf(
                 C2 to WhiteKnight,
                 B4 to BlackPawn,
                 E1 to WhiteKing
             )
         )
-        val moves = chessGame.moveOptions(C2)
+        val moves = position.moveOptions(C2)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             ValidMove(C2, D4),
             ValidMove(C2, B4),
