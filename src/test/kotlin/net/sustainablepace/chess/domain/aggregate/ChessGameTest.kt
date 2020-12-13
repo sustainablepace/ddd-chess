@@ -190,4 +190,48 @@ class ChessGameTest {
         assertThat(updatedChessGame.pieceOn(E6)).isEqualTo(WhitePawn)
         assertThat(updatedChessGame.pieceOn(E5)).isEqualTo(NoPiece)
     }
+
+    @Test
+    fun `castling sets the game stats accordingly`() {
+        val chessGame = ChessGame(
+            mapOf(
+                E1 to WhiteKing,
+                A1 to WhiteRook,
+                E8 to BlackKing,
+                A8 to BlackRook
+            )
+        )
+        assertThat(chessGame.whiteCastlingOptions.kingSide).isTrue()
+        assertThat(chessGame.whiteCastlingOptions.queenSide).isTrue()
+        assertThat(chessGame.blackCastlingOptions.kingSide).isTrue()
+        assertThat(chessGame.blackCastlingOptions.queenSide).isTrue()
+
+        val gameAfterWhiteCastling = chessGame
+            .movePiece(ValidMove(E1, C1))
+        assertThat(gameAfterWhiteCastling.pieceOn(C1)).isEqualTo(WhiteKing)
+        assertThat(gameAfterWhiteCastling.pieceOn(D1)).isEqualTo(WhiteRook)
+        assertThat(gameAfterWhiteCastling.whiteCastlingOptions.kingSide).isFalse()
+        assertThat(gameAfterWhiteCastling.whiteCastlingOptions.queenSide).isFalse()
+        assertThat(gameAfterWhiteCastling.blackCastlingOptions.kingSide).isTrue()
+        assertThat(gameAfterWhiteCastling.blackCastlingOptions.queenSide).isTrue()
+
+        val gameAfterBlackCastling = gameAfterWhiteCastling
+            .movePiece(ValidMove(E8, C8))
+        assertThat(gameAfterBlackCastling.pieceOn(C8)).isEqualTo(BlackKing)
+        assertThat(gameAfterBlackCastling.pieceOn(D8)).isEqualTo(BlackRook)
+        assertThat(gameAfterWhiteCastling.whiteCastlingOptions.kingSide).isFalse()
+        assertThat(gameAfterWhiteCastling.whiteCastlingOptions.queenSide).isFalse()
+        assertThat(gameAfterBlackCastling.blackCastlingOptions.kingSide).isFalse()
+        assertThat(gameAfterBlackCastling.blackCastlingOptions.queenSide).isFalse()
+    }
+
+    @Test
+    fun `disallow moves that result in a checked position`() {
+        val chessGame = ChessGame()
+            .movePiece(ValidMove(E2, E4))
+            .movePiece(ValidMove(E7, E6))
+            .movePiece(ValidMove(F1, B5))
+
+        assertThat(chessGame.moveOptions()).doesNotContain(ValidMove(D7, D6), ValidMove(D7, D5))
+    }
 }

@@ -2,7 +2,6 @@ package net.sustainablepace.chess.domain.aggregate
 
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.move.ValidMove
-import net.sustainablepace.chess.domain.move.rules.MoveRuleSet
 import kotlin.math.abs
 
 typealias EnPassantSquare = Square?
@@ -16,8 +15,8 @@ class ChessGame private constructor(
     val status: String,
     val numberOfNextMove: Int = 1,
     val enPassantSquare: EnPassantSquare = null,
-    val whiteCastlingOptions: CastlingOptions = CastlingOptions(),
-    val blackCastlingOptions: CastlingOptions = CastlingOptions(),
+    val whiteCastlingOptions: CastlingOptions = CastlingOptions(White),
+    val blackCastlingOptions: CastlingOptions = CastlingOptions(Black),
 ) {
     constructor() : this(defaultPosition)
     constructor(position: Position) : this(White, position)
@@ -38,16 +37,14 @@ class ChessGame private constructor(
         position
             .filter { it.value.side == turn }.keys
             .flatMap { square -> moveOptions(square) }
+            .filter { move ->
+                !position.movePiece(move, enPassantSquare).isInCheck(turn)
+            }
             .toSet()
 
-    fun moveOptions(departureSquare: Square): Set<ValidMove> =
-        position[departureSquare].let { pieceToBeMoved ->
-            if (pieceToBeMoved is Piece && pieceToBeMoved.side == turn) {
-                MoveRuleSet.getRulesForPiece(pieceToBeMoved).moveRules.flatMap { rule ->
-                    rule.findMoves(this, departureSquare)
-                }.toSet()
-            } else emptySet()
-        }
+    fun moveOptions(departureSquare: Square): Set<ValidMove> = // TODO this does not take turn into account...good or bad?
+        position.moveOptions(departureSquare, enPassantSquare, whiteCastlingOptions, blackCastlingOptions)
+
 
     private fun enpassantSquareOfMove(move: ValidMove): EnPassantSquare =
         if (
@@ -57,58 +54,13 @@ class ChessGame private constructor(
             move.arrivalSquare
         } else null
 
-    private fun calculatePositionAfterMove(move: ValidMove): Position =
-        mutableMapOf<Square, Piece>().run {
-            putAll(position)
-            this[move.arrivalSquare] = getValue(move.departureSquare)
-            remove(move.departureSquare)
-
-            // castling
-            if (this[move.arrivalSquare] is WhiteKing && move == ValidMove("e1-c1")) {
-                this[D1] = WhiteRook
-                remove(A1)
-            }
-            if (this[move.arrivalSquare] is WhiteKing && move == ValidMove("e1-g1")) {
-                this[F1] = WhiteRook
-                remove(H1)
-            }
-            if (this[move.arrivalSquare] is BlackKing && move == ValidMove("e8-c8")) {
-                this[D8] = BlackRook
-                remove(A8)
-            }
-            if (this[move.arrivalSquare] is BlackKing && move == ValidMove("e8-g8")) {
-                this[F8] = BlackRook
-                remove(H8)
-            }
-
-            // Promotion
-            if (this[move.arrivalSquare] is WhitePawn && move.arrivalSquare.rank == '8') {
-                this[move.arrivalSquare] = WhiteQueen
-            }
-            if (this[move.arrivalSquare] is BlackPawn && move.arrivalSquare.rank == '1') {
-                this[move.arrivalSquare] = BlackQueen
-            }
-
-            // En passant capturing
-            if (enPassantSquare != null) {
-                val lowerNeighbour = enPassantSquare.lowerNeighbour()
-                val upperNeighbour = enPassantSquare.upperNeighbour()
-                if (turn == White && upperNeighbour != null && this[upperNeighbour] is WhitePawn) {
-                    remove(enPassantSquare)
-                } else if (turn == Black && lowerNeighbour != null && this[lowerNeighbour] is BlackPawn) {
-                    remove(enPassantSquare)
-                }
-            }
-            this
-        }
-
     fun movePiece(move: ValidMove): ChessGame =
         when (val piece = position[move.departureSquare]) {
             is Piece -> piece
             else -> null
         }?.let { piece ->
             if (moveOptions().contains(move)) {
-                calculatePositionAfterMove(move).let { updatedPosition ->
+                position.movePiece(move, enPassantSquare).let { updatedPosition ->
                     val updatedTurn = if (turn == White) Black else White
                     val updatedNumberOfNextMove = if (updatedTurn != turn) (numberOfNextMove + 1) else numberOfNextMove
                     ChessGame(
@@ -127,7 +79,7 @@ class ChessGame private constructor(
             } else this
         } ?: this
 
-    fun pieceOn(arrivalSquare: Square): PieceOrNoPiece = position[arrivalSquare] ?: NoPiece
+    fun pieceOn(arrivalSquare: Square): PieceOrNoPiece = position.pieceOn(arrivalSquare)
 
     companion object {
         val defaultPosition = mapOf(

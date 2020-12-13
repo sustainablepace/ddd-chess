@@ -1,14 +1,19 @@
 package net.sustainablepace.chess.domain.move.rules
 
-import net.sustainablepace.chess.domain.aggregate.ChessGame
-import net.sustainablepace.chess.domain.aggregate.chessgame.NoPiece
-import net.sustainablepace.chess.domain.aggregate.chessgame.Piece
-import net.sustainablepace.chess.domain.aggregate.chessgame.Square
+import net.sustainablepace.chess.domain.aggregate.EnPassantSquare
+import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.move.ValidMove
 import net.sustainablepace.chess.domain.move.rules.CaptureType.*
 
 sealed class MoveRule {
-    abstract fun findMoves(chessGame: ChessGame, departureSquare: Square): Set<ValidMove>
+    abstract fun findMoves(
+        departureSquare: Square,
+        movingPiece: Piece,
+        position: Position,
+        enPassantSquare: EnPassantSquare,
+        whiteCastlingOptions: CastlingOptions,
+        blackCastlingOptions: CastlingOptions
+    ): Set<ValidMove>
 
     abstract operator fun unaryMinus(): MoveRule
 
@@ -18,7 +23,14 @@ sealed class MoveRule {
             captureType: CaptureType = ALLOWED,
             pieceCanTakeMultipleSteps: Boolean = false,
             rotations: Boolean = false,
-            moveCondition: ((chessGame: ChessGame, departureSquare: Square, arrivalSquare: Square) -> Boolean)? = null
+            moveCondition: ((
+                departureSquare: Square,
+                arrivalSquare: Square,
+                position: Position,
+                enPassantSquare: EnPassantSquare,
+                whiteCastlingOptions: CastlingOptions,
+                blackCastlingOptions: CastlingOptions
+            ) -> Boolean)? = null
         ): Set<MoveRule> =
             when (moveCondition) {
                 null -> when (rotations) {
@@ -41,13 +53,20 @@ class ParameterizedRule(
     private val captureType: CaptureType,
     private val pieceCanTakeMultipleSteps: Boolean = false
 ) : MoveRule() {
-    override fun findMoves(chessGame: ChessGame, departureSquare: Square): Set<ValidMove> =
+    override fun findMoves(
+        departureSquare: Square,
+        movingPiece: Piece,
+        position: Position,
+        enPassantSquare: EnPassantSquare,
+        whiteCastlingOptions: CastlingOptions,
+        blackCastlingOptions: CastlingOptions
+    ): Set<ValidMove> =
         when (pieceCanTakeMultipleSteps) {
             true -> mutableListOf<Square>().run {
                 for (step in (1..7)) {
                     val arrivalSquare = (direction * step).from(departureSquare)
                     if (arrivalSquare is Square) add(arrivalSquare) else break
-                    if (chessGame.pieceOn(arrivalSquare) is Piece) break
+                    if (position.pieceOn(arrivalSquare) is Piece) break
                 }
                 this
             }.toList()
@@ -57,10 +76,10 @@ class ParameterizedRule(
                     else -> emptyList()
                 }
         }.mapNotNull { arrivalSquare ->
-            val blockingPiece = chessGame.pieceOn(arrivalSquare)
+            val blockingPiece = position.pieceOn(arrivalSquare)
             when {
                 blockingPiece is NoPiece && captureType == MANDATORY -> null
-                blockingPiece is Piece && (chessGame.turn == blockingPiece.side || captureType == DISALLOWED) -> null
+                blockingPiece is Piece && (movingPiece.side == blockingPiece.side || captureType == DISALLOWED) -> null
                 else -> ValidMove(departureSquare, arrivalSquare)
             }
         }.toSet()
@@ -74,11 +93,33 @@ class ParameterizedRule(
 
 class CustomizedRule(
     private val direction: Direction,
-    private val moveCondition: (chessGame: ChessGame, departureSquare: Square, arrivalSquare: Square) -> Boolean
+    private val moveCondition: (
+        departureSquare: Square,
+        arrivalSquare: Square,
+        position: Position,
+        enPassantSquare: EnPassantSquare,
+        whiteCastlingOptions: CastlingOptions,
+        blackCastlingOptions: CastlingOptions
+    ) -> Boolean
 ) : MoveRule() {
-    override fun findMoves(chessGame: ChessGame, departureSquare: Square): Set<ValidMove> =
+    override fun findMoves(
+        departureSquare: Square,
+        movingPiece: Piece,
+        position: Position,
+        enPassantSquare: EnPassantSquare,
+        whiteCastlingOptions: CastlingOptions,
+        blackCastlingOptions: CastlingOptions
+    ): Set<ValidMove> =
         when (val arrivalSquare = direction.from(departureSquare)) {
-            is Square -> if (moveCondition(chessGame, departureSquare, arrivalSquare)) {
+            is Square -> if (moveCondition(
+                    departureSquare,
+                    arrivalSquare,
+                    position,
+                    enPassantSquare,
+                    whiteCastlingOptions,
+                    blackCastlingOptions
+                )
+            ) {
                 setOf(ValidMove(departureSquare, arrivalSquare))
             } else emptySet()
             else -> emptySet()
