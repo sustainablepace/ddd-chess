@@ -11,7 +11,7 @@ class ChessGame private constructor(
     val turn: Side,
     val white: Player,
     val black: Player,
-    val status: String,
+    val status: Status,
     val numberOfNextMove: Int = 1
 ) {
     constructor() : this(Position())
@@ -23,7 +23,7 @@ class ChessGame private constructor(
         turn = side,
         white = HumanPlayer, //StupidComputerPlayer,
         black = StupidComputerPlayer,
-        status = "in progress"
+        status = InProgress
     )
 
     val activePlayer: Player
@@ -47,8 +47,8 @@ class ChessGame private constructor(
                     white = white,
                     black = black,
                     status = when {
-                        updatedPosition.isCheckMate(updatedTurn) -> "checkmate"
-                        updatedPosition.isStaleMate(updatedTurn) -> "stalemate"
+                        updatedPosition.isCheckMate(updatedTurn) -> Checkmate
+                        updatedPosition.isStaleMate(updatedTurn) -> Stalemate
                         else -> status
                     }
                 )

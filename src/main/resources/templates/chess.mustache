@@ -13,7 +13,7 @@
                 turn: "",
                 white: "",
                 black: "",
-                status: "",
+                status: "InProgress",
                 computerTurn: false
             }
 
@@ -70,7 +70,7 @@
             async function updateGame(game) {
                 chessGame.id = game.id
 
-                let draggable = !game.computerTurn && game.status === "in progress"
+                let draggable = !game.computerTurn && game.status === "InProgress"
                 chessGame.board = Chessboard(div, {
                     onDrop: onDrop,
                     onDragStart: onDragStart,
@@ -82,11 +82,11 @@
                 chessGame.black = game.black
                 chessGame.status = game.status
                 chessGame.computerTurn = game.computerTurn
-                if (game.status !== "in progress") {
+                if (game.status !== "InProgress") {
                     alert("Game over - " + game.status)
                 }
 
-                if(chessGame.computerTurn && chessGame.status === "in progress") {
+                if(chessGame.computerTurn && chessGame.status === "InProgress") {
                     let move = suggestMove()
                     await new Promise(r => setTimeout(r, 1000));
                     if(move !== null) {

@@ -12,7 +12,7 @@ class WhitePawnTest {
                 E2 to WhitePawn
             )
         )
-        val moves = chessGame.moveOptions(E2)
+        val moves = chessGame.moveOptionsIgnoringCheck(E2)
         assertThat(moves).containsExactlyInAnyOrder(
             ValidMove(E2, E3),
             ValidMove(E2, E4)
@@ -25,7 +25,7 @@ class WhitePawnTest {
                 E4 to WhitePawn
             )
         )
-        val moves = chessGame.moveOptions(E4)
+        val moves = chessGame.moveOptionsIgnoringCheck(E4)
         assertThat(moves).containsExactlyInAnyOrder(
             ValidMove(E4, E5)
         )
@@ -40,7 +40,7 @@ class WhitePawnTest {
                 F5 to BlackPawn
             )
         )
-        val moves = chessGame.moveOptions(E4)
+        val moves = chessGame.moveOptionsIgnoringCheck(E4)
         assertThat(moves).containsExactlyInAnyOrder(
             ValidMove(E4, F5),
             ValidMove(E4, D5)
@@ -54,7 +54,7 @@ class WhitePawnTest {
                 A4 to BlackPawn
             ))
 
-        val moves = chessGame.moveOptions(A2)
+        val moves = chessGame.moveOptionsIgnoringCheck(A2)
         assertThat(moves).containsExactlyInAnyOrder(
             ValidMove(A2, A3)
         )
@@ -67,7 +67,7 @@ class WhitePawnTest {
                 A3 to BlackPawn
             )
         )
-        val moves = chessGame.moveOptions(A2)
+        val moves = chessGame.moveOptionsIgnoringCheck(A2)
         assertThat(moves).isEmpty()
     }
 

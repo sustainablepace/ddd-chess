@@ -11,7 +11,7 @@ class ChessGameTest {
         val game = ChessGame()
 
         assertThat(game.id).isNotEmpty()
-        assertThat(game.status).isEqualTo("in progress")
+        assertThat(game.status).isEqualTo(InProgress)
         assertThat(game.turn).isEqualTo(White)
         assertThat(game.white).isInstanceOf(HumanPlayer::class.java)
         assertThat(game.black).isInstanceOf(ComputerPlayer::class.java)

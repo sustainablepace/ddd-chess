@@ -11,7 +11,7 @@ class BlackPawnTest {
         val position = Position(mapOf(
             E7 to BlackPawn
         ))
-        val moves = position.moveOptions(E7)
+        val moves = position.moveOptionsIgnoringCheck(E7)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             ValidMove(E7, E6),
             ValidMove(E7, E5)
@@ -23,7 +23,7 @@ class BlackPawnTest {
         val position = Position(mapOf(
             E5 to BlackPawn
         ))
-        val moves = position.moveOptions(E5)
+        val moves = position.moveOptionsIgnoringCheck(E5)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             ValidMove(E5, E4)
         )

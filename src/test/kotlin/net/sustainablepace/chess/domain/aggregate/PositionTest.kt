@@ -22,7 +22,7 @@ class PositionTest {
             .movePiece(ValidMove(D7, D6))
             .movePiece(ValidMove(F1, B5))
 
-        assertThat(position.moveOptions(B5)).contains(ValidMove(B5, E8))
+        assertThat(position.moveOptionsIgnoringCheck(B5)).contains(ValidMove(B5, E8))
         assertThat(position.isInCheck(Black)).isTrue()
     }
 

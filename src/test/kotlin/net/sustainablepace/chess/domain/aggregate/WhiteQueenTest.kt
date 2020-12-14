@@ -13,7 +13,7 @@ class WhiteQueenTest {
                 E4 to WhiteQueen
             )
         )
-        val moves = position.moveOptions(E4)
+        val moves = position.moveOptionsIgnoringCheck(E4)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             ValidMove(E4, D3),
             ValidMove(E4, C2),
@@ -58,7 +58,7 @@ class WhiteQueenTest {
                 E6 to BlackQueen
             )
         )
-        val moves = position.moveOptions(E4)
+        val moves = position.moveOptionsIgnoringCheck(E4)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             ValidMove(E4, D3),
             ValidMove(E4, C2),

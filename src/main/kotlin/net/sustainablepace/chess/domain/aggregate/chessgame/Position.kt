@@ -7,6 +7,16 @@ import kotlin.math.abs
 
 typealias Board = Map<Square, Piece>
 
+fun Board.findKing(side: Side) = filter {
+    it.value is King && it.value.side == side
+}.map {
+    it.key
+}.firstOrNull()
+
+fun Board.findSquares(side: Side) = filter {
+    it.value.side == side
+}.keys
+
 data class Position(
     val board: Board,
     val enPassantSquare: EnPassantSquare = null,
@@ -18,25 +28,21 @@ data class Position(
 
     fun pieceOn(square: Square): PieceOrNoPiece = board[square] ?: NoPiece
 
-    fun moveOptions(
+    fun moveOptionsIgnoringCheck(
         square: Square
-    ): Set<ValidMove> {
-        return board[square].let { pieceToBeMoved ->
+    ): Set<ValidMove> =
+        board[square].let { pieceToBeMoved ->
             if (pieceToBeMoved is Piece) {
                 MoveRuleSet.getRulesForPiece(pieceToBeMoved).moveRules.flatMap { rule ->
                     rule.findMoves(square, pieceToBeMoved, this)
-                }.filter { move ->
-                    true // TODO find moves that result in a check position
                 }.toSet()
             } else emptySet()
         }
-    }
-
 
     fun moveOptions(side: Side): Set<ValidMove> =
         board
             .filter { it.value.side == side }.keys
-            .flatMap { square -> moveOptions(square) }
+            .flatMap { square -> moveOptionsIgnoringCheck(square) }
             .filter { move ->
                 !movePiece(move).isInCheck(side)
             }
@@ -45,22 +51,14 @@ data class Position(
     fun isCheckMate(side: Side): Boolean = moveOptions(side).isEmpty() && isInCheck(side)
     fun isStaleMate(side: Side): Boolean = moveOptions(side).isEmpty() && !isInCheck(side)
 
-    fun isInCheck(side: Side): Boolean {
-        val threatenedKingSquare = board.filter {
-            it.value is King && it.value.side == side
-        }.map {
-            it.key
-        }.firstOrNull() ?: return false
-
-        board.filter {
-            it.value.side != side
-        }.keys.map { square ->
-            moveOptions(square).find { it.arrivalSquare == threatenedKingSquare }?.let {
-                return true
-            }
-        }
-        return false
-    }
+    fun isInCheck(side: Side): Boolean =
+        board.findKing(side)?.let { threatenedKingSquare ->
+            board.findSquares(!side).find { square ->
+                moveOptionsIgnoringCheck(square)
+                    .map { it.arrivalSquare }
+                    .contains(threatenedKingSquare)
+            } is Square
+        } ?: false
 
     fun movePiece(move: ValidMove): Position =
         mutableMapOf<Square, Piece>().let { newPosition ->

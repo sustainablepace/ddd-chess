@@ -13,7 +13,7 @@ class WhiteKingTest {
                 E4 to WhiteKing
             )
         )
-        val moves = position.moveOptions(E4)
+        val moves = position.moveOptionsIgnoringCheck(E4)
         assertThat(moves).containsExactlyInAnyOrder(
             ValidMove(E4, D3),
             ValidMove(E4, E3),
@@ -35,7 +35,7 @@ class WhiteKingTest {
                 E5 to WhiteQueen
             )
         )
-        val moves = position.moveOptions(E4)
+        val moves = position.moveOptionsIgnoringCheck(E4)
         assertThat(moves).containsExactlyInAnyOrder(
             ValidMove(E4, D3),
             ValidMove(E4, E3),
