@@ -68,7 +68,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
             MoveRule(
                 direction = -Direction.castlingMove(), // queenside
                 moveCondition = { departureSquare, arrivalSquare, position ->
-                    when (val movingPiece = position.pieceOn(departureSquare)) {
+                    when (position.pieceOn(departureSquare)) {
                         is WhiteKing -> departureSquare == E1 &&
                             arrivalSquare == C1 &&
                             position.pieceOn(A1) is WhiteRook &&
@@ -90,7 +90,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
             MoveRule(
                 direction = Direction.castlingMove(), // kingside
                 moveCondition = { departureSquare, arrivalSquare, position ->
-                    when (val movingPiece = position.pieceOn(departureSquare)) {
+                    when (position.pieceOn(departureSquare)) {
                         is WhiteKing -> departureSquare == E1 &&
                             arrivalSquare == G1 &&
                             position.pieceOn(H1) is WhiteRook &&

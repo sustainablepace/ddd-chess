@@ -1,6 +1,6 @@
 package net.sustainablepace.chess.domain.aggregate.chessgame
 
-data class CastlingOptions( // TODO: add diamond with type
+data class CastlingOptions(
     val side: Side,
     val kingSide: Boolean = true,
     val queenSide: Boolean = true
@@ -8,7 +8,7 @@ data class CastlingOptions( // TODO: add diamond with type
     fun updateAfterPieceMoved(departureSquare: Square, piece: Piece): CastlingOptions =
         if (side != piece.side) {
             this
-        } else when (piece.side) {
+        } else when (side) {
             is White -> '1'
             is Black -> '8'
         }.let { rank ->

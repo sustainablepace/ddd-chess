@@ -1,5 +1,7 @@
 package net.sustainablepace.chess.domain.aggregate.chessgame
 
+import kotlin.math.abs
+
 sealed class Square(val file: File, val rank: Rank) {
     init {
         check((file + "" + rank).matches(Regex("[a-h][1-8]")))
@@ -153,6 +155,8 @@ object H8 : Square('h', '8')
 
 typealias File = Char
 typealias Rank = Char
+
+infix fun Rank.diff(other: Rank): Int = abs(this - other)
 
 fun Square.leftNeighbour(): Square? = Square(file - 1, rank)
 fun Square.rightNeighbour(): Square? = Square(file + 1, rank)

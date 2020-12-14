@@ -3,7 +3,7 @@ package net.sustainablepace.chess.domain.aggregate.chessgame
 sealed class PieceOrNoPiece
 object NoPiece: PieceOrNoPiece()
 
-sealed class Piece(val side: Side): PieceOrNoPiece() { // TODO parameterize side
+sealed class Piece(val side: Side): PieceOrNoPiece() {
     override fun toString() = when(side) {
         is White -> "White"
         is Black -> "Black"

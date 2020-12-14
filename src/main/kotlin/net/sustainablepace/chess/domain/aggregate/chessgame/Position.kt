@@ -3,7 +3,6 @@ package net.sustainablepace.chess.domain.aggregate.chessgame
 import net.sustainablepace.chess.domain.aggregate.EnPassantSquare
 import net.sustainablepace.chess.domain.move.ValidMove
 import net.sustainablepace.chess.domain.move.rules.MoveRuleSet
-import kotlin.math.abs
 
 typealias Board = Map<Square, Piece>
 
@@ -67,19 +66,19 @@ data class Position(
             newPosition.remove(move.departureSquare)
 
             // castling
-            if (newPosition[move.arrivalSquare] is WhiteKing && move == ValidMove("e1-c1")) {
+            if (newPosition[move.arrivalSquare] is WhiteKing && move == ValidMove(E1, C1)) {
                 newPosition[D1] = WhiteRook
                 newPosition.remove(A1)
             }
-            if (newPosition[move.arrivalSquare] is WhiteKing && move == ValidMove("e1-g1")) {
+            if (newPosition[move.arrivalSquare] is WhiteKing && move == ValidMove(E1, G1)) {
                 newPosition[F1] = WhiteRook
                 newPosition.remove(H1)
             }
-            if (newPosition[move.arrivalSquare] is BlackKing && move == ValidMove("e8-c8")) {
+            if (newPosition[move.arrivalSquare] is BlackKing && move == ValidMove(E8, C8)) {
                 newPosition[D8] = BlackRook
                 newPosition.remove(A8)
             }
-            if (newPosition[move.arrivalSquare] is BlackKing && move == ValidMove("e8-g8")) {
+            if (newPosition[move.arrivalSquare] is BlackKing && move == ValidMove(E8, G8)) {
                 newPosition[F8] = BlackRook
                 newPosition.remove(H8)
             }
@@ -104,24 +103,21 @@ data class Position(
                 }
             }
             newPosition
-        }.let { board ->
+        }.let { updatedBoard ->
             val movingPiece = pieceOn(move.departureSquare) as Piece
 
             Position(
-                board,
-                enpassantSquareOfMove(move),
-                whiteCastlingOptions.updateAfterPieceMoved(move.departureSquare, movingPiece),
-                blackCastlingOptions.updateAfterPieceMoved(move.departureSquare, movingPiece)
+                board = updatedBoard,
+                enPassantSquare = with(move) {
+                    if (
+                        board[departureSquare] is Pawn &&
+                        departureSquare.rank diff arrivalSquare.rank == 2
+                    ) arrivalSquare else null
+                },
+                whiteCastlingOptions = whiteCastlingOptions.updateAfterPieceMoved(move.departureSquare, movingPiece),
+                blackCastlingOptions = blackCastlingOptions.updateAfterPieceMoved(move.departureSquare, movingPiece)
             )
         }
-
-    private fun enpassantSquareOfMove(move: ValidMove): EnPassantSquare =
-        if (
-            board[move.departureSquare] is Pawn &&
-            abs(move.departureSquare.rank - move.arrivalSquare.rank) == 2
-        ) {
-            move.arrivalSquare
-        } else null
 
     companion object {
         private val defaultBoard = mapOf(
