@@ -12,14 +12,12 @@ import org.springframework.stereotype.Service
 class MovePieceService(val chessGameRepository: ChessGameRepository) : ApplicationService<MovePiece, PieceMovedOrNot> {
     override fun process(intent: MovePiece): PieceMovedOrNot = with(intent) {
         chessGameRepository.findById(chessGameId)?.let { chessGame ->
-            chessGame.movePiece(move).let { updatedChessGame ->
-                if(updatedChessGame.numberOfNextMove > chessGame.numberOfNextMove) {
-                    chessGameRepository.save(updatedChessGame)
-                    PieceMoved(move, updatedChessGame)
-                } else {
-                    PieceNotMoved("Move ${move.departureSquare}-${move.arrivalSquare} not possible in game $chessGameId.")
+            chessGame.movePiece(move).let { event ->
+                when(event) {
+                    is PieceMoved -> event.also { chessGameRepository.save(it.chessGame) }
+                    is PieceNotMoved -> event
                 }
             }
-        } ?: PieceNotMoved("Could not find game $chessGameId.")
+        } ?: throw IllegalArgumentException("Could not find game $chessGameId.")
     }
 }

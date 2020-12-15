@@ -1,5 +1,6 @@
 package net.sustainablepace.chess.domain.aggregate
 
+import net.sustainablepace.chess.domain.PositionNotUpdated
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.move.ValidMove
 import org.assertj.core.api.Assertions.assertThat
@@ -113,5 +114,12 @@ class PositionTest {
             ValidMove(G8, F6),
             ValidMove(G8, H6)
         )
+    }
+
+    @Test
+    fun `position not updated after move`() {
+        val position = Position().movePiece(ValidMove(A3, A4))
+
+        assertThat(position).isInstanceOf(PositionNotUpdated::class.java)
     }
 }

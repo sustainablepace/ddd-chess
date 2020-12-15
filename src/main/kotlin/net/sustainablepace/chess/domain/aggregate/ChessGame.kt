@@ -1,67 +1,70 @@
 package net.sustainablepace.chess.domain.aggregate
 
+import net.sustainablepace.chess.domain.*
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.move.ValidMove
 
-typealias EnPassantSquare = Square?
-
 class ChessGame private constructor(
-    val id: ChessGameId,
-    val position: Position,
-    val turn: Side,
-    val white: Player,
-    val black: Player,
-    val status: Status,
-    val numberOfNextMove: Int = 1,
-    val fiftyMoveRule: Int = 0
-) {
-    constructor() : this(Position())
-    constructor(position: Position) : this(White, position)
-    constructor(side: Side) : this(side, Position())
-    constructor(side: Side, position: Position) : this(
-        id = chessGameId(),
-        position = position,
-        turn = side,
-        white = HumanPlayer, //StupidComputerPlayer,
-        black = StupidComputerPlayer,
-        status = InProgress,
-        fiftyMoveRule = 0
-    )
+    override val id: ChessGameId,
+    override val position: Position,
+    override val turn: Side,
+    override val white: Player,
+    override val black: Player,
+    override val status: Status,
+    override val numberOfNextMove: Int = 1,
+    override val fiftyMoveRule: Int = 0
+) : ChessGameEvent {
 
-    val activePlayer: Player
-        get() = if (turn == White) white else black
+    override fun getActivePlayer(): Player = if (turn == White) white else black
 
-    fun pieceOn(arrivalSquare: Square): PieceOrNoPiece = position.pieceOn(arrivalSquare)
+    override fun pieceOn(arrivalSquare: Square): PieceOrNoPiece = position.pieceOn(arrivalSquare)
 
-    fun moveOptions(): Set<ValidMove> =
-        position.moveOptions(turn)
+    override fun moveOptions(): Set<ValidMove> = position.moveOptions(turn)
 
-    fun movePiece(move: ValidMove): ChessGame =
-        if (moveOptions().contains(move)) {
-            position.movePiece(move).let { updatedPosition ->
-                val updatedTurn = if (turn == White) Black else White
-                val updatedNumberOfNextMove = if (updatedTurn != turn) (numberOfNextMove + 1) else numberOfNextMove
-                val hasPawnMoved = position.pieceOn(move.departureSquare) is Pawn
-                val pieceHasBeenCaptured = (position.board.count() - updatedPosition.board.count()) > 0
-                val fiftyMoves = if(hasPawnMoved || pieceHasBeenCaptured) 0 else fiftyMoveRule + 1
-                ChessGame(
-                    id = id,
-                    position = updatedPosition,
-                    turn = updatedTurn,
-                    numberOfNextMove = if (updatedNumberOfNextMove > numberOfNextMove) updatedNumberOfNextMove else numberOfNextMove,
-                    white = white,
-                    black = black,
-                    status = when {
-                        updatedPosition.isCheckMate(updatedTurn) -> Checkmate
-                        updatedPosition.isStaleMate(updatedTurn) -> Stalemate
-                        fiftyMoves == 50 -> FiftyMoveRule
-                        else -> status
-                    },
-                    fiftyMoveRule = fiftyMoves
-                )
+    override fun movePiece(move: ValidMove): PieceMovedOrNot =
+        when (moveOptions().contains(move)) {
+            false -> PieceNotMoved("Move $move not possible in game $id.", this)
+            true -> position.movePiece(move).let { event ->
+                when (event) {
+                    is PositionNotUpdated -> PieceNotMoved("Move $move not executed in game $id.", this)
+                    is PositionUpdated -> PieceMoved(
+                        move = move,
+                        chessGame = ChessGame(
+                            id = id,
+                            position = event.position,
+                            turn = !turn,
+                            numberOfNextMove = numberOfNextMove + 1,
+                            white = white,
+                            black = black,
+                            status = when {
+                                event.position.isCheckMate(!turn) -> Checkmate
+                                event.position.isStaleMate(!turn) -> Stalemate
+                                (if (event.pieceCapturedOrPawnMoved) 0 else (fiftyMoveRule + 1)) >= 50 -> FiftyMoveRule
+                                else -> status
+                            },
+                            fiftyMoveRule = if (event.pieceCapturedOrPawnMoved) 0 else (fiftyMoveRule + 1)
+                        )
+                    )
+                }
             }
-        } else this
+        }
 
+    companion object {
+        operator fun invoke(): PiecesHaveBeenSetUp = ChessGame(Position())
+        operator fun invoke(position: Position): PiecesHaveBeenSetUp = ChessGame(White, position)
+        operator fun invoke(side: Side): PiecesHaveBeenSetUp = ChessGame(side, Position())
+        operator fun invoke(side: Side, position: Position): PiecesHaveBeenSetUp =
+            PiecesHaveBeenSetUp(
+                ChessGame(
+                    id = chessGameId(),
+                    position = position,
+                    turn = side,
+                    white = HumanPlayer, //StupidComputerPlayer,
+                    black = StupidComputerPlayer,
+                    status = InProgress,
+                    fiftyMoveRule = 0
+                )
+            )
 
-
+    }
 }

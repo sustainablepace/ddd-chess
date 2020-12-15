@@ -8,10 +8,12 @@ import net.sustainablepace.chess.domain.aggregate.ChessGame
 import org.springframework.stereotype.Component
 
 @Component
-class SetupPiecesService(val chessGameRepository: ChessGameRepository): ApplicationService<SetUpPieces, PiecesHaveBeenSetUp> {
-    override fun process(intent: SetUpPieces): PiecesHaveBeenSetUp = ChessGame().let { chessGame ->
-        chessGameRepository.save(chessGame)
-        PiecesHaveBeenSetUp(chessGame)
-    }
+class SetupPiecesService(val chessGameRepository: ChessGameRepository) :
+    ApplicationService<SetUpPieces, PiecesHaveBeenSetUp> {
+
+    override fun process(intent: SetUpPieces): PiecesHaveBeenSetUp =
+        ChessGame().also {
+            chessGameRepository.save(it.chessGame)
+        }
 }
 

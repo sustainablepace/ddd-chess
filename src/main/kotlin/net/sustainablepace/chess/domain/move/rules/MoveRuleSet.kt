@@ -141,7 +141,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
             MoveRule(
                 direction = Direction.diagonal(),
                 captureType = CaptureType.MANDATORY,
-                moveCondition = { departureSquare, arrivalSquare, position ->
+                moveCondition = { departureSquare, _, position ->
                     val neighbourSquare = departureSquare.rightNeighbour()
                     val movingPiece = position.pieceOn(departureSquare)
                     if (
@@ -156,7 +156,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
             MoveRule(
                 direction = -Direction.diagonal(),
                 captureType = CaptureType.MANDATORY,
-                moveCondition = { departureSquare, arrivalSquare, position ->
+                moveCondition = { departureSquare, _, position ->
                     val neighbourSquare = departureSquare.leftNeighbour()
                     val movingPiece = position.pieceOn(departureSquare)
                     if (
