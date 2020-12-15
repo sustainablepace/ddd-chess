@@ -12,7 +12,8 @@ class ChessGame private constructor(
     val white: Player,
     val black: Player,
     val status: Status,
-    val numberOfNextMove: Int = 1
+    val numberOfNextMove: Int = 1,
+    val fiftyMoveRule: Int = 0
 ) {
     constructor() : this(Position())
     constructor(position: Position) : this(White, position)
@@ -23,7 +24,8 @@ class ChessGame private constructor(
         turn = side,
         white = HumanPlayer, //StupidComputerPlayer,
         black = StupidComputerPlayer,
-        status = InProgress
+        status = InProgress,
+        fiftyMoveRule = 0
     )
 
     val activePlayer: Player
@@ -39,6 +41,9 @@ class ChessGame private constructor(
             position.movePiece(move).let { updatedPosition ->
                 val updatedTurn = if (turn == White) Black else White
                 val updatedNumberOfNextMove = if (updatedTurn != turn) (numberOfNextMove + 1) else numberOfNextMove
+                val hasPawnMoved = position.pieceOn(move.departureSquare) is Pawn
+                val pieceHasBeenCaptured = (position.board.count() - updatedPosition.board.count()) > 0
+                val fiftyMoves = if(hasPawnMoved || pieceHasBeenCaptured) 0 else fiftyMoveRule + 1
                 ChessGame(
                     id = id,
                     position = updatedPosition,
@@ -49,8 +54,10 @@ class ChessGame private constructor(
                     status = when {
                         updatedPosition.isCheckMate(updatedTurn) -> Checkmate
                         updatedPosition.isStaleMate(updatedTurn) -> Stalemate
+                        fiftyMoves == 50 -> FiftyMoveRule
                         else -> status
-                    }
+                    },
+                    fiftyMoveRule = fiftyMoves
                 )
             }
         } else this

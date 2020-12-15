@@ -4,18 +4,6 @@ import net.sustainablepace.chess.domain.aggregate.EnPassantSquare
 import net.sustainablepace.chess.domain.move.ValidMove
 import net.sustainablepace.chess.domain.move.rules.MoveRuleSet
 
-typealias Board = Map<Square, Piece>
-
-fun Board.findKing(side: Side) = filter {
-    it.value is King && it.value.side == side
-}.map {
-    it.key
-}.firstOrNull()
-
-fun Board.findSquares(side: Side) = filter {
-    it.value.side == side
-}.keys
-
 data class Position(
     val board: Board,
     val enPassantSquare: EnPassantSquare = null,
