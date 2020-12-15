@@ -1,7 +1,7 @@
 package net.sustainablepace.chess.domain.aggregate
 
-import net.sustainablepace.chess.domain.PositionNotUpdated
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.domain.event.PositionNotUpdated
 import net.sustainablepace.chess.domain.move.ValidMove
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

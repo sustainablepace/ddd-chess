@@ -1,7 +1,7 @@
 package net.sustainablepace.chess.domain.aggregate
 
-import net.sustainablepace.chess.domain.*
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.domain.event.*
 import net.sustainablepace.chess.domain.move.ValidMove
 
 class ChessGame private constructor(

@@ -3,11 +3,11 @@ package net.sustainablepace.chess.application.service
 import net.sustainablepace.chess.application.ApplicationService
 import net.sustainablepace.chess.application.port.`in`.command.CalculateMove
 import net.sustainablepace.chess.application.port.out.ChessGameRepository
-import net.sustainablepace.chess.domain.MoveCalculated
-import net.sustainablepace.chess.domain.MoveCalculatedOrNot
-import net.sustainablepace.chess.domain.NoMoveCalculated
 import net.sustainablepace.chess.domain.aggregate.chessgame.ComputerPlayer
 import net.sustainablepace.chess.domain.aggregate.chessgame.HumanPlayer
+import net.sustainablepace.chess.domain.event.MoveCalculated
+import net.sustainablepace.chess.domain.event.MoveCalculatedOrNot
+import net.sustainablepace.chess.domain.event.NoMoveCalculated
 import net.sustainablepace.chess.domain.move.ValidMove
 import org.springframework.stereotype.Service
 

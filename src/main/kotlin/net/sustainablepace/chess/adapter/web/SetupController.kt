@@ -2,7 +2,7 @@ package net.sustainablepace.chess.adapter.web
 
 import net.sustainablepace.chess.application.ApplicationService
 import net.sustainablepace.chess.application.port.`in`.command.SetUpPieces
-import net.sustainablepace.chess.domain.PiecesHaveBeenSetUp
+import net.sustainablepace.chess.domain.event.PiecesHaveBeenSetUp
 import net.sustainablepace.chess.domain.readmodel.ChessGameReadModel
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok

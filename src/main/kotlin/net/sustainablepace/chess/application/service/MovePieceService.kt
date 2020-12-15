@@ -3,9 +3,9 @@ package net.sustainablepace.chess.application.service
 import net.sustainablepace.chess.application.ApplicationService
 import net.sustainablepace.chess.application.port.`in`.command.MovePiece
 import net.sustainablepace.chess.application.port.out.ChessGameRepository
-import net.sustainablepace.chess.domain.PieceMoved
-import net.sustainablepace.chess.domain.PieceMovedOrNot
-import net.sustainablepace.chess.domain.PieceNotMoved
+import net.sustainablepace.chess.domain.event.PieceMoved
+import net.sustainablepace.chess.domain.event.PieceMovedOrNot
+import net.sustainablepace.chess.domain.event.PieceNotMoved
 import org.springframework.stereotype.Service
 
 @Service

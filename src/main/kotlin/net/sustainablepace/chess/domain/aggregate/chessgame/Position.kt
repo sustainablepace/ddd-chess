@@ -1,9 +1,9 @@
 package net.sustainablepace.chess.domain.aggregate.chessgame
 
-import net.sustainablepace.chess.domain.PositionEvent
-import net.sustainablepace.chess.domain.PositionNotUpdated
-import net.sustainablepace.chess.domain.PositionUpdated
-import net.sustainablepace.chess.domain.PositionUpdatedOrNot
+import net.sustainablepace.chess.domain.event.PositionEvent
+import net.sustainablepace.chess.domain.event.PositionNotUpdated
+import net.sustainablepace.chess.domain.event.PositionUpdated
+import net.sustainablepace.chess.domain.event.PositionUpdatedOrNot
 import net.sustainablepace.chess.domain.move.ValidMove
 import net.sustainablepace.chess.domain.move.rules.MoveRuleSet
 

@@ -3,9 +3,9 @@ package net.sustainablepace.chess.adapter.web
 import net.sustainablepace.chess.application.ApplicationService
 import net.sustainablepace.chess.application.port.`in`.command.MovePiece
 import net.sustainablepace.chess.application.port.`in`.command.MoveString
-import net.sustainablepace.chess.domain.PieceMoved
-import net.sustainablepace.chess.domain.PieceMovedOrNot
-import net.sustainablepace.chess.domain.PieceNotMoved
+import net.sustainablepace.chess.domain.event.PieceMoved
+import net.sustainablepace.chess.domain.event.PieceMovedOrNot
+import net.sustainablepace.chess.domain.event.PieceNotMoved
 import net.sustainablepace.chess.domain.readmodel.ChessGameReadModel
 import net.sustainablepace.chess.logger
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
