@@ -70,19 +70,19 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                 moveCondition = { departureSquare, arrivalSquare, position ->
                     when (position.pieceOn(departureSquare)) {
                         is WhiteKing -> departureSquare == E1 &&
-                            arrivalSquare == C1 &&
-                            position.pieceOn(A1) is WhiteRook &&
+                            arrivalSquare == c1 &&
+                            position.pieceOn(a1) is WhiteRook &&
                             position.whiteCastlingOptions.queenSide &&
-                            position.pieceOn(B1) is NoPiece &&
-                            position.pieceOn(C1) is NoPiece &&
-                            position.pieceOn(D1) is NoPiece
+                            position.pieceOn(b1) is NoPiece &&
+                            position.pieceOn(c1) is NoPiece &&
+                            position.pieceOn(d1) is NoPiece
                         is BlackKing -> departureSquare == E8 &&
-                            arrivalSquare == C8 &&
-                            position.pieceOn(A8) is BlackRook &&
+                            arrivalSquare == c8 &&
+                            position.pieceOn(a8) is BlackRook &&
                             position.blackCastlingOptions.queenSide &&
-                            position.pieceOn(B8) is NoPiece &&
-                            position.pieceOn(C8) is NoPiece &&
-                            position.pieceOn(D8) is NoPiece
+                            position.pieceOn(b8) is NoPiece &&
+                            position.pieceOn(c8) is NoPiece &&
+                            position.pieceOn(d8) is NoPiece
                         else -> false
                     }
                 }

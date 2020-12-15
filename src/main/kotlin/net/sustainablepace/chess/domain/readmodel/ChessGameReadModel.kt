@@ -44,7 +44,7 @@ data class ChessGameReadModel(
                         is HumanPlayer -> "human"
                         is ComputerPlayer -> "computer"
                     },
-                    status = status.javaClass.simpleName,
+                    status = getStatus().javaClass.simpleName,
                     computerTurn = when (turn) {
                         White -> white is ComputerPlayer
                         Black -> black is ComputerPlayer

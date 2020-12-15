@@ -8,8 +8,9 @@ import net.sustainablepace.chess.domain.event.PiecesHaveBeenSetUp
 import org.springframework.stereotype.Component
 
 @Component
-class SetupPiecesService(val chessGameRepository: ChessGameRepository) :
-    ApplicationService<SetUpPieces, PiecesHaveBeenSetUp> {
+class SetupPiecesService(
+    private val chessGameRepository: ChessGameRepository
+) : ApplicationService<SetUpPieces, PiecesHaveBeenSetUp> {
 
     override fun process(intent: SetUpPieces): PiecesHaveBeenSetUp =
         ChessGame().also {

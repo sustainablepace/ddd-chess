@@ -1,7 +1,7 @@
 package net.sustainablepace.chess.domain.aggregate
 
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
-import net.sustainablepace.chess.domain.move.ValidMove
+import net.sustainablepace.chess.domain.move.Move
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -11,7 +11,7 @@ class ChessGameTest {
         val game = ChessGame()
 
         assertThat(game.id).isNotEmpty()
-        assertThat(game.status).isEqualTo(InProgress)
+        assertThat(game.getStatus()).isEqualTo(InProgress)
         assertThat(game.turn).isEqualTo(White)
         assertThat(game.white).isInstanceOf(HumanPlayer::class.java)
         assertThat(game.black).isInstanceOf(ComputerPlayer::class.java)
@@ -27,7 +27,7 @@ class ChessGameTest {
         assertThat(game.pieceOn(E2)).isEqualTo(WhitePawn)
         assertThat(game.pieceOn(E3)).isEqualTo(NoPiece)
 
-        val move = ValidMove(E2, E3)
+        val move = Move(E2, E3)
 
         val updatedGame = game.movePiece(move)
 
@@ -46,8 +46,8 @@ class ChessGameTest {
             ))
         )
         val updatedChessGame = chessGame
-            .movePiece(ValidMove(E2, E4))
-            .movePiece(ValidMove(F4, E3))
+            .movePiece(Move(E2, E4))
+            .movePiece(Move(F4, E3))
 
         assertThat(updatedChessGame.numberOfNextMove).isEqualTo(3)
         assertThat(updatedChessGame.pieceOn(E3)).isEqualTo(BlackPawn)
@@ -58,13 +58,13 @@ class ChessGameTest {
     fun `en passent capturing works for black (right)`() {
         val chessGame = ChessGame(
             Position(mapOf(
-                D4 to BlackPawn,
+                d4 to BlackPawn,
                 E2 to WhitePawn
             ))
         )
         val updatedChessGame = chessGame
-            .movePiece(ValidMove(E2, E4))
-            .movePiece(ValidMove(D4, E3))
+            .movePiece(Move(E2, E4))
+            .movePiece(Move(d4, E3))
 
         assertThat(updatedChessGame.numberOfNextMove).isEqualTo(3)
         assertThat(updatedChessGame.pieceOn(E3)).isEqualTo(BlackPawn)
@@ -76,12 +76,12 @@ class ChessGameTest {
         val chessGame = ChessGame(
             Black, Position(mapOf(
                 E7 to BlackPawn,
-                D5 to WhitePawn
+                d5 to WhitePawn
             ))
         )
         val updatedChessGame = chessGame
-            .movePiece(ValidMove(E7, E5))
-            .movePiece(ValidMove(D5, E6))
+            .movePiece(Move(E7, E5))
+            .movePiece(Move(d5, E6))
 
         assertThat(updatedChessGame.numberOfNextMove).isEqualTo(3)
         assertThat(updatedChessGame.pieceOn(E6)).isEqualTo(WhitePawn)
@@ -97,8 +97,8 @@ class ChessGameTest {
             ))
         )
         val updatedChessGame = chessGame
-            .movePiece(ValidMove(E7, E5))
-            .movePiece(ValidMove(F5, E6))
+            .movePiece(Move(E7, E5))
+            .movePiece(Move(F5, E6))
 
         assertThat(updatedChessGame.numberOfNextMove).isEqualTo(3)
         assertThat(updatedChessGame.pieceOn(E6)).isEqualTo(WhitePawn)
@@ -110,9 +110,9 @@ class ChessGameTest {
         val chessGame = ChessGame(
             Position(mapOf(
                 E1 to WhiteKing,
-                A1 to WhiteRook,
+                a1 to WhiteRook,
                 E8 to BlackKing,
-                A8 to BlackRook
+                a8 to BlackRook
             ))
         )
         assertThat(chessGame.position.whiteCastlingOptions.kingSide).isTrue()
@@ -121,21 +121,21 @@ class ChessGameTest {
         assertThat(chessGame.position.blackCastlingOptions.queenSide).isTrue()
 
         val gameAfterWhiteCastling = chessGame
-            .movePiece(ValidMove(E1, C1))
+            .movePiece(Move(E1, c1))
 
         assertThat(gameAfterWhiteCastling.numberOfNextMove).isEqualTo(2)
-        assertThat(gameAfterWhiteCastling.pieceOn(C1)).isEqualTo(WhiteKing)
-        assertThat(gameAfterWhiteCastling.pieceOn(D1)).isEqualTo(WhiteRook)
+        assertThat(gameAfterWhiteCastling.pieceOn(c1)).isEqualTo(WhiteKing)
+        assertThat(gameAfterWhiteCastling.pieceOn(d1)).isEqualTo(WhiteRook)
         assertThat(gameAfterWhiteCastling.position.whiteCastlingOptions.kingSide).isFalse()
         assertThat(gameAfterWhiteCastling.position.whiteCastlingOptions.queenSide).isFalse()
         assertThat(gameAfterWhiteCastling.position.blackCastlingOptions.kingSide).isTrue()
         assertThat(gameAfterWhiteCastling.position.blackCastlingOptions.queenSide).isTrue()
 
         val gameAfterBlackCastling = gameAfterWhiteCastling
-            .movePiece(ValidMove(E8, C8))
+            .movePiece(Move(E8, c8))
         assertThat(gameAfterBlackCastling.numberOfNextMove).isEqualTo(3)
-        assertThat(gameAfterBlackCastling.pieceOn(C8)).isEqualTo(BlackKing)
-        assertThat(gameAfterBlackCastling.pieceOn(D8)).isEqualTo(BlackRook)
+        assertThat(gameAfterBlackCastling.pieceOn(c8)).isEqualTo(BlackKing)
+        assertThat(gameAfterBlackCastling.pieceOn(d8)).isEqualTo(BlackRook)
         assertThat(gameAfterBlackCastling.position.whiteCastlingOptions.kingSide).isFalse()
         assertThat(gameAfterBlackCastling.position.whiteCastlingOptions.queenSide).isFalse()
         assertThat(gameAfterBlackCastling.position.blackCastlingOptions.kingSide).isFalse()
@@ -145,11 +145,11 @@ class ChessGameTest {
     @Test
     fun `disallow moves that result in a checked position`() {
         val chessGame = ChessGame()
-            .movePiece(ValidMove(E2, E4))
-            .movePiece(ValidMove(E7, E6))
-            .movePiece(ValidMove(F1, B5))
+            .movePiece(Move(E2, E4))
+            .movePiece(Move(E7, E6))
+            .movePiece(Move(F1, b5))
 
-        assertThat(chessGame.moveOptions()).doesNotContain(ValidMove(D7, D6), ValidMove(D7, D5))
+        assertThat(chessGame.moveOptions()).doesNotContain(Move(d7, d6), Move(d7, d5))
     }
 
     @Test
@@ -161,20 +161,20 @@ class ChessGameTest {
                     E8 to BlackKing,
                     F1 to WhiteKnight,
                     G3 to WhiteKnight,
-                    A3 to BlackPawn
+                    a3 to BlackPawn
                 ))
         )
         val chessGameAfterMove3 = chessGame
-            .movePiece(ValidMove(F1, E3))
-            .movePiece(ValidMove(E8, E7))
-            .movePiece(ValidMove(E3, D1))
+            .movePiece(Move(F1, E3))
+            .movePiece(Move(E8, E7))
+            .movePiece(Move(E3, d1))
 
         assertThat(chessGameAfterMove3.numberOfNextMove).isEqualTo(4)
-        assertThat(chessGameAfterMove3.fiftyMoveRule).isEqualTo(3)
+        assertThat(chessGameAfterMove3.movesWithoutCaptureOrPawnMove).isEqualTo(3)
 
-        val chessGameAfterMove4 = chessGameAfterMove3.movePiece(ValidMove(A3, A2))
+        val chessGameAfterMove4 = chessGameAfterMove3.movePiece(Move(a3, a2))
 
-        assertThat(chessGameAfterMove4.fiftyMoveRule).isEqualTo(0)
+        assertThat(chessGameAfterMove4.movesWithoutCaptureOrPawnMove).isEqualTo(0)
     }
 
 
@@ -187,22 +187,22 @@ class ChessGameTest {
                     E8 to BlackKing,
                     F1 to WhiteKnight,
                     G3 to WhiteKnight,
-                    A3 to BlackPawn
+                    a3 to BlackPawn
                 ))
         )
         val chessGameAfterMove4 = chessGame
-            .movePiece(ValidMove(F1, D2))
-            .movePiece(ValidMove(E8, E7))
-            .movePiece(ValidMove(D2, B1))
-            .movePiece(ValidMove(E7, E8))
+            .movePiece(Move(F1, d2))
+            .movePiece(Move(E8, E7))
+            .movePiece(Move(d2, b1))
+            .movePiece(Move(E7, E8))
 
         assertThat(chessGameAfterMove4.numberOfNextMove).isEqualTo(5)
-        assertThat(chessGameAfterMove4.fiftyMoveRule).isEqualTo(4)
+        assertThat(chessGameAfterMove4.movesWithoutCaptureOrPawnMove).isEqualTo(4)
 
-        val chessGameAfterMove5 = chessGameAfterMove4.movePiece(ValidMove(B1, A3))
+        val chessGameAfterMove5 = chessGameAfterMove4.movePiece(Move(b1, a3))
 
         assertThat(chessGameAfterMove5.numberOfNextMove).isEqualTo(6)
-        assertThat(chessGameAfterMove5.fiftyMoveRule).isEqualTo(0)
+        assertThat(chessGameAfterMove5.movesWithoutCaptureOrPawnMove).isEqualTo(0)
     }
 
     @Test
@@ -217,60 +217,60 @@ class ChessGameTest {
                 ))
         )
         val chessGameAfterMove50 = chessGame
-            .movePiece(ValidMove(E1, F1))
-            .movePiece(ValidMove(E8, F8))
-            .movePiece(ValidMove(F1, G1))
-            .movePiece(ValidMove(F8, G8))
-            .movePiece(ValidMove(G1, H1))
-            .movePiece(ValidMove(G8, H8))
-            .movePiece(ValidMove(H1, H2))
-            .movePiece(ValidMove(H8, H7))
-            .movePiece(ValidMove(H2, G2))
-            .movePiece(ValidMove(H7, G7))
-            .movePiece(ValidMove(G2, F2))
-            .movePiece(ValidMove(G7, F7))
-            .movePiece(ValidMove(F2, E2))
-            .movePiece(ValidMove(F7, E7))
-            .movePiece(ValidMove(E2, D2))
-            .movePiece(ValidMove(E7, D7))
-            .movePiece(ValidMove(D2, C2))
-            .movePiece(ValidMove(D7, C7))
-            .movePiece(ValidMove(C2, B2))
-            .movePiece(ValidMove(C7, B7))
-            .movePiece(ValidMove(B2, A2))
-            .movePiece(ValidMove(B7, A7))
-            .movePiece(ValidMove(A2, A1))
-            .movePiece(ValidMove(A7, A8))
-            .movePiece(ValidMove(A1, B1))
-            .movePiece(ValidMove(A8, B8))
-            .movePiece(ValidMove(B1, C1))
-            .movePiece(ValidMove(B8, C8))
-            .movePiece(ValidMove(C1, D1))
-            .movePiece(ValidMove(C8, D8))
-            .movePiece(ValidMove(D1, E1))
-            .movePiece(ValidMove(D8, E8))
-            .movePiece(ValidMove(E1, F1))
-            .movePiece(ValidMove(E8, F8))
-            .movePiece(ValidMove(F1, G1))
-            .movePiece(ValidMove(F8, G8))
-            .movePiece(ValidMove(G1, H1))
-            .movePiece(ValidMove(G8, H8))
-            .movePiece(ValidMove(H1, H2))
-            .movePiece(ValidMove(H8, H7))
-            .movePiece(ValidMove(H2, G2))
-            .movePiece(ValidMove(H7, G7))
-            .movePiece(ValidMove(G2, F2))
-            .movePiece(ValidMove(G7, F7))
-            .movePiece(ValidMove(F2, E2))
-            .movePiece(ValidMove(F7, E7))
-            .movePiece(ValidMove(E2, D2))
-            .movePiece(ValidMove(E7, D7))
-            .movePiece(ValidMove(D2, C2))
-            .movePiece(ValidMove(D7, C7))
+            .movePiece(Move(E1, F1))
+            .movePiece(Move(E8, F8))
+            .movePiece(Move(F1, G1))
+            .movePiece(Move(F8, G8))
+            .movePiece(Move(G1, H1))
+            .movePiece(Move(G8, H8))
+            .movePiece(Move(H1, H2))
+            .movePiece(Move(H8, H7))
+            .movePiece(Move(H2, G2))
+            .movePiece(Move(H7, G7))
+            .movePiece(Move(G2, F2))
+            .movePiece(Move(G7, F7))
+            .movePiece(Move(F2, E2))
+            .movePiece(Move(F7, E7))
+            .movePiece(Move(E2, d2))
+            .movePiece(Move(E7, d7))
+            .movePiece(Move(d2, c2))
+            .movePiece(Move(d7, c7))
+            .movePiece(Move(c2, b2))
+            .movePiece(Move(c7, b7))
+            .movePiece(Move(b2, a2))
+            .movePiece(Move(b7, a7))
+            .movePiece(Move(a2, a1))
+            .movePiece(Move(a7, a8))
+            .movePiece(Move(a1, b1))
+            .movePiece(Move(a8, b8))
+            .movePiece(Move(b1, c1))
+            .movePiece(Move(b8, c8))
+            .movePiece(Move(c1, d1))
+            .movePiece(Move(c8, d8))
+            .movePiece(Move(d1, E1))
+            .movePiece(Move(d8, E8))
+            .movePiece(Move(E1, F1))
+            .movePiece(Move(E8, F8))
+            .movePiece(Move(F1, G1))
+            .movePiece(Move(F8, G8))
+            .movePiece(Move(G1, H1))
+            .movePiece(Move(G8, H8))
+            .movePiece(Move(H1, H2))
+            .movePiece(Move(H8, H7))
+            .movePiece(Move(H2, G2))
+            .movePiece(Move(H7, G7))
+            .movePiece(Move(G2, F2))
+            .movePiece(Move(G7, F7))
+            .movePiece(Move(F2, E2))
+            .movePiece(Move(F7, E7))
+            .movePiece(Move(E2, d2))
+            .movePiece(Move(E7, d7))
+            .movePiece(Move(d2, c2))
+            .movePiece(Move(d7, c7))
 
         assertThat(chessGameAfterMove50.numberOfNextMove).isEqualTo(51)
-        assertThat(chessGameAfterMove50.fiftyMoveRule).isEqualTo(50)
-        assertThat(chessGameAfterMove50.status).isEqualTo(FiftyMoveRule)
+        assertThat(chessGameAfterMove50.movesWithoutCaptureOrPawnMove).isEqualTo(50)
+        assertThat(chessGameAfterMove50.getStatus()).isEqualTo(FiftyMoveRule)
     }
 
 }

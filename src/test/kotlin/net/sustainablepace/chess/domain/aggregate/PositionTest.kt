@@ -1,8 +1,8 @@
 package net.sustainablepace.chess.domain.aggregate
 
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
-import net.sustainablepace.chess.domain.event.PositionNotUpdated
-import net.sustainablepace.chess.domain.move.ValidMove
+import net.sustainablepace.chess.domain.event.PositionNotChanged
+import net.sustainablepace.chess.domain.move.Move
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -19,11 +19,11 @@ class PositionTest {
     @Test
     fun `black is in check by bishop`() {
         val position = Position()
-            .movePiece(ValidMove(E2, E4))
-            .movePiece(ValidMove(D7, D6))
-            .movePiece(ValidMove(F1, B5))
+            .movePiece(Move(E2, E4))
+            .movePiece(Move(d7, d6))
+            .movePiece(Move(F1, b5))
 
-        assertThat(position.moveOptionsIgnoringCheck(B5)).contains(ValidMove(B5, E8))
+        assertThat(position.moveOptionsIgnoringCheck(b5)).contains(Move(b5, E8))
         assertThat(position.isInCheck(Black)).isTrue()
     }
 
@@ -32,11 +32,11 @@ class PositionTest {
         val position = Position()
         assertThat(position.enPassantSquare).isNull()
 
-        position.movePiece(ValidMove(E2, E4)).let {
+        position.movePiece(Move(E2, E4)).let {
             assertThat(it.enPassantSquare).isEqualTo(E4)
         }
 
-        position.movePiece(ValidMove(E2, E3)).let {
+        position.movePiece(Move(E2, E3)).let {
             assertThat(it.enPassantSquare).isNull()
         }
     }
@@ -46,11 +46,11 @@ class PositionTest {
         val position = Position()
         assertThat(position.enPassantSquare).isNull()
 
-        position.movePiece(ValidMove(E7, E6)).let {
+        position.movePiece(Move(E7, E6)).let {
             assertThat(it.enPassantSquare).isNull()
         }
 
-        position.movePiece(ValidMove(E7, E5)).let {
+        position.movePiece(Move(E7, E5)).let {
             assertThat(it.enPassantSquare).isEqualTo(E5)
         }
 
@@ -63,26 +63,26 @@ class PositionTest {
         val moves = position.moveOptions(White)
 
         assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove(A2, A3),
-            ValidMove(B2, B3),
-            ValidMove(C2, C3),
-            ValidMove(D2, D3),
-            ValidMove(E2, E3),
-            ValidMove(F2, F3),
-            ValidMove(G2, G3),
-            ValidMove(H2, H3),
-            ValidMove(A2, A4),
-            ValidMove(B2, B4),
-            ValidMove(C2, C4),
-            ValidMove(D2, D4),
-            ValidMove(E2, E4),
-            ValidMove(F2, F4),
-            ValidMove(G2, G4),
-            ValidMove(H2, H4),
-            ValidMove(B1, A3),
-            ValidMove(B1, C3),
-            ValidMove(G1, F3),
-            ValidMove(G1, H3)
+            Move(a2, a3),
+            Move(b2, b3),
+            Move(c2, c3),
+            Move(d2, d3),
+            Move(E2, E3),
+            Move(F2, F3),
+            Move(G2, G3),
+            Move(H2, H3),
+            Move(a2, a4),
+            Move(b2, b4),
+            Move(c2, c4),
+            Move(d2, d4),
+            Move(E2, E4),
+            Move(F2, F4),
+            Move(G2, G4),
+            Move(H2, H4),
+            Move(b1, a3),
+            Move(b1, c3),
+            Move(G1, F3),
+            Move(G1, H3)
         )
     }
 
@@ -93,33 +93,33 @@ class PositionTest {
         val moves = position.moveOptions(Black)
 
         assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove(A7, A6),
-            ValidMove(B7, B6),
-            ValidMove(C7, C6),
-            ValidMove(D7, D6),
-            ValidMove(E7, E6),
-            ValidMove(F7, F6),
-            ValidMove(G7, G6),
-            ValidMove(H7, H6),
-            ValidMove(A7, A5),
-            ValidMove(B7, B5),
-            ValidMove(C7, C5),
-            ValidMove(D7, D5),
-            ValidMove(E7, E5),
-            ValidMove(F7, F5),
-            ValidMove(G7, G5),
-            ValidMove(H7, H5),
-            ValidMove(B8, A6),
-            ValidMove(B8, C6),
-            ValidMove(G8, F6),
-            ValidMove(G8, H6)
+            Move(a7, a6),
+            Move(b7, b6),
+            Move(c7, c6),
+            Move(d7, d6),
+            Move(E7, E6),
+            Move(F7, F6),
+            Move(G7, G6),
+            Move(H7, H6),
+            Move(a7, a5),
+            Move(b7, b5),
+            Move(c7, c5),
+            Move(d7, d5),
+            Move(E7, E5),
+            Move(F7, F5),
+            Move(G7, G5),
+            Move(H7, H5),
+            Move(b8, a6),
+            Move(b8, c6),
+            Move(G8, F6),
+            Move(G8, H6)
         )
     }
 
     @Test
     fun `position not updated after move`() {
-        val position = Position().movePiece(ValidMove(A3, A4))
+        val position = Position().movePiece(Move(a3, a4))
 
-        assertThat(position).isInstanceOf(PositionNotUpdated::class.java)
+        assertThat(position).isInstanceOf(PositionNotChanged::class.java)
     }
 }

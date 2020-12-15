@@ -4,7 +4,7 @@ import net.sustainablepace.chess.domain.aggregate.chessgame.NoPiece
 import net.sustainablepace.chess.domain.aggregate.chessgame.Piece
 import net.sustainablepace.chess.domain.aggregate.chessgame.Position
 import net.sustainablepace.chess.domain.aggregate.chessgame.Square
-import net.sustainablepace.chess.domain.move.ValidMove
+import net.sustainablepace.chess.domain.move.Move
 import net.sustainablepace.chess.domain.move.rules.CaptureType.*
 
 sealed class MoveRule {
@@ -12,7 +12,7 @@ sealed class MoveRule {
         departureSquare: Square,
         movingPiece: Piece,
         position: Position
-    ): Set<ValidMove>
+    ): Set<Move>
 
     abstract operator fun unaryMinus(): MoveRule
 
@@ -53,7 +53,7 @@ class ParameterizedRule(
         departureSquare: Square,
         movingPiece: Piece,
         position: Position
-    ): Set<ValidMove> =
+    ): Set<Move> =
         when (pieceCanTakeMultipleSteps) {
             true -> mutableListOf<Square>().run {
                 for (step in (1..7)) {
@@ -73,7 +73,7 @@ class ParameterizedRule(
             when {
                 blockingPiece is NoPiece && captureType == MANDATORY -> null
                 blockingPiece is Piece && (movingPiece.side == blockingPiece.side || captureType == DISALLOWED) -> null
-                else -> ValidMove(departureSquare, arrivalSquare)
+                else -> Move(departureSquare, arrivalSquare)
             }
         }.toSet()
 
@@ -96,7 +96,7 @@ class CustomizedRule(
         departureSquare: Square,
         movingPiece: Piece,
         position: Position
-    ): Set<ValidMove> =
+    ): Set<Move> =
         when (val arrivalSquare = direction.from(departureSquare)) {
             is Square -> if (moveCondition(
                     departureSquare,
@@ -104,7 +104,7 @@ class CustomizedRule(
                     position
                 )
             ) {
-                setOf(ValidMove(departureSquare, arrivalSquare))
+                setOf(Move(departureSquare, arrivalSquare))
             } else emptySet()
             else -> emptySet()
         }

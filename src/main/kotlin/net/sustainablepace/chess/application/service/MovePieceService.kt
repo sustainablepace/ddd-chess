@@ -9,15 +9,17 @@ import net.sustainablepace.chess.domain.event.PieceNotMoved
 import org.springframework.stereotype.Service
 
 @Service
-class MovePieceService(val chessGameRepository: ChessGameRepository) : ApplicationService<MovePiece, PieceMovedOrNot> {
-    override fun process(intent: MovePiece): PieceMovedOrNot = with(intent) {
-        chessGameRepository.findById(chessGameId)?.let { chessGame ->
-            chessGame.movePiece(move).let { event ->
-                when(event) {
+class MovePieceService(
+    private val chessGameRepository: ChessGameRepository
+) : ApplicationService<MovePiece, PieceMovedOrNot> {
+
+    override fun process(intent: MovePiece): PieceMovedOrNot =
+        chessGameRepository.findById(intent.chessGameId)?.let { chessGame ->
+            chessGame.movePiece(intent.move).let { event ->
+                when (event) {
                     is PieceMoved -> event.also { chessGameRepository.save(it.chessGame) }
                     is PieceNotMoved -> event
                 }
             }
-        } ?: throw IllegalArgumentException("Could not find game $chessGameId.")
-    }
+        } ?: throw IllegalArgumentException("Could not find game ${intent.chessGameId}.")
 }

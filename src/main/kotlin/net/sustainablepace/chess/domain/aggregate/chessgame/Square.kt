@@ -18,38 +18,38 @@ sealed class Square(val file: File, val rank: Rank) {
 
         operator fun invoke(file: File, rank: Rank): Square? {
             return when {
-                A1.file == file && A1.rank == rank -> A1
-                A2.file == file && A2.rank == rank -> A2
-                A3.file == file && A3.rank == rank -> A3
-                A4.file == file && A4.rank == rank -> A4
-                A5.file == file && A5.rank == rank -> A5
-                A6.file == file && A6.rank == rank -> A6
-                A7.file == file && A7.rank == rank -> A7
-                A8.file == file && A8.rank == rank -> A8
-                B1.file == file && B1.rank == rank -> B1
-                B2.file == file && B2.rank == rank -> B2
-                B3.file == file && B3.rank == rank -> B3
-                B4.file == file && B4.rank == rank -> B4
-                B5.file == file && B5.rank == rank -> B5
-                B6.file == file && B6.rank == rank -> B6
-                B7.file == file && B7.rank == rank -> B7
-                B8.file == file && B8.rank == rank -> B8
-                C1.file == file && C1.rank == rank -> C1
-                C2.file == file && C2.rank == rank -> C2
-                C3.file == file && C3.rank == rank -> C3
-                C4.file == file && C4.rank == rank -> C4
-                C5.file == file && C5.rank == rank -> C5
-                C6.file == file && C6.rank == rank -> C6
-                C7.file == file && C7.rank == rank -> C7
-                C8.file == file && C8.rank == rank -> C8
-                D1.file == file && D1.rank == rank -> D1
-                D2.file == file && D2.rank == rank -> D2
-                D3.file == file && D3.rank == rank -> D3
-                D4.file == file && D4.rank == rank -> D4
-                D5.file == file && D5.rank == rank -> D5
-                D6.file == file && D6.rank == rank -> D6
-                D7.file == file && D7.rank == rank -> D7
-                D8.file == file && D8.rank == rank -> D8
+                a1.file == file && a1.rank == rank -> a1
+                a2.file == file && a2.rank == rank -> a2
+                a3.file == file && a3.rank == rank -> a3
+                a4.file == file && a4.rank == rank -> a4
+                a5.file == file && a5.rank == rank -> a5
+                a6.file == file && a6.rank == rank -> a6
+                a7.file == file && a7.rank == rank -> a7
+                a8.file == file && a8.rank == rank -> a8
+                b1.file == file && b1.rank == rank -> b1
+                b2.file == file && b2.rank == rank -> b2
+                b3.file == file && b3.rank == rank -> b3
+                b4.file == file && b4.rank == rank -> b4
+                b5.file == file && b5.rank == rank -> b5
+                b6.file == file && b6.rank == rank -> b6
+                b7.file == file && b7.rank == rank -> b7
+                b8.file == file && b8.rank == rank -> b8
+                c1.file == file && c1.rank == rank -> c1
+                c2.file == file && c2.rank == rank -> c2
+                c3.file == file && c3.rank == rank -> c3
+                c4.file == file && c4.rank == rank -> c4
+                c5.file == file && c5.rank == rank -> c5
+                c6.file == file && c6.rank == rank -> c6
+                c7.file == file && c7.rank == rank -> c7
+                c8.file == file && c8.rank == rank -> c8
+                d1.file == file && d1.rank == rank -> d1
+                d2.file == file && d2.rank == rank -> d2
+                d3.file == file && d3.rank == rank -> d3
+                d4.file == file && d4.rank == rank -> d4
+                d5.file == file && d5.rank == rank -> d5
+                d6.file == file && d6.rank == rank -> d6
+                d7.file == file && d7.rank == rank -> d7
+                d8.file == file && d8.rank == rank -> d8
                 E1.file == file && E1.rank == rank -> E1
                 E2.file == file && E2.rank == rank -> E2
                 E3.file == file && E3.rank == rank -> E3
@@ -88,38 +88,38 @@ sealed class Square(val file: File, val rank: Rank) {
     }
 }
 
-object A1 : Square('a', '1')
-object A2 : Square('a', '2')
-object A3 : Square('a', '3')
-object A4 : Square('a', '4')
-object A5 : Square('a', '5')
-object A6 : Square('a', '6')
-object A7 : Square('a', '7')
-object A8 : Square('a', '8')
-object B1 : Square('b', '1')
-object B2 : Square('b', '2')
-object B3 : Square('b', '3')
-object B4 : Square('b', '4')
-object B5 : Square('b', '5')
-object B6 : Square('b', '6')
-object B7 : Square('b', '7')
-object B8 : Square('b', '8')
-object C1 : Square('c', '1')
-object C2 : Square('c', '2')
-object C3 : Square('c', '3')
-object C4 : Square('c', '4')
-object C5 : Square('c', '5')
-object C6 : Square('c', '6')
-object C7 : Square('c', '7')
-object C8 : Square('c', '8')
-object D1 : Square('d', '1')
-object D2 : Square('d', '2')
-object D3 : Square('d', '3')
-object D4 : Square('d', '4')
-object D5 : Square('d', '5')
-object D6 : Square('d', '6')
-object D7 : Square('d', '7')
-object D8 : Square('d', '8')
+object a1 : Square('a', '1')
+object a2 : Square('a', '2')
+object a3 : Square('a', '3')
+object a4 : Square('a', '4')
+object a5 : Square('a', '5')
+object a6 : Square('a', '6')
+object a7 : Square('a', '7')
+object a8 : Square('a', '8')
+object b1 : Square('b', '1')
+object b2 : Square('b', '2')
+object b3 : Square('b', '3')
+object b4 : Square('b', '4')
+object b5 : Square('b', '5')
+object b6 : Square('b', '6')
+object b7 : Square('b', '7')
+object b8 : Square('b', '8')
+object c1 : Square('c', '1')
+object c2 : Square('c', '2')
+object c3 : Square('c', '3')
+object c4 : Square('c', '4')
+object c5 : Square('c', '5')
+object c6 : Square('c', '6')
+object c7 : Square('c', '7')
+object c8 : Square('c', '8')
+object d1 : Square('d', '1')
+object d2 : Square('d', '2')
+object d3 : Square('d', '3')
+object d4 : Square('d', '4')
+object d5 : Square('d', '5')
+object d6 : Square('d', '6')
+object d7 : Square('d', '7')
+object d8 : Square('d', '8')
 object E1 : Square('e', '1')
 object E2 : Square('e', '2')
 object E3 : Square('e', '3')

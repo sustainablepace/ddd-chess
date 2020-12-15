@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController
 class SetupController(val setupService: ApplicationService<SetUpPieces, PiecesHaveBeenSetUp>) {
     @PostMapping("/setup")
     fun setup(): ResponseEntity<ChessGameReadModel> =
-        setupService.process(SetUpPieces).chessGame.let { chessGame ->
-            ok().body(ChessGameReadModel(chessGame))
+        setupService.process(SetUpPieces).let { piecesHaveBeenSetUp ->
+            ok().body(ChessGameReadModel(piecesHaveBeenSetUp.chessGame))
         }
 }
 

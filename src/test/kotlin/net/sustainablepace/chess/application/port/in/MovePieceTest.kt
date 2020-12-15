@@ -1,7 +1,7 @@
 package net.sustainablepace.chess.application.port.`in`
 
 import net.sustainablepace.chess.application.port.`in`.command.MovePiece
-import net.sustainablepace.chess.domain.move.ValidMove
+import net.sustainablepace.chess.domain.move.Move
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -32,6 +32,6 @@ class MovePieceTest {
         val command = MovePiece("id", "e2-e4").getOrNull()
 
         assertThat(command).isInstanceOf(MovePiece::class.java)
-        assertThat(command?.move).isEqualTo(ValidMove("e2-e4"))
+        assertThat(command?.move).isEqualTo(Move("e2-e4"))
     }
 }

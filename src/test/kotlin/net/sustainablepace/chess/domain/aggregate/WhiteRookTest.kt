@@ -1,7 +1,7 @@
 package net.sustainablepace.chess.domain.aggregate
 
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
-import net.sustainablepace.chess.domain.move.ValidMove
+import net.sustainablepace.chess.domain.move.Move
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -10,31 +10,31 @@ class WhiteRookTest {
     @Test
     fun `finds valid rook movements`() {
         val position = Position(mapOf(
-                C3 to WhiteRook,
-                C7 to BlackPawn,
+                c3 to WhiteRook,
+                c7 to BlackPawn,
                 E3 to WhitePawn
             )
         )
 
-        val moves = position.moveOptionsIgnoringCheck(C3)
+        val moves = position.moveOptionsIgnoringCheck(c3)
         assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove(C3, C4),
-            ValidMove(C3, C5),
-            ValidMove(C3, C6),
-            ValidMove(C3, C7),
-            ValidMove(C3, B3),
-            ValidMove(C3, A3),
-            ValidMove(C3, C2),
-            ValidMove(C3, C1),
-            ValidMove(C3, D3)
+            Move(c3, c4),
+            Move(c3, c5),
+            Move(c3, c6),
+            Move(c3, c7),
+            Move(c3, b3),
+            Move(c3, a3),
+            Move(c3, c2),
+            Move(c3, c1),
+            Move(c3, d3)
         )
     }
 
     @Test
     fun `moving left rook makes castling unavailable`() {
-        val position = Position().movePiece(ValidMove(A2, A4))
-            .movePiece(ValidMove(A7, A6))
-            .movePiece(ValidMove(A1, A3))
+        val position = Position().movePiece(Move(a2, a4))
+            .movePiece(Move(a7, a6))
+            .movePiece(Move(a1, a3))
 
         assertThat(position.whiteCastlingOptions.queenSide).isFalse()
         assertThat(position.whiteCastlingOptions.kingSide).isTrue()
@@ -42,9 +42,9 @@ class WhiteRookTest {
 
     @Test
     fun `moving right rook makes castling unavailable`() {
-        val position = Position().movePiece(ValidMove(H2, H4))
-            .movePiece(ValidMove(H7, H6))
-            .movePiece(ValidMove(H1, H3))
+        val position = Position().movePiece(Move(H2, H4))
+            .movePiece(Move(H7, H6))
+            .movePiece(Move(H1, H3))
 
         assertThat(position.whiteCastlingOptions.queenSide).isTrue()
         assertThat(position.whiteCastlingOptions.kingSide).isFalse()

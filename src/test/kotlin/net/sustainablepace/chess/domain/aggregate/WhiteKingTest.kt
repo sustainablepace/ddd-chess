@@ -1,7 +1,7 @@
 package net.sustainablepace.chess.domain.aggregate
 
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
-import net.sustainablepace.chess.domain.move.ValidMove
+import net.sustainablepace.chess.domain.move.Move
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -15,14 +15,14 @@ class WhiteKingTest {
         )
         val moves = position.moveOptionsIgnoringCheck(E4)
         assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove(E4, D3),
-            ValidMove(E4, E3),
-            ValidMove(E4, F3),
-            ValidMove(E4, F4),
-            ValidMove(E4, F5),
-            ValidMove(E4, E5),
-            ValidMove(E4, D5),
-            ValidMove(E4, D4)
+            Move(E4, d3),
+            Move(E4, E3),
+            Move(E4, F3),
+            Move(E4, F4),
+            Move(E4, F5),
+            Move(E4, E5),
+            Move(E4, d5),
+            Move(E4, d4)
         )
     }
 
@@ -31,19 +31,19 @@ class WhiteKingTest {
         val position = Position(
             mapOf(
                 E4 to WhiteKing,
-                D5 to BlackPawn,
+                d5 to BlackPawn,
                 E5 to WhiteQueen
             )
         )
         val moves = position.moveOptionsIgnoringCheck(E4)
         assertThat(moves).containsExactlyInAnyOrder(
-            ValidMove(E4, D3),
-            ValidMove(E4, E3),
-            ValidMove(E4, F3),
-            ValidMove(E4, F4),
-            ValidMove(E4, F5),
-            ValidMove(E4, D5),
-            ValidMove(E4, D4)
+            Move(E4, d3),
+            Move(E4, E3),
+            Move(E4, F3),
+            Move(E4, F4),
+            Move(E4, F5),
+            Move(E4, d5),
+            Move(E4, d4)
         )
     }
 
@@ -52,15 +52,15 @@ class WhiteKingTest {
         val position = Position(
             mapOf(
                 E1 to WhiteKing,
-                A1 to WhiteRook
+                a1 to WhiteRook
             )
         )
         assertThat(position.whiteCastlingOptions.kingSide).isTrue()
         assertThat(position.whiteCastlingOptions.queenSide).isTrue()
 
-        val updatedPosition = position.movePiece(ValidMove(E1, C1))
-        assertThat(updatedPosition.pieceOn(C1)).isEqualTo(WhiteKing)
-        assertThat(updatedPosition.pieceOn(D1)).isEqualTo(WhiteRook)
+        val updatedPosition = position.movePiece(Move(E1, c1))
+        assertThat(updatedPosition.pieceOn(c1)).isEqualTo(WhiteKing)
+        assertThat(updatedPosition.pieceOn(d1)).isEqualTo(WhiteRook)
         assertThat(updatedPosition.whiteCastlingOptions.kingSide).isFalse()
         assertThat(updatedPosition.whiteCastlingOptions.queenSide).isFalse()
     }
@@ -76,7 +76,7 @@ class WhiteKingTest {
         assertThat(position.whiteCastlingOptions.kingSide).isTrue()
         assertThat(position.whiteCastlingOptions.queenSide).isTrue()
 
-        val updatedPosition = position.movePiece(ValidMove(E1, G1))
+        val updatedPosition = position.movePiece(Move(E1, G1))
         assertThat(updatedPosition.pieceOn(G1)).isEqualTo(WhiteKing)
         assertThat(updatedPosition.pieceOn(F1)).isEqualTo(WhiteRook)
         assertThat(updatedPosition.whiteCastlingOptions.kingSide).isFalse()
@@ -85,9 +85,9 @@ class WhiteKingTest {
 
     @Test
     fun `moving king makes castling unavailable`() {
-        val position = Position().movePiece(ValidMove(E2, E4))
-            .movePiece(ValidMove(E7, E6))
-            .movePiece(ValidMove(E1, E2))
+        val position = Position().movePiece(Move(E2, E4))
+            .movePiece(Move(E7, E6))
+            .movePiece(Move(E1, E2))
 
         assertThat(position.whiteCastlingOptions.queenSide).isFalse()
         assertThat(position.whiteCastlingOptions.kingSide).isFalse()

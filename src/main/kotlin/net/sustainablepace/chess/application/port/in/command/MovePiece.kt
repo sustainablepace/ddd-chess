@@ -3,16 +3,16 @@ package net.sustainablepace.chess.application.port.`in`.command
 import net.sustainablepace.chess.application.port.`in`.Command
 import net.sustainablepace.chess.domain.aggregate.chessgame.ChessGameId
 import net.sustainablepace.chess.domain.move.InvalidMove
-import net.sustainablepace.chess.domain.move.ValidMove
+import net.sustainablepace.chess.domain.move.Move
 
 typealias MoveString = String
 
-class MovePiece private constructor(val chessGameId: ChessGameId, val move: ValidMove) : Command {
+class MovePiece private constructor(val chessGameId: ChessGameId, val move: Move) : Command {
     companion object {
         operator fun invoke(chessGameId: ChessGameId, moveString: MoveString): Result<MovePiece> =
-            ValidMove(moveString).let { move ->
+            Move(moveString).let { move ->
                 when (move) {
-                    is ValidMove -> Result.success(MovePiece(chessGameId, move))
+                    is Move -> Result.success(MovePiece(chessGameId, move))
                     is InvalidMove -> Result.failure(IllegalArgumentException("Invalid move " + move.moveInput + "." + move.problem))
                 }
             }

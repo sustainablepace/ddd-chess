@@ -1,31 +1,32 @@
 package net.sustainablepace.chess.domain.event
 
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
-import net.sustainablepace.chess.domain.move.ValidMove
+import net.sustainablepace.chess.domain.move.Move
 
 interface PositionEvent: Event {
+    fun movePiece(move: Move): PositionChangedOrNot
+
     fun isInCheck(side: Side): Boolean
     fun pieceOn(square: Square): PieceOrNoPiece
-    fun movePiece(move: ValidMove): PositionUpdatedOrNot
-    fun moveOptions(side: Side): Set<ValidMove>
-    fun moveOptionsIgnoringCheck(square: Square): Set<ValidMove>
+    fun moveOptions(side: Side): Set<Move>
+    fun moveOptionsIgnoringCheck(square: Square): Set<Move>
     val board: Board
     val enPassantSquare: EnPassantSquare
     val whiteCastlingOptions: CastlingOptions
     val blackCastlingOptions: CastlingOptions
 }
 
-sealed class PositionUpdatedOrNot : PositionEvent {
+sealed class PositionChangedOrNot : PositionEvent {
     abstract val position: Position
     abstract val pieceCapturedOrPawnMoved: Boolean
 }
 
-class PositionUpdated(
+class PositionChanged(
     override val position: Position,
     override val pieceCapturedOrPawnMoved: Boolean
-) : PositionUpdatedOrNot(), PositionEvent by position
+) : PositionChangedOrNot(), PositionEvent by position
 
-class PositionNotUpdated(
+class PositionNotChanged(
     override val position: Position,
     override val pieceCapturedOrPawnMoved: Boolean
-) : PositionUpdatedOrNot(), PositionEvent by position
+) : PositionChangedOrNot(), PositionEvent by position
