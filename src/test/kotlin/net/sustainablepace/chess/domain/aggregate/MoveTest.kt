@@ -1,7 +1,7 @@
 package net.sustainablepace.chess.domain.aggregate
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.E2
-import net.sustainablepace.chess.domain.aggregate.chessgame.E4
+import net.sustainablepace.chess.domain.aggregate.chessgame.e2
+import net.sustainablepace.chess.domain.aggregate.chessgame.e4
 import net.sustainablepace.chess.domain.move.InvalidMove
 import net.sustainablepace.chess.domain.move.Move
 import org.assertj.core.api.Assertions.assertThat
@@ -35,8 +35,8 @@ class MoveTest {
         val move = Move("e2-e4")
 
         if(move is Move) {
-            assertThat(move.departureSquare).isEqualTo(E2)
-            assertThat(move.arrivalSquare).isEqualTo(E4)
+            assertThat(move.departureSquare).isEqualTo(e2)
+            assertThat(move.arrivalSquare).isEqualTo(e4)
         } else {
             fail("Move is not valid.")
         }

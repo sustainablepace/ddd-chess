@@ -10,19 +10,19 @@ class WhiteKingTest {
     fun `finds valid king movements on empty board`() {
         val position = Position(
             mapOf(
-                E4 to WhiteKing
+                e4 to WhiteKing
             )
         )
-        val moves = position.moveOptionsIgnoringCheck(E4)
+        val moves = position.moveOptionsIgnoringCheck(e4)
         assertThat(moves).containsExactlyInAnyOrder(
-            Move(E4, d3),
-            Move(E4, E3),
-            Move(E4, F3),
-            Move(E4, F4),
-            Move(E4, F5),
-            Move(E4, E5),
-            Move(E4, d5),
-            Move(E4, d4)
+            Move(e4, d3),
+            Move(e4, e3),
+            Move(e4, f3),
+            Move(e4, f4),
+            Move(e4, f5),
+            Move(e4, e5),
+            Move(e4, d5),
+            Move(e4, d4)
         )
     }
 
@@ -30,20 +30,20 @@ class WhiteKingTest {
     fun `finds valid king movements on crowded board`() {
         val position = Position(
             mapOf(
-                E4 to WhiteKing,
+                e4 to WhiteKing,
                 d5 to BlackPawn,
-                E5 to WhiteQueen
+                e5 to WhiteQueen
             )
         )
-        val moves = position.moveOptionsIgnoringCheck(E4)
+        val moves = position.moveOptionsIgnoringCheck(e4)
         assertThat(moves).containsExactlyInAnyOrder(
-            Move(E4, d3),
-            Move(E4, E3),
-            Move(E4, F3),
-            Move(E4, F4),
-            Move(E4, F5),
-            Move(E4, d5),
-            Move(E4, d4)
+            Move(e4, d3),
+            Move(e4, e3),
+            Move(e4, f3),
+            Move(e4, f4),
+            Move(e4, f5),
+            Move(e4, d5),
+            Move(e4, d4)
         )
     }
 
@@ -51,14 +51,14 @@ class WhiteKingTest {
     fun `castling queenside on empty board`() {
         val position = Position(
             mapOf(
-                E1 to WhiteKing,
+                e1 to WhiteKing,
                 a1 to WhiteRook
             )
         )
         assertThat(position.whiteCastlingOptions.kingSide).isTrue()
         assertThat(position.whiteCastlingOptions.queenSide).isTrue()
 
-        val updatedPosition = position.movePiece(Move(E1, c1))
+        val updatedPosition = position.movePiece(Move(e1, c1))
         assertThat(updatedPosition.pieceOn(c1)).isEqualTo(WhiteKing)
         assertThat(updatedPosition.pieceOn(d1)).isEqualTo(WhiteRook)
         assertThat(updatedPosition.whiteCastlingOptions.kingSide).isFalse()
@@ -69,25 +69,25 @@ class WhiteKingTest {
     fun `castling kingside on empty board`() {
         val position = Position(
             mapOf(
-                E1 to WhiteKing,
-                H1 to WhiteRook
+                e1 to WhiteKing,
+                h1 to WhiteRook
             )
         )
         assertThat(position.whiteCastlingOptions.kingSide).isTrue()
         assertThat(position.whiteCastlingOptions.queenSide).isTrue()
 
-        val updatedPosition = position.movePiece(Move(E1, G1))
-        assertThat(updatedPosition.pieceOn(G1)).isEqualTo(WhiteKing)
-        assertThat(updatedPosition.pieceOn(F1)).isEqualTo(WhiteRook)
+        val updatedPosition = position.movePiece(Move(e1, g1))
+        assertThat(updatedPosition.pieceOn(g1)).isEqualTo(WhiteKing)
+        assertThat(updatedPosition.pieceOn(f1)).isEqualTo(WhiteRook)
         assertThat(updatedPosition.whiteCastlingOptions.kingSide).isFalse()
         assertThat(updatedPosition.whiteCastlingOptions.queenSide).isFalse()
     }
 
     @Test
     fun `moving king makes castling unavailable`() {
-        val position = Position().movePiece(Move(E2, E4))
-            .movePiece(Move(E7, E6))
-            .movePiece(Move(E1, E2))
+        val position = Position().movePiece(Move(e2, e4))
+            .movePiece(Move(e7, e6))
+            .movePiece(Move(e1, e2))
 
         assertThat(position.whiteCastlingOptions.queenSide).isFalse()
         assertThat(position.whiteCastlingOptions.kingSide).isFalse()

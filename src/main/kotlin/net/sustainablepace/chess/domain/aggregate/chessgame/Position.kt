@@ -20,9 +20,9 @@ data class Position(
 
     override fun pieceOn(square: Square): PieceOrNoPiece = board[square] ?: NoPiece
 
-    override fun moveOptionsIgnoringCheck(square: Square): Set<Move> =
+    override fun moveOptionsIgnoringCheck(square: Square, ignoreKing: Boolean): Set<Move> =
         board[square].let { pieceToBeMoved ->
-            if (pieceToBeMoved is Piece) {
+            if (pieceToBeMoved is Piece && (!ignoreKing || ignoreKing && pieceToBeMoved !is King)) {
                 MoveRuleSet.getRulesForPiece(pieceToBeMoved).moveRules.flatMap { rule ->
                     rule.findMoves(square, pieceToBeMoved, this)
                 }.toSet()
@@ -32,9 +32,9 @@ data class Position(
     override fun moveOptions(side: Side): Set<Move> =
         board
             .filter { it.value.side == side }.keys
-            .flatMap { square -> moveOptionsIgnoringCheck(square) }
+            .flatMap { square -> moveOptionsIgnoringCheck(square) } // TODO: Castling not allowed in check
             .filter { move ->
-                !movePiece(move).isInCheck(side) // TODO: Castling not allowed in check
+                !movePiece(move).isInCheck(side)
             }
             .toSet()
 
@@ -43,12 +43,15 @@ data class Position(
 
     override fun isInCheck(side: Side): Boolean =
         board.findKing(side)?.let { threatenedKingSquare ->
-            board.findSquares(!side).find { square ->
-                moveOptionsIgnoringCheck(square)
-                    .map { it.arrivalSquare }
-                    .contains(threatenedKingSquare)
-            } is Square
+            isSquareThreatenedBy(threatenedKingSquare, !side)
         } ?: false
+
+    override fun isSquareThreatenedBy(threatenedSquare: Square, side: Side): Boolean =
+        board.findSquares(side).find { square ->
+            moveOptionsIgnoringCheck(square, true)
+                .map { it.arrivalSquare }
+                .contains(threatenedSquare)
+        } is Square
 
     override fun movePiece(move: Move): PositionChangedOrNot =
         when (val movingPiece = pieceOn(move.departureSquare)) {
@@ -63,21 +66,21 @@ data class Position(
                 updatedBoard.remove(move.departureSquare)
 
                 // castling
-                if (updatedBoard[move.arrivalSquare] is WhiteKing && move == Move(E1, c1)) {
+                if (updatedBoard[move.arrivalSquare] is WhiteKing && move == Move(e1, c1)) {
                     updatedBoard[d1] = WhiteRook
                     updatedBoard.remove(a1)
                 }
-                else if (updatedBoard[move.arrivalSquare] is WhiteKing && move == Move(E1, G1)) {
-                    updatedBoard[F1] = WhiteRook
-                    updatedBoard.remove(H1)
+                else if (updatedBoard[move.arrivalSquare] is WhiteKing && move == Move(e1, g1)) {
+                    updatedBoard[f1] = WhiteRook
+                    updatedBoard.remove(h1)
                 }
-                else if (updatedBoard[move.arrivalSquare] is BlackKing && move == Move(E8, c8)) {
+                else if (updatedBoard[move.arrivalSquare] is BlackKing && move == Move(e8, c8)) {
                     updatedBoard[d8] = BlackRook
                     updatedBoard.remove(a8)
                 }
-                else if (updatedBoard[move.arrivalSquare] is BlackKing && move == Move(E8, G8)) {
-                    updatedBoard[F8] = BlackRook
-                    updatedBoard.remove(H8)
+                else if (updatedBoard[move.arrivalSquare] is BlackKing && move == Move(e8, g8)) {
+                    updatedBoard[f8] = BlackRook
+                    updatedBoard.remove(h8)
                 }
 
                 // Promotion
@@ -128,34 +131,34 @@ data class Position(
             b1 to WhiteKnight,
             c1 to WhiteBishop,
             d1 to WhiteQueen,
-            E1 to WhiteKing,
-            F1 to WhiteBishop,
-            G1 to WhiteKnight,
-            H1 to WhiteRook,
+            e1 to WhiteKing,
+            f1 to WhiteBishop,
+            g1 to WhiteKnight,
+            h1 to WhiteRook,
             a2 to WhitePawn,
             b2 to WhitePawn,
             c2 to WhitePawn,
             d2 to WhitePawn,
-            E2 to WhitePawn,
-            F2 to WhitePawn,
-            G2 to WhitePawn,
-            H2 to WhitePawn,
+            e2 to WhitePawn,
+            f2 to WhitePawn,
+            g2 to WhitePawn,
+            h2 to WhitePawn,
             a8 to BlackRook,
             b8 to BlackKnight,
             c8 to BlackBishop,
             d8 to BlackQueen,
-            E8 to BlackKing,
-            F8 to BlackBishop,
-            G8 to BlackKnight,
-            H8 to BlackRook,
+            e8 to BlackKing,
+            f8 to BlackBishop,
+            g8 to BlackKnight,
+            h8 to BlackRook,
             a7 to BlackPawn,
             b7 to BlackPawn,
             c7 to BlackPawn,
             d7 to BlackPawn,
-            E7 to BlackPawn,
-            F7 to BlackPawn,
-            G7 to BlackPawn,
-            H7 to BlackPawn
+            e7 to BlackPawn,
+            f7 to BlackPawn,
+            g7 to BlackPawn,
+            h7 to BlackPawn
         )
     }
 }

@@ -9,45 +9,45 @@ class WhiteBishopTest {
     @Test
     fun `finds valid bishop movements on empty board`() {
         val position = Position(mapOf(
-                E4 to WhiteBishop
+                e4 to WhiteBishop
             )
         )
-        val moves = position.moveOptionsIgnoringCheck(E4)
+        val moves = position.moveOptionsIgnoringCheck(e4)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
-            Move(E4, d3),
-            Move(E4, c2),
-            Move(E4, b1),
-            Move(E4, d5),
-            Move(E4, c6),
-            Move(E4, b7),
-            Move(E4, a8),
-            Move(E4, F5),
-            Move(E4, G6),
-            Move(E4, H7),
-            Move(E4, F3),
-            Move(E4, G2),
-            Move(E4, H1)
+            Move(e4, d3),
+            Move(e4, c2),
+            Move(e4, b1),
+            Move(e4, d5),
+            Move(e4, c6),
+            Move(e4, b7),
+            Move(e4, a8),
+            Move(e4, f5),
+            Move(e4, g6),
+            Move(e4, h7),
+            Move(e4, f3),
+            Move(e4, g2),
+            Move(e4, h1)
         )
     }
 
     @Test
     fun `finds valid bishop movements on crowded board`() {
         val position = Position(mapOf(
-                E4 to WhiteBishop,
+                e4 to WhiteBishop,
                 d5 to BlackPawn,
-                G2 to WhiteQueen
+                g2 to WhiteQueen
             )
         )
-        val moves = position.moveOptionsIgnoringCheck(E4)
+        val moves = position.moveOptionsIgnoringCheck(e4)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
-            Move(E4,d3),
-            Move(E4,c2),
-            Move(E4,b1),
-            Move(E4,d5),
-            Move(E4,F5),
-            Move(E4,G6),
-            Move(E4,H7),
-            Move(E4,F3)
+            Move(e4,d3),
+            Move(e4,c2),
+            Move(e4,b1),
+            Move(e4,d5),
+            Move(e4,f5),
+            Move(e4,g6),
+            Move(e4,h7),
+            Move(e4,f3)
         )
     }
 }

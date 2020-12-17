@@ -69,20 +69,28 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                 direction = -Direction.castlingMove(), // queenside
                 moveCondition = { departureSquare, arrivalSquare, position ->
                     when (position.pieceOn(departureSquare)) {
-                        is WhiteKing -> departureSquare == E1 &&
+                        is WhiteKing -> departureSquare == e1 &&
                             arrivalSquare == c1 &&
                             position.pieceOn(a1) is WhiteRook &&
                             position.whiteCastlingOptions.queenSide &&
                             position.pieceOn(b1) is NoPiece &&
                             position.pieceOn(c1) is NoPiece &&
-                            position.pieceOn(d1) is NoPiece
-                        is BlackKing -> departureSquare == E8 &&
+                            position.pieceOn(d1) is NoPiece &&
+                            !position.isInCheck(White) &&
+                            !position.isSquareThreatenedBy(b1, Black) &&
+                            !position.isSquareThreatenedBy(c1, Black) &&
+                            !position.isSquareThreatenedBy(d1, Black)
+                        is BlackKing -> departureSquare == e8 &&
                             arrivalSquare == c8 &&
                             position.pieceOn(a8) is BlackRook &&
                             position.blackCastlingOptions.queenSide &&
                             position.pieceOn(b8) is NoPiece &&
                             position.pieceOn(c8) is NoPiece &&
-                            position.pieceOn(d8) is NoPiece
+                            position.pieceOn(d8) is NoPiece &&
+                            !position.isInCheck(Black) &&
+                            !position.isSquareThreatenedBy(b8, White) &&
+                            !position.isSquareThreatenedBy(c8, White) &&
+                            !position.isSquareThreatenedBy(d8, White)
                         else -> false
                     }
                 }
@@ -91,18 +99,24 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                 direction = Direction.castlingMove(), // kingside
                 moveCondition = { departureSquare, arrivalSquare, position ->
                     when (position.pieceOn(departureSquare)) {
-                        is WhiteKing -> departureSquare == E1 &&
-                            arrivalSquare == G1 &&
-                            position.pieceOn(H1) is WhiteRook &&
+                        is WhiteKing -> departureSquare == e1 &&
+                            arrivalSquare == g1 &&
+                            position.pieceOn(h1) is WhiteRook &&
                             position.whiteCastlingOptions.kingSide &&
-                            position.pieceOn(F1) is NoPiece &&
-                            position.pieceOn(G1) is NoPiece
-                        is BlackKing -> departureSquare == E8 &&
-                            arrivalSquare == G8 &&
-                            position.pieceOn(H8) is BlackRook &&
-                            position.blackCastlingOptions.queenSide &&
-                            position.pieceOn(F8) is NoPiece &&
-                            position.pieceOn(G8) is NoPiece
+                            position.pieceOn(f1) is NoPiece &&
+                            position.pieceOn(g1) is NoPiece &&
+                            !position.isInCheck(White) &&
+                            !position.isSquareThreatenedBy(f1, Black) &&
+                            !position.isSquareThreatenedBy(g1, Black)
+                        is BlackKing -> departureSquare == e8 &&
+                            arrivalSquare == g8 &&
+                            position.pieceOn(h8) is BlackRook &&
+                            position.blackCastlingOptions.kingSide &&
+                            position.pieceOn(f8) is NoPiece &&
+                            position.pieceOn(g8) is NoPiece &&
+                            !position.isInCheck(Black)&&
+                            !position.isSquareThreatenedBy(f8, White) &&
+                            !position.isSquareThreatenedBy(g8, White)
                         else -> false
                     }
                 }

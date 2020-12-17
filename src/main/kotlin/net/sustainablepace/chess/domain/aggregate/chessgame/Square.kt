@@ -50,38 +50,38 @@ sealed class Square(val file: File, val rank: Rank) {
                 d6.file == file && d6.rank == rank -> d6
                 d7.file == file && d7.rank == rank -> d7
                 d8.file == file && d8.rank == rank -> d8
-                E1.file == file && E1.rank == rank -> E1
-                E2.file == file && E2.rank == rank -> E2
-                E3.file == file && E3.rank == rank -> E3
-                E4.file == file && E4.rank == rank -> E4
-                E5.file == file && E5.rank == rank -> E5
-                E6.file == file && E6.rank == rank -> E6
-                E7.file == file && E7.rank == rank -> E7
-                E8.file == file && E8.rank == rank -> E8
-                F1.file == file && F1.rank == rank -> F1
-                F2.file == file && F2.rank == rank -> F2
-                F3.file == file && F3.rank == rank -> F3
-                F4.file == file && F4.rank == rank -> F4
-                F5.file == file && F5.rank == rank -> F5
-                F6.file == file && F6.rank == rank -> F6
-                F7.file == file && F7.rank == rank -> F7
-                F8.file == file && F8.rank == rank -> F8
-                G1.file == file && G1.rank == rank -> G1
-                G2.file == file && G2.rank == rank -> G2
-                G3.file == file && G3.rank == rank -> G3
-                G4.file == file && G4.rank == rank -> G4
-                G5.file == file && G5.rank == rank -> G5
-                G6.file == file && G6.rank == rank -> G6
-                G7.file == file && G7.rank == rank -> G7
-                G8.file == file && G8.rank == rank -> G8
-                H1.file == file && H1.rank == rank -> H1
-                H2.file == file && H2.rank == rank -> H2
-                H3.file == file && H3.rank == rank -> H3
-                H4.file == file && H4.rank == rank -> H4
-                H5.file == file && H5.rank == rank -> H5
-                H6.file == file && H6.rank == rank -> H6
-                H7.file == file && H7.rank == rank -> H7
-                H8.file == file && H8.rank == rank -> H8
+                e1.file == file && e1.rank == rank -> e1
+                e2.file == file && e2.rank == rank -> e2
+                e3.file == file && e3.rank == rank -> e3
+                e4.file == file && e4.rank == rank -> e4
+                e5.file == file && e5.rank == rank -> e5
+                e6.file == file && e6.rank == rank -> e6
+                e7.file == file && e7.rank == rank -> e7
+                e8.file == file && e8.rank == rank -> e8
+                f1.file == file && f1.rank == rank -> f1
+                f2.file == file && f2.rank == rank -> f2
+                f3.file == file && f3.rank == rank -> f3
+                f4.file == file && f4.rank == rank -> f4
+                f5.file == file && f5.rank == rank -> f5
+                f6.file == file && f6.rank == rank -> f6
+                f7.file == file && f7.rank == rank -> f7
+                f8.file == file && f8.rank == rank -> f8
+                g1.file == file && g1.rank == rank -> g1
+                g2.file == file && g2.rank == rank -> g2
+                g3.file == file && g3.rank == rank -> g3
+                g4.file == file && g4.rank == rank -> g4
+                g5.file == file && g5.rank == rank -> g5
+                g6.file == file && g6.rank == rank -> g6
+                g7.file == file && g7.rank == rank -> g7
+                g8.file == file && g8.rank == rank -> g8
+                h1.file == file && h1.rank == rank -> h1
+                h2.file == file && h2.rank == rank -> h2
+                h3.file == file && h3.rank == rank -> h3
+                h4.file == file && h4.rank == rank -> h4
+                h5.file == file && h5.rank == rank -> h5
+                h6.file == file && h6.rank == rank -> h6
+                h7.file == file && h7.rank == rank -> h7
+                h8.file == file && h8.rank == rank -> h8
                 else -> null
             }
         }
@@ -120,38 +120,38 @@ object d5 : Square('d', '5')
 object d6 : Square('d', '6')
 object d7 : Square('d', '7')
 object d8 : Square('d', '8')
-object E1 : Square('e', '1')
-object E2 : Square('e', '2')
-object E3 : Square('e', '3')
-object E4 : Square('e', '4')
-object E5 : Square('e', '5')
-object E6 : Square('e', '6')
-object E7 : Square('e', '7')
-object E8 : Square('e', '8')
-object F1 : Square('f', '1')
-object F2 : Square('f', '2')
-object F3 : Square('f', '3')
-object F4 : Square('f', '4')
-object F5 : Square('f', '5')
-object F6 : Square('f', '6')
-object F7 : Square('f', '7')
-object F8 : Square('f', '8')
-object G1 : Square('g', '1')
-object G2 : Square('g', '2')
-object G3 : Square('g', '3')
-object G4 : Square('g', '4')
-object G5 : Square('g', '5')
-object G6 : Square('g', '6')
-object G7 : Square('g', '7')
-object G8 : Square('g', '8')
-object H1 : Square('h', '1')
-object H2 : Square('h', '2')
-object H3 : Square('h', '3')
-object H4 : Square('h', '4')
-object H5 : Square('h', '5')
-object H6 : Square('h', '6')
-object H7 : Square('h', '7')
-object H8 : Square('h', '8')
+object e1 : Square('e', '1')
+object e2 : Square('e', '2')
+object e3 : Square('e', '3')
+object e4 : Square('e', '4')
+object e5 : Square('e', '5')
+object e6 : Square('e', '6')
+object e7 : Square('e', '7')
+object e8 : Square('e', '8')
+object f1 : Square('f', '1')
+object f2 : Square('f', '2')
+object f3 : Square('f', '3')
+object f4 : Square('f', '4')
+object f5 : Square('f', '5')
+object f6 : Square('f', '6')
+object f7 : Square('f', '7')
+object f8 : Square('f', '8')
+object g1 : Square('g', '1')
+object g2 : Square('g', '2')
+object g3 : Square('g', '3')
+object g4 : Square('g', '4')
+object g5 : Square('g', '5')
+object g6 : Square('g', '6')
+object g7 : Square('g', '7')
+object g8 : Square('g', '8')
+object h1 : Square('h', '1')
+object h2 : Square('h', '2')
+object h3 : Square('h', '3')
+object h4 : Square('h', '4')
+object h5 : Square('h', '5')
+object h6 : Square('h', '6')
+object h7 : Square('h', '7')
+object h8 : Square('h', '8')
 
 typealias File = Char
 typealias Rank = Char

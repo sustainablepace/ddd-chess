@@ -9,41 +9,41 @@ class WhitePawnTest {
     @Test
     fun `finds valid pawn movements on empty board in initial position`() {
         val chessGame = Position(mapOf(
-                E2 to WhitePawn
+                e2 to WhitePawn
             )
         )
-        val moves = chessGame.moveOptionsIgnoringCheck(E2)
+        val moves = chessGame.moveOptionsIgnoringCheck(e2)
         assertThat(moves).containsExactlyInAnyOrder(
-            Move(E2, E3),
-            Move(E2, E4)
+            Move(e2, e3),
+            Move(e2, e4)
         )
     }
 
     @Test
     fun `finds valid pawn movements on empty board`() {
         val chessGame = Position(mapOf(
-                E4 to WhitePawn
+                e4 to WhitePawn
             )
         )
-        val moves = chessGame.moveOptionsIgnoringCheck(E4)
+        val moves = chessGame.moveOptionsIgnoringCheck(e4)
         assertThat(moves).containsExactlyInAnyOrder(
-            Move(E4, E5)
+            Move(e4, e5)
         )
     }
 
     @Test
     fun `finds valid pawn movements on crowded board`() {
         val chessGame = Position(mapOf(
-                E4 to WhitePawn,
-                E5 to WhiteQueen,
+                e4 to WhitePawn,
+                e5 to WhiteQueen,
                 d5 to BlackPawn,
-                F5 to BlackPawn
+                f5 to BlackPawn
             )
         )
-        val moves = chessGame.moveOptionsIgnoringCheck(E4)
+        val moves = chessGame.moveOptionsIgnoringCheck(e4)
         assertThat(moves).containsExactlyInAnyOrder(
-            Move(E4, F5),
-            Move(E4, d5)
+            Move(e4, f5),
+            Move(e4, d5)
         )
     }
 
@@ -75,39 +75,39 @@ class WhitePawnTest {
     fun `finds en passant capture moves to the right`() {
         val chessGame = Position(mapOf(
                 d4 to BlackPawn,
-                E2 to WhitePawn
+                e2 to WhitePawn
             )
         )
-        val position = chessGame.movePiece(Move(E2, E4))
+        val position = chessGame.movePiece(Move(e2, e4))
 
         assertThat(position.moveOptions(Black)).contains(
-            Move(d4, E3)
+            Move(d4, e3)
         )
     }
 
     @Test
     fun `finds en passant capture moves to the left`() {
         val chessGame = Position(mapOf(
-                F4 to BlackPawn,
-                E2 to WhitePawn
+                f4 to BlackPawn,
+                e2 to WhitePawn
             )
         )
-        val updatedPosition = chessGame.movePiece(Move(E2, E4))
+        val updatedPosition = chessGame.movePiece(Move(e2, e4))
 
         assertThat(updatedPosition.moveOptions(Black)).contains(
-            Move(F4, E3)
+            Move(f4, e3)
         )
     }
 
     @Test
     fun `promotion to queen`() {
         val chessGame = Position(mapOf(
-                F7 to WhitePawn
+                f7 to WhitePawn
             )
         )
-        val updatedPosition = chessGame.movePiece(Move(F7, F8))
+        val updatedPosition = chessGame.movePiece(Move(f7, f8))
 
-        assertThat(updatedPosition.pieceOn(F8)).isEqualTo(WhiteQueen)
+        assertThat(updatedPosition.pieceOn(f8)).isEqualTo(WhiteQueen)
     }
 
     // TODO: Allow promotion to another piece

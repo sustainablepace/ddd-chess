@@ -7,9 +7,10 @@ interface PositionEvent: Event {
     fun movePiece(move: Move): PositionChangedOrNot
 
     fun isInCheck(side: Side): Boolean
+    fun isSquareThreatenedBy(threatenedSquare: Square, side: Side): Boolean
     fun pieceOn(square: Square): PieceOrNoPiece
     fun moveOptions(side: Side): Set<Move>
-    fun moveOptionsIgnoringCheck(square: Square): Set<Move>
+    fun moveOptionsIgnoringCheck(square: Square, ignoreKing: Boolean = false): Set<Move>
     val board: Board
     val enPassantSquare: EnPassantSquare
     val whiteCastlingOptions: CastlingOptions

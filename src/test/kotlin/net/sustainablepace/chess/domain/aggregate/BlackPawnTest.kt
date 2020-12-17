@@ -9,36 +9,36 @@ class BlackPawnTest {
     @Test
     fun `finds valid pawn movements on empty board in initial position`() {
         val position = Position(mapOf(
-            E7 to BlackPawn
+            e7 to BlackPawn
         ))
-        val moves = position.moveOptionsIgnoringCheck(E7)
+        val moves = position.moveOptionsIgnoringCheck(e7)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
-            Move(E7, E6),
-            Move(E7, E5)
+            Move(e7, e6),
+            Move(e7, e5)
         )
     }
 
     @Test
     fun `finds valid pawn movements on empty board`() {
         val position = Position(mapOf(
-            E5 to BlackPawn
+            e5 to BlackPawn
         ))
-        val moves = position.moveOptionsIgnoringCheck(E5)
+        val moves = position.moveOptionsIgnoringCheck(e5)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
-            Move(E5, E4)
+            Move(e5, e4)
         )
     }
 
     @Test
     fun `finds en passant capture moves to the right`() {
         val position = Position(mapOf(
-            F7 to BlackPawn,
-            E5 to WhitePawn
+            f7 to BlackPawn,
+            e5 to WhitePawn
         ))
-        val updatedPosition = position.movePiece(Move(F7, F5))
+        val updatedPosition = position.movePiece(Move(f7, f5))
 
         Assertions.assertThat(updatedPosition.moveOptions(White)).contains(
-            Move(E5, F6)
+            Move(e5, f6)
         )
     }
 
@@ -46,23 +46,23 @@ class BlackPawnTest {
     fun `finds en passant capture moves to the left`() {
         val position = Position(mapOf(
             d7 to BlackPawn,
-            E5 to WhitePawn
+            e5 to WhitePawn
         ))
         val updatedPosition = position.movePiece(Move(d7, d5))
 
         Assertions.assertThat(updatedPosition.moveOptions(White)).contains(
-            Move(E5, d6)
+            Move(e5, d6)
         )
     }
 
     @Test
     fun `promotion to queen`() {
         val position = Position(mapOf(
-            F2 to BlackPawn
+            f2 to BlackPawn
         ))
-        val updatedPosition = position.movePiece(Move(F2, F1))
+        val updatedPosition = position.movePiece(Move(f2, f1))
 
-        Assertions.assertThat(updatedPosition.pieceOn(F1)).isEqualTo(BlackQueen)
+        Assertions.assertThat(updatedPosition.pieceOn(f1)).isEqualTo(BlackQueen)
     }
 
     @Test
@@ -79,9 +79,9 @@ class BlackPawnTest {
     @Test
     fun `moving right rook makes castling unavailable`() {
         val position = Position()
-            .movePiece(Move(H7, H5))
-            .movePiece(Move(H2, H3))
-            .movePiece(Move(H8, H6))
+            .movePiece(Move(h7, h5))
+            .movePiece(Move(h2, h3))
+            .movePiece(Move(h8, h6))
 
         Assertions.assertThat(position.blackCastlingOptions.queenSide).isTrue()
         Assertions.assertThat(position.blackCastlingOptions.kingSide).isFalse()

@@ -12,14 +12,14 @@ class WhiteKnightTest {
         val position = Position(mapOf(
                 c2 to WhiteKnight,
                 b4 to BlackPawn,
-                E1 to WhiteKing
+                e1 to WhiteKing
             )
         )
         val moves = position.moveOptionsIgnoringCheck(c2)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             Move(c2, d4),
             Move(c2, b4),
-            Move(c2, E3),
+            Move(c2, e3),
             Move(c2, a1),
             Move(c2, a3)
         )

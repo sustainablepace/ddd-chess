@@ -12,7 +12,7 @@ class WhiteRookTest {
         val position = Position(mapOf(
                 c3 to WhiteRook,
                 c7 to BlackPawn,
-                E3 to WhitePawn
+                e3 to WhitePawn
             )
         )
 
@@ -42,9 +42,9 @@ class WhiteRookTest {
 
     @Test
     fun `moving right rook makes castling unavailable`() {
-        val position = Position().movePiece(Move(H2, H4))
-            .movePiece(Move(H7, H6))
-            .movePiece(Move(H1, H3))
+        val position = Position().movePiece(Move(h2, h4))
+            .movePiece(Move(h7, h6))
+            .movePiece(Move(h1, h3))
 
         assertThat(position.whiteCastlingOptions.queenSide).isTrue()
         assertThat(position.whiteCastlingOptions.kingSide).isFalse()
