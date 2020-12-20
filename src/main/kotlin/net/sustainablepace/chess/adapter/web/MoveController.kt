@@ -44,5 +44,4 @@ class MoveController(val movePieceService: ApplicationService<MovePiece, PieceMo
         } catch (ex: Exception) {
             status(INTERNAL_SERVER_ERROR).build()
         }
-
 }

@@ -76,7 +76,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                             position.pieceOn(b1) is NoPiece &&
                             position.pieceOn(c1) is NoPiece &&
                             position.pieceOn(d1) is NoPiece &&
-                            !position.isInCheck(White) &&
+                            !position.isInCheck() &&
                             !position.isSquareThreatenedBy(b1, Black) &&
                             !position.isSquareThreatenedBy(c1, Black) &&
                             !position.isSquareThreatenedBy(d1, Black)
@@ -87,7 +87,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                             position.pieceOn(b8) is NoPiece &&
                             position.pieceOn(c8) is NoPiece &&
                             position.pieceOn(d8) is NoPiece &&
-                            !position.isInCheck(Black) &&
+                            !position.isInCheck() &&
                             !position.isSquareThreatenedBy(b8, White) &&
                             !position.isSquareThreatenedBy(c8, White) &&
                             !position.isSquareThreatenedBy(d8, White)
@@ -105,7 +105,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                             position.whiteCastlingOptions.kingSide &&
                             position.pieceOn(f1) is NoPiece &&
                             position.pieceOn(g1) is NoPiece &&
-                            !position.isInCheck(White) &&
+                            !position.isInCheck() &&
                             !position.isSquareThreatenedBy(f1, Black) &&
                             !position.isSquareThreatenedBy(g1, Black)
                         is BlackKing -> departureSquare == e8 &&
@@ -114,7 +114,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                             position.blackCastlingOptions.kingSide &&
                             position.pieceOn(f8) is NoPiece &&
                             position.pieceOn(g8) is NoPiece &&
-                            !position.isInCheck(Black)&&
+                            !position.isInCheck()&&
                             !position.isSquareThreatenedBy(f8, White) &&
                             !position.isSquareThreatenedBy(g8, White)
                         else -> false
@@ -134,10 +134,10 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                     when (val movingPiece = position.pieceOn(departureSquare)) {
                         is NoPiece -> false
                         is Piece -> when (movingPiece.side) {
-                            White -> departureSquare.rank == '2' &&
+                            White -> departureSquare.rank == 2 &&
                                 position.pieceOn(departureSquare.upperNeighbour()!!) is NoPiece &&
                                 position.pieceOn(arrivalSquare) is NoPiece
-                            Black -> departureSquare.rank == '7' &&
+                            Black -> departureSquare.rank == 7 &&
                                 position.pieceOn(departureSquare.lowerNeighbour()!!) is NoPiece &&
                                 position.pieceOn(arrivalSquare) is NoPiece
                         }

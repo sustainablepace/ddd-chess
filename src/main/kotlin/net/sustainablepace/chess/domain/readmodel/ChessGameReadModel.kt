@@ -32,7 +32,7 @@ data class ChessGameReadModel(
                 ChessGameReadModel(
                     id = id,
                     position = position.board.map { it.key.toString() to it.value.stringify() }.toMap(),
-                    turn = when (turn) {
+                    turn = when (position.turn) {
                         White -> "white"
                         Black -> "black"
                     },
@@ -44,8 +44,8 @@ data class ChessGameReadModel(
                         is HumanPlayer -> "human"
                         is ComputerPlayer -> "computer"
                     },
-                    status = getStatus().javaClass.simpleName,
-                    computerTurn = when (turn) {
+                    status = status.javaClass.simpleName,
+                    computerTurn = when (position.turn) {
                         White -> white is ComputerPlayer
                         Black -> black is ComputerPlayer
                     }

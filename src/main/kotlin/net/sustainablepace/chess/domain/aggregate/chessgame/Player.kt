@@ -17,7 +17,7 @@ object StupidComputerPlayer : ComputerPlayer() {
         chessGame.moveOptions().toList().let { moves ->
             when (moves.size) {
                 0 -> NoMoveCalculated(
-                    reason = "No move available. Game is in status ${chessGame.getStatus()}",
+                    reason = "No move available. Game is in status ${chessGame.status}",
                     chessGame = chessGame
                 )
                 else -> MoveCalculated(

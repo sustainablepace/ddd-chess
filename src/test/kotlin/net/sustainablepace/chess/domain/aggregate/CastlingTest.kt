@@ -73,12 +73,13 @@ class CastlingTest {
     @Test
     fun `black cannot castle kingside in checked position`() {
         val chessGame = ChessGame(
-            Black, Position(
-                mapOf(
+            Position(
+                board = mapOf(
                     e8 to BlackKing,
                     h8 to BlackRook,
                     e2 to WhiteRook
-                )
+                ),
+                turn = Black
             )
         ).movePiece(Move(e8, g8))
 
@@ -109,12 +110,13 @@ class CastlingTest {
     @Test
     fun `black cannot castle queenside in checked position`() {
         val chessGame = ChessGame(
-            Black, Position(
-                mapOf(
+            Position(
+                board = mapOf(
                     e8 to BlackKing,
                     a8 to BlackRook,
                     e2 to WhiteRook
-                )
+                ),
+                turn = Black
             )
         ).movePiece(Move(e8, c8))
 
@@ -145,12 +147,13 @@ class CastlingTest {
     @Test
     fun `black cannot castle kingside via threatened square`() {
         val chessGame = ChessGame(
-            Black, Position(
-                mapOf(
+            Position(
+                board = mapOf(
                     e8 to BlackKing,
                     h8 to BlackRook,
                     a3 to WhiteBishop
-                )
+                ),
+                turn = Black
             )
         ).movePiece(Move(e8, g8))
 
@@ -181,12 +184,13 @@ class CastlingTest {
     @Test
     fun `black cannot castle queenside via threatened square`() {
         val chessGame = ChessGame(
-            Black, Position(
-                mapOf(
+            Position(
+                board = mapOf(
                     e8 to BlackKing,
                     a8 to BlackRook,
                     h4 to WhiteBishop
-                )
+                ),
+                turn = Black
             )
         ).movePiece(Move(e8, c8))
 

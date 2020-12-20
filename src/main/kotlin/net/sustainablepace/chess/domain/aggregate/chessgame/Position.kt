@@ -1,47 +1,55 @@
 package net.sustainablepace.chess.domain.aggregate.chessgame
 
-import net.sustainablepace.chess.domain.event.PositionChanged
-import net.sustainablepace.chess.domain.event.PositionChangedOrNot
+import net.sustainablepace.chess.domain.event.PieceMovedOnBoard
+import net.sustainablepace.chess.domain.event.PieceMovedOnBoardOrNot
+import net.sustainablepace.chess.domain.event.PieceNotMovedOnBoard
 import net.sustainablepace.chess.domain.event.PositionEvent
-import net.sustainablepace.chess.domain.event.PositionNotChanged
 import net.sustainablepace.chess.domain.move.Move
 import net.sustainablepace.chess.domain.move.rules.MoveRuleSet
 
 typealias EnPassantSquare = Square?
 
+interface MoveOptionsCalculator {
+    fun moveOptions(): Set<Move>
+}
+
 data class Position(
-    override val board: Board,
+    override val board: Board = defaultBoard,
     override val enPassantSquare: EnPassantSquare = null,
     override val whiteCastlingOptions: CastlingOptions = CastlingOptions(White),
-    override val blackCastlingOptions: CastlingOptions = CastlingOptions(Black)
-) : PositionEvent {
-
-    constructor() : this(defaultBoard)
+    override val blackCastlingOptions: CastlingOptions = CastlingOptions(Black),
+    override val turn: Side = White
+) : PositionEvent, MoveOptionsCalculator {
 
     override fun pieceOn(square: Square): PieceOrNoPiece = board[square] ?: NoPiece
 
-    override fun moveOptionsIgnoringCheck(square: Square, ignoreKing: Boolean): Set<Move> =
-        board[square].let { pieceToBeMoved ->
-            if (pieceToBeMoved is Piece && (!ignoreKing || ignoreKing && pieceToBeMoved !is King)) {
-                MoveRuleSet.getRulesForPiece(pieceToBeMoved).moveRules.flatMap { rule ->
-                    rule.findMoves(square, pieceToBeMoved, this)
-                }.toSet()
-            } else emptySet()
+    override fun moveOptionsIgnoringCheck(square: Square, ignoreKingMoves: Boolean): Set<Move> =
+        pieceOn(square).let { pieceToBeMoved ->
+            when (pieceToBeMoved) {
+                is NoPiece -> emptySet()
+                is Piece -> when {
+                    pieceToBeMoved is King && ignoreKingMoves -> emptySet()
+                    else -> MoveRuleSet.getRulesForPiece(pieceToBeMoved).moveRules.flatMap { rule ->
+                        rule.findMoves(square, pieceToBeMoved, this)
+                    }.toSet()
+                }
+            }
         }
 
-    override fun moveOptions(side: Side): Set<Move> =
+    override fun moveOptions(): Set<Move> =
         board
-            .filter { it.value.side == side }.keys
-            .flatMap { square -> moveOptionsIgnoringCheck(square) } // TODO: Castling not allowed in check
-            .filter { move ->
-                !movePiece(move).isInCheck(side)
-            }
+            .findSquares(turn)
+            .flatMap { square -> moveOptionsIgnoringCheck(square) }
+            .filterNot { move -> movePiece(move).position.isInCheck(turn) }
             .toSet()
 
-    fun isCheckMate(side: Side): Boolean = moveOptions(side).isEmpty() && isInCheck(side)
-    fun isStaleMate(side: Side): Boolean = moveOptions(side).isEmpty() && !isInCheck(side)
+    fun isCheckMate(): Boolean = moveOptions().isEmpty() && isInCheck()
+    fun isStaleMate(): Boolean = moveOptions().isEmpty() && !isInCheck()
+    fun isDeadPosition(): Boolean = board.isDeadPosition()
 
-    override fun isInCheck(side: Side): Boolean =
+    override fun isInCheck(): Boolean = isInCheck(turn)
+
+    private fun isInCheck(side: Side): Boolean =
         board.findKing(side)?.let { threatenedKingSquare ->
             isSquareThreatenedBy(threatenedKingSquare, !side)
         } ?: false
@@ -53,76 +61,33 @@ data class Position(
                 .contains(threatenedSquare)
         } is Square
 
-    override fun movePiece(move: Move): PositionChangedOrNot =
+    override fun movePiece(move: Move): PieceMovedOnBoardOrNot =
         when (val movingPiece = pieceOn(move.departureSquare)) {
-            is NoPiece -> PositionNotChanged(
+            is NoPiece -> PieceNotMovedOnBoard(
                 position = this,
-                pieceCapturedOrPawnMoved = false
+                pieceCapturedOrPawnMoved = false,
+                move = move
             )
-            is Piece -> mutableMapOf<Square, Piece>().let { updatedBoard ->
-                updatedBoard.putAll(board)
-
-                updatedBoard[move.arrivalSquare] = movingPiece
-                updatedBoard.remove(move.departureSquare)
-
-                // castling
-                if (updatedBoard[move.arrivalSquare] is WhiteKing && move == Move(e1, c1)) {
-                    updatedBoard[d1] = WhiteRook
-                    updatedBoard.remove(a1)
-                }
-                else if (updatedBoard[move.arrivalSquare] is WhiteKing && move == Move(e1, g1)) {
-                    updatedBoard[f1] = WhiteRook
-                    updatedBoard.remove(h1)
-                }
-                else if (updatedBoard[move.arrivalSquare] is BlackKing && move == Move(e8, c8)) {
-                    updatedBoard[d8] = BlackRook
-                    updatedBoard.remove(a8)
-                }
-                else if (updatedBoard[move.arrivalSquare] is BlackKing && move == Move(e8, g8)) {
-                    updatedBoard[f8] = BlackRook
-                    updatedBoard.remove(h8)
-                }
-
-                // Promotion
-                if (updatedBoard[move.arrivalSquare] is WhitePawn && move.arrivalSquare.rank == '8') {
-                    updatedBoard[move.arrivalSquare] = WhiteQueen
-                }
-                else if (updatedBoard[move.arrivalSquare] is BlackPawn && move.arrivalSquare.rank == '1') {
-                    updatedBoard[move.arrivalSquare] = BlackQueen
-                }
-
-                // En passant capturing
-                if (enPassantSquare != null) {
-                    val lowerNeighbour = enPassantSquare.lowerNeighbour()
-                    val upperNeighbour = enPassantSquare.upperNeighbour()
-                    if (movingPiece.side == White && upperNeighbour != null && updatedBoard[upperNeighbour] is WhitePawn) {
-                        updatedBoard.remove(enPassantSquare)
-                    } else if (movingPiece.side == Black && lowerNeighbour != null && updatedBoard[lowerNeighbour] is BlackPawn) {
-                        updatedBoard.remove(enPassantSquare)
-                    }
-                }
-
-                PositionChanged(
-                    position = Position(
-                        board = updatedBoard,
-                        enPassantSquare = with(move) {
-                            if (
-                                movingPiece is Pawn &&
-                                departureSquare.rank diff arrivalSquare.rank == 2
-                            ) arrivalSquare else null
-                        },
-                        whiteCastlingOptions = whiteCastlingOptions.updateAfterPieceMoved(
-                            move.departureSquare,
-                            movingPiece
-                        ),
-                        blackCastlingOptions = blackCastlingOptions.updateAfterPieceMoved(
-                            move.departureSquare,
-                            movingPiece
-                        )
+            is Piece -> PieceMovedOnBoard(
+                move = move,
+                position = Position(
+                    board = board.movePiece(move, movingPiece, enPassantSquare),
+                    enPassantSquare = if (
+                        movingPiece is Pawn &&
+                        move.departureSquare.rank diff move.arrivalSquare.rank == 2
+                    ) move.arrivalSquare else null,
+                    whiteCastlingOptions = whiteCastlingOptions.updateAfterPieceMoved(
+                        move.departureSquare,
+                        movingPiece
                     ),
-                    pieceCapturedOrPawnMoved = board[move.arrivalSquare] is Piece || movingPiece is Pawn
-                )
-            }
+                    blackCastlingOptions = blackCastlingOptions.updateAfterPieceMoved(
+                        move.departureSquare,
+                        movingPiece
+                    ),
+                    turn = !turn
+                ),
+                pieceCapturedOrPawnMoved = pieceOn(move.arrivalSquare) is Piece || movingPiece is Pawn
+            )
         }
 
     companion object {

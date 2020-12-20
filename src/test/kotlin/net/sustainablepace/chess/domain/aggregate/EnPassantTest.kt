@@ -48,11 +48,12 @@ class EnPassantTest {
     @Test
     fun `en passent capturing works for white (left)`() {
         val chessGame = ChessGame(
-            Black, Position(
-                mapOf(
+            Position(
+                board = mapOf(
                     e7 to BlackPawn,
                     d5 to WhitePawn
-                )
+                ),
+                turn = Black
             )
         )
         val updatedChessGame = chessGame
@@ -67,11 +68,12 @@ class EnPassantTest {
     @Test
     fun `en passent capturing works for white (right)`() {
         val chessGame = ChessGame(
-            Black, Position(
-                mapOf(
+            Position(
+                board = mapOf(
                     e7 to BlackPawn,
                     f5 to WhitePawn
-                )
+                ),
+                turn = Black
             )
         )
         val updatedChessGame = chessGame

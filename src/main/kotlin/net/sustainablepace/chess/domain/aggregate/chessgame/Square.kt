@@ -1,3 +1,5 @@
+@file:Suppress("ClassName")
+
 package net.sustainablepace.chess.domain.aggregate.chessgame
 
 import kotlin.math.abs
@@ -7,17 +9,21 @@ sealed class Square(val file: File, val rank: Rank) {
         check((file + "" + rank).matches(Regex("[a-h][1-8]")))
     }
 
+    fun colour(): Side = if (
+        file in setOf('b', 'd', 'f', 'h') && rank % 2 == 0 ||
+        file in setOf('a', 'c', 'e', 'g') && rank % 2 == 1
+    ) Black else White
+
     override fun toString() = file + "" + rank
 
     companion object {
-        operator fun invoke(square: String): Square? {
-            return if(square.matches(Regex("[a-h][1-8]"))) {
-                invoke(square[0], square[1])
+        operator fun invoke(square: String): Square? =
+            if (square.matches(Regex("[a-h][1-8]"))) {
+                invoke(square[0], square[1].toString().toInt())
             } else null
-        }
 
-        operator fun invoke(file: File, rank: Rank): Square? {
-            return when {
+        operator fun invoke(file: File, rank: Rank): Square? =
+            when {
                 a1.file == file && a1.rank == rank -> a1
                 a2.file == file && a2.rank == rank -> a2
                 a3.file == file && a3.rank == rank -> a3
@@ -84,77 +90,76 @@ sealed class Square(val file: File, val rank: Rank) {
                 h8.file == file && h8.rank == rank -> h8
                 else -> null
             }
-        }
     }
 }
 
-object a1 : Square('a', '1')
-object a2 : Square('a', '2')
-object a3 : Square('a', '3')
-object a4 : Square('a', '4')
-object a5 : Square('a', '5')
-object a6 : Square('a', '6')
-object a7 : Square('a', '7')
-object a8 : Square('a', '8')
-object b1 : Square('b', '1')
-object b2 : Square('b', '2')
-object b3 : Square('b', '3')
-object b4 : Square('b', '4')
-object b5 : Square('b', '5')
-object b6 : Square('b', '6')
-object b7 : Square('b', '7')
-object b8 : Square('b', '8')
-object c1 : Square('c', '1')
-object c2 : Square('c', '2')
-object c3 : Square('c', '3')
-object c4 : Square('c', '4')
-object c5 : Square('c', '5')
-object c6 : Square('c', '6')
-object c7 : Square('c', '7')
-object c8 : Square('c', '8')
-object d1 : Square('d', '1')
-object d2 : Square('d', '2')
-object d3 : Square('d', '3')
-object d4 : Square('d', '4')
-object d5 : Square('d', '5')
-object d6 : Square('d', '6')
-object d7 : Square('d', '7')
-object d8 : Square('d', '8')
-object e1 : Square('e', '1')
-object e2 : Square('e', '2')
-object e3 : Square('e', '3')
-object e4 : Square('e', '4')
-object e5 : Square('e', '5')
-object e6 : Square('e', '6')
-object e7 : Square('e', '7')
-object e8 : Square('e', '8')
-object f1 : Square('f', '1')
-object f2 : Square('f', '2')
-object f3 : Square('f', '3')
-object f4 : Square('f', '4')
-object f5 : Square('f', '5')
-object f6 : Square('f', '6')
-object f7 : Square('f', '7')
-object f8 : Square('f', '8')
-object g1 : Square('g', '1')
-object g2 : Square('g', '2')
-object g3 : Square('g', '3')
-object g4 : Square('g', '4')
-object g5 : Square('g', '5')
-object g6 : Square('g', '6')
-object g7 : Square('g', '7')
-object g8 : Square('g', '8')
-object h1 : Square('h', '1')
-object h2 : Square('h', '2')
-object h3 : Square('h', '3')
-object h4 : Square('h', '4')
-object h5 : Square('h', '5')
-object h6 : Square('h', '6')
-object h7 : Square('h', '7')
-object h8 : Square('h', '8')
+object a1 : Square('a', 1)
+object a2 : Square('a', 2)
+object a3 : Square('a', 3)
+object a4 : Square('a', 4)
+object a5 : Square('a', 5)
+object a6 : Square('a', 6)
+object a7 : Square('a', 7)
+object a8 : Square('a', 8)
+object b1 : Square('b', 1)
+object b2 : Square('b', 2)
+object b3 : Square('b', 3)
+object b4 : Square('b', 4)
+object b5 : Square('b', 5)
+object b6 : Square('b', 6)
+object b7 : Square('b', 7)
+object b8 : Square('b', 8)
+object c1 : Square('c', 1)
+object c2 : Square('c', 2)
+object c3 : Square('c', 3)
+object c4 : Square('c', 4)
+object c5 : Square('c', 5)
+object c6 : Square('c', 6)
+object c7 : Square('c', 7)
+object c8 : Square('c', 8)
+object d1 : Square('d', 1)
+object d2 : Square('d', 2)
+object d3 : Square('d', 3)
+object d4 : Square('d', 4)
+object d5 : Square('d', 5)
+object d6 : Square('d', 6)
+object d7 : Square('d', 7)
+object d8 : Square('d', 8)
+object e1 : Square('e', 1)
+object e2 : Square('e', 2)
+object e3 : Square('e', 3)
+object e4 : Square('e', 4)
+object e5 : Square('e', 5)
+object e6 : Square('e', 6)
+object e7 : Square('e', 7)
+object e8 : Square('e', 8)
+object f1 : Square('f', 1)
+object f2 : Square('f', 2)
+object f3 : Square('f', 3)
+object f4 : Square('f', 4)
+object f5 : Square('f', 5)
+object f6 : Square('f', 6)
+object f7 : Square('f', 7)
+object f8 : Square('f', 8)
+object g1 : Square('g', 1)
+object g2 : Square('g', 2)
+object g3 : Square('g', 3)
+object g4 : Square('g', 4)
+object g5 : Square('g', 5)
+object g6 : Square('g', 6)
+object g7 : Square('g', 7)
+object g8 : Square('g', 8)
+object h1 : Square('h', 1)
+object h2 : Square('h', 2)
+object h3 : Square('h', 3)
+object h4 : Square('h', 4)
+object h5 : Square('h', 5)
+object h6 : Square('h', 6)
+object h7 : Square('h', 7)
+object h8 : Square('h', 8)
 
 typealias File = Char
-typealias Rank = Char
+typealias Rank = Int
 
 infix fun Rank.diff(other: Rank): Int = abs(this - other)
 

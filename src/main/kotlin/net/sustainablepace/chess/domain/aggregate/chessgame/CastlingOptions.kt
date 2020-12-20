@@ -9,8 +9,8 @@ data class CastlingOptions(
         if (side != piece.side) {
             this
         } else when (side) {
-            is White -> '1'
-            is Black -> '8'
+            is White -> 1
+            is Black -> 8
         }.let { rank ->
             if (piece is Rook && departureSquare == Square('a', rank)) {
                 CastlingOptions(side = side, kingSide = kingSide, queenSide = false)

@@ -80,7 +80,7 @@ class WhitePawnTest {
         )
         val position = chessGame.movePiece(Move(e2, e4))
 
-        assertThat(position.moveOptions(Black)).contains(
+        assertThat(position.moveOptions()).contains(
             Move(d4, e3)
         )
     }
@@ -94,7 +94,7 @@ class WhitePawnTest {
         )
         val updatedPosition = chessGame.movePiece(Move(e2, e4))
 
-        assertThat(updatedPosition.moveOptions(Black)).contains(
+        assertThat(updatedPosition.moveOptions()).contains(
             Move(f4, e3)
         )
     }

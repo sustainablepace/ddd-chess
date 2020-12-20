@@ -10,14 +10,14 @@ interface ChessGameEvent : Event {
     fun getActivePlayer(): Player
     fun pieceOn(arrivalSquare: Square): PieceOrNoPiece
     fun moveOptions(): Set<Move>
-    fun getStatus(): Status
     val id: ChessGameId
     val position: Position
-    val turn: Side
     val white: Player
     val black: Player
     val numberOfNextMove: Int
     val movesWithoutCaptureOrPawnMove: Int
+    val moves: List<PositionChanged>
+    val status: Status
 }
 
 data class PiecesHaveBeenSetUp(val chessGame: ChessGame) : ChessGameEvent by chessGame

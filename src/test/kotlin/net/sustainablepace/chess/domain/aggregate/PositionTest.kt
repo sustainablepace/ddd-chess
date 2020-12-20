@@ -1,18 +1,24 @@
 package net.sustainablepace.chess.domain.aggregate
 
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
-import net.sustainablepace.chess.domain.event.PositionNotChanged
+import net.sustainablepace.chess.domain.event.PieceNotMovedOnBoard
 import net.sustainablepace.chess.domain.move.Move
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class PositionTest {
     @Test
-    fun `initial position is not in check`() {
+    fun `initial position is not in check (white)`() {
         val position = Position()
 
-        assertThat(position.isInCheck(White)).isFalse()
-        assertThat(position.isInCheck(Black)).isFalse()
+        assertThat(position.isInCheck()).isFalse()
+    }
+
+    @Test
+    fun `initial position is not in check (black)`() {
+        val position = Position(turn = Black)
+
+        assertThat(position.isInCheck()).isFalse()
     }
 
 
@@ -24,7 +30,7 @@ class PositionTest {
             .movePiece(Move(f1, b5))
 
         assertThat(position.moveOptionsIgnoringCheck(b5)).contains(Move(b5, e8))
-        assertThat(position.isInCheck(Black)).isTrue()
+        assertThat(position.isInCheck()).isTrue()
     }
 
     @Test
@@ -60,7 +66,7 @@ class PositionTest {
     fun `find moves for white in default position`() {
         val position = Position()
 
-        val moves = position.moveOptions(White)
+        val moves = position.moveOptions()
 
         assertThat(moves).containsExactlyInAnyOrder(
             Move(a2, a3),
@@ -88,9 +94,9 @@ class PositionTest {
 
     @Test
     fun `find moves for black in default position`() {
-        val position = Position()
+        val position = Position(turn = Black)
 
-        val moves = position.moveOptions(Black)
+        val moves = position.moveOptions()
 
         assertThat(moves).containsExactlyInAnyOrder(
             Move(a7, a6),
@@ -120,6 +126,83 @@ class PositionTest {
     fun `position not updated after move`() {
         val position = Position().movePiece(Move(a3, a4))
 
-        assertThat(position).isInstanceOf(PositionNotChanged::class.java)
+        assertThat(position).isInstanceOf(PieceNotMovedOnBoard::class.java)
+    }
+
+    @Test
+    fun `initial position is not a dead position`() {
+        val position = Position()
+        assertThat(position.isDeadPosition()).isFalse()
+    }
+
+    @Test
+    fun `dead position (only two kings)`() {
+        val position = Position(mapOf(
+            e1 to WhiteKing,
+            e8 to BlackKing
+        ))
+        assertThat(position.isDeadPosition()).isTrue()
+    }
+
+    @Test
+    fun `dead position (only two kings and a white bishop)`() {
+        val position = Position(mapOf(
+            e1 to WhiteKing,
+            c1 to WhiteBishop,
+            e8 to BlackKing
+        ))
+        assertThat(position.isDeadPosition()).isTrue()
+    }
+
+    @Test
+    fun `dead position (only two kings and a black bishop)`() {
+        val position = Position(mapOf(
+            e1 to WhiteKing,
+            c8 to BlackBishop,
+            e8 to BlackKing
+        ))
+        assertThat(position.isDeadPosition()).isTrue()
+    }
+
+    @Test
+    fun `dead position (only two kings and two bishops on different coloured squares)`() {
+        val position = Position(mapOf(
+            e1 to WhiteKing,
+            c1 to WhiteBishop,
+            e8 to BlackKing,
+            c8 to BlackBishop
+        ))
+        assertThat(position.isDeadPosition()).isFalse()
+    }
+
+    @Test
+    fun `dead position (only two kings and two bishops on identical coloured squares)`() {
+        val position = Position(mapOf(
+            e1 to WhiteKing,
+            c1 to WhiteBishop,
+            e8 to BlackKing,
+            f8 to BlackBishop
+        ))
+        assertThat(position.isDeadPosition()).isTrue()
+    }
+
+    @Test
+    fun `dead position (only two kings and a white knight)`() {
+        val position = Position(mapOf(
+            e1 to WhiteKing,
+            b1 to WhiteKnight,
+            e8 to BlackKing
+        ))
+        assertThat(position.isDeadPosition()).isTrue()
+    }
+
+    @Test
+    fun `dead position (only two kings and a black knight)`() {
+        val position = Position(mapOf(
+            e1 to WhiteKing,
+            b8 to BlackKnight,
+            e8 to BlackKing
+        ))
+        assertThat(position.isDeadPosition()).isTrue()
     }
 }
