@@ -2,6 +2,7 @@ package net.sustainablepace.chess.domain.aggregate
 
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.move.Move
+import net.sustainablepace.chess.domain.move.PromotionMove
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -12,7 +13,7 @@ class WhitePawnTest {
                 e2 to WhitePawn
             )
         )
-        val moves = chessGame.moveOptionsIgnoringCheck(e2)
+        val moves = chessGame.moveOptionsForSquare(e2)
         assertThat(moves).containsExactlyInAnyOrder(
             Move(e2, e3),
             Move(e2, e4)
@@ -25,7 +26,7 @@ class WhitePawnTest {
                 e4 to WhitePawn
             )
         )
-        val moves = chessGame.moveOptionsIgnoringCheck(e4)
+        val moves = chessGame.moveOptionsForSquare(e4)
         assertThat(moves).containsExactlyInAnyOrder(
             Move(e4, e5)
         )
@@ -40,7 +41,7 @@ class WhitePawnTest {
                 f5 to BlackPawn
             )
         )
-        val moves = chessGame.moveOptionsIgnoringCheck(e4)
+        val moves = chessGame.moveOptionsForSquare(e4)
         assertThat(moves).containsExactlyInAnyOrder(
             Move(e4, f5),
             Move(e4, d5)
@@ -54,7 +55,7 @@ class WhitePawnTest {
                 a4 to BlackPawn
             ))
 
-        val moves = chessGame.moveOptionsIgnoringCheck(a2)
+        val moves = chessGame.moveOptionsForSquare(a2)
         assertThat(moves).containsExactlyInAnyOrder(
             Move(a2, a3)
         )
@@ -67,7 +68,7 @@ class WhitePawnTest {
                 a3 to BlackPawn
             )
         )
-        val moves = chessGame.moveOptionsIgnoringCheck(a2)
+        val moves = chessGame.moveOptionsForSquare(a2)
         assertThat(moves).isEmpty()
     }
 
@@ -100,16 +101,27 @@ class WhitePawnTest {
     }
 
     @Test
-    fun `promotion to queen`() {
+    fun `promotion to all options`() {
         val chessGame = Position(mapOf(
                 f7 to WhitePawn
             )
         )
-        val updatedPosition = chessGame.movePiece(Move(f7, f8))
+        assertThat(chessGame.moveOptions()).containsExactly(
+            PromotionMove(f7, f8, WhiteQueen),
+            PromotionMove(f7, f8, WhiteRook),
+            PromotionMove(f7, f8, WhiteBishop),
+            PromotionMove(f7, f8, WhiteKnight),
+        )
 
-        assertThat(updatedPosition.pieceOn(f8)).isEqualTo(WhiteQueen)
+        val positionAfterQueenPromotion = chessGame.movePiece(PromotionMove(f7, f8, WhiteQueen))
+        assertThat(positionAfterQueenPromotion.pieceOn(f8)).isEqualTo(WhiteQueen)
+        val positionAfterRookPromotion = chessGame.movePiece(PromotionMove(f7, f8, WhiteRook))
+        assertThat(positionAfterRookPromotion.pieceOn(f8)).isEqualTo(WhiteRook)
+
+        val positionAfterKnightPromotion = chessGame.movePiece(PromotionMove(f7, f8, WhiteKnight))
+        assertThat(positionAfterKnightPromotion.pieceOn(f8)).isEqualTo(WhiteKnight)
+
+        val positionAfterBishopPromotion = chessGame.movePiece(PromotionMove(f7, f8, WhiteBishop))
+        assertThat(positionAfterBishopPromotion.pieceOn(f8)).isEqualTo(WhiteBishop)
     }
-
-    // TODO: Allow promotion to another piece
-
 }

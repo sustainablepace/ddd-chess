@@ -2,7 +2,7 @@ package net.sustainablepace.chess.domain.aggregate
 
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.event.*
-import net.sustainablepace.chess.domain.move.Move
+import net.sustainablepace.chess.domain.move.ValidMove
 
 fun List<PositionChanged>.identicalPositions() =
     groupBy { it.position }.map { it.value.size }.maxOrNull() ?: 0
@@ -34,7 +34,7 @@ class ChessGame private constructor(
 
     override fun pieceOn(arrivalSquare: Square): PieceOrNoPiece = position.pieceOn(arrivalSquare)
 
-    override fun movePiece(move: Move): PieceMovedOrNot =
+    override fun movePiece(move: ValidMove): PieceMovedOrNot =
         if (move !in moveOptions())
             PieceNotMoved(
                 reason = "Move $move not possible in game $id.",

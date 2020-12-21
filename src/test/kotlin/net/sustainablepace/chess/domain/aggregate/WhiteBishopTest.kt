@@ -12,7 +12,7 @@ class WhiteBishopTest {
                 e4 to WhiteBishop
             )
         )
-        val moves = position.moveOptionsIgnoringCheck(e4)
+        val moves = position.moveOptionsForSquare(e4)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             Move(e4, d3),
             Move(e4, c2),
@@ -38,7 +38,7 @@ class WhiteBishopTest {
                 g2 to WhiteQueen
             )
         )
-        val moves = position.moveOptionsIgnoringCheck(e4)
+        val moves = position.moveOptionsForSquare(e4)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             Move(e4,d3),
             Move(e4,c2),

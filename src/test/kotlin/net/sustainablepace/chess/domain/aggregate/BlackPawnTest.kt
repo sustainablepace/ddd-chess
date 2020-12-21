@@ -2,6 +2,7 @@ package net.sustainablepace.chess.domain.aggregate
 
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.move.Move
+import net.sustainablepace.chess.domain.move.PromotionMove
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -13,7 +14,7 @@ class BlackPawnTest {
                 e7 to BlackPawn
             )
         )
-        val moves = position.moveOptionsIgnoringCheck(e7)
+        val moves = position.moveOptionsForSquare(e7)
         assertThat(moves).containsExactlyInAnyOrder(
             Move(e7, e6),
             Move(e7, e5)
@@ -27,7 +28,7 @@ class BlackPawnTest {
                 e5 to BlackPawn
             )
         )
-        val moves = position.moveOptionsIgnoringCheck(e5)
+        val moves = position.moveOptionsForSquare(e5)
         assertThat(moves).containsExactlyInAnyOrder(
             Move(e5, e4)
         )
@@ -65,16 +66,32 @@ class BlackPawnTest {
         )
     }
 
-    @Test
-    fun `promotion to queen`() {
-        val position = Position(
-            mapOf(
-                f2 to BlackPawn
-            )
-        )
-        val updatedPosition = position.movePiece(Move(f2, f1))
 
-        assertThat(updatedPosition.pieceOn(f1)).isEqualTo(BlackQueen)
+    @Test
+    fun `promotion to all options`() {
+        val chessGame = Position(
+            board = mapOf(
+                f2 to BlackPawn
+            ),
+            turn = Black
+        )
+        assertThat(chessGame.moveOptions()).containsExactly(
+            PromotionMove(f2, f1, BlackQueen),
+            PromotionMove(f2, f1, BlackRook),
+            PromotionMove(f2, f1, BlackBishop),
+            PromotionMove(f2, f1, BlackKnight),
+        )
+
+        val positionAfterQueenPromotion = chessGame.movePiece(PromotionMove(f2, f1, BlackQueen))
+        assertThat(positionAfterQueenPromotion.pieceOn(f1)).isEqualTo(BlackQueen)
+        val positionAfterRookPromotion = chessGame.movePiece(PromotionMove(f2, f1, BlackRook))
+        assertThat(positionAfterRookPromotion.pieceOn(f1)).isEqualTo(BlackRook)
+
+        val positionAfterKnightPromotion = chessGame.movePiece(PromotionMove(f2, f1, BlackKnight))
+        assertThat(positionAfterKnightPromotion.pieceOn(f1)).isEqualTo(BlackKnight)
+
+        val positionAfterBishopPromotion = chessGame.movePiece(PromotionMove(f2, f1, BlackBishop))
+        assertThat(positionAfterBishopPromotion.pieceOn(f1)).isEqualTo(BlackBishop)
     }
 
     @Test

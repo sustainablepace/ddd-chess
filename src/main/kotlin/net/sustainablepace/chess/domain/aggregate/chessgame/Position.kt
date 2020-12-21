@@ -4,13 +4,14 @@ import net.sustainablepace.chess.domain.event.PieceMovedOnBoard
 import net.sustainablepace.chess.domain.event.PieceMovedOnBoardOrNot
 import net.sustainablepace.chess.domain.event.PieceNotMovedOnBoard
 import net.sustainablepace.chess.domain.event.PositionEvent
-import net.sustainablepace.chess.domain.move.Move
+import net.sustainablepace.chess.domain.move.ValidMove
+import net.sustainablepace.chess.domain.move.rules.Direction.Companion.castlingMove
 import net.sustainablepace.chess.domain.move.rules.MoveRuleSet
 
 typealias EnPassantSquare = Square?
 
 interface MoveOptionsCalculator {
-    fun moveOptions(): Set<Move>
+    fun moveOptions(): Set<ValidMove>
 }
 
 data class Position(
@@ -23,23 +24,22 @@ data class Position(
 
     override fun pieceOn(square: Square): PieceOrNoPiece = board[square] ?: NoPiece
 
-    override fun moveOptionsIgnoringCheck(square: Square, ignoreKingMoves: Boolean): Set<Move> =
+    override fun moveOptionsForSquare(square: Square): Set<ValidMove> =
         pieceOn(square).let { pieceToBeMoved ->
             when (pieceToBeMoved) {
                 is NoPiece -> emptySet()
                 is Piece -> when {
-                    pieceToBeMoved is King && ignoreKingMoves -> emptySet()
-                    else -> MoveRuleSet.getRulesForPiece(pieceToBeMoved).moveRules.flatMap { rule ->
-                        rule.findMoves(square, pieceToBeMoved, this)
+                    else -> MoveRuleSet.getRulesForPiece(pieceToBeMoved).flatMap { rule ->
+                        rule.findMoves(square, this)
                     }.toSet()
                 }
             }
         }
 
-    override fun moveOptions(): Set<Move> =
+    override fun moveOptions(): Set<ValidMove> =
         board
             .findSquares(turn)
-            .flatMap { square -> moveOptionsIgnoringCheck(square) }
+            .flatMap { square -> moveOptionsForSquare(square) }
             .filterNot { move -> movePiece(move).position.isInCheck(turn) }
             .toSet()
 
@@ -55,13 +55,20 @@ data class Position(
         } ?: false
 
     override fun isSquareThreatenedBy(threatenedSquare: Square, side: Side): Boolean =
-        board.findSquares(side).find { square ->
-            moveOptionsIgnoringCheck(square, true)
+        board.findPieces(side).find { (square, pieceToBeMoved) ->
+            MoveRuleSet.getRulesForPiece(pieceToBeMoved).flatMap { rule ->
+                // Ignore castling moves because they don't threaten immediately
+                if (pieceToBeMoved is King && rule.direction in setOf(castlingMove(), -castlingMove())) {
+                    emptySet()
+                } else {
+                    rule.findMoves(square, this)
+                }
+            }.toSet()
                 .map { it.arrivalSquare }
                 .contains(threatenedSquare)
-        } is Square
+        } != null
 
-    override fun movePiece(move: Move): PieceMovedOnBoardOrNot =
+    override fun movePiece(move: ValidMove): PieceMovedOnBoardOrNot =
         when (val movingPiece = pieceOn(move.departureSquare)) {
             is NoPiece -> PieceNotMovedOnBoard(
                 position = this,

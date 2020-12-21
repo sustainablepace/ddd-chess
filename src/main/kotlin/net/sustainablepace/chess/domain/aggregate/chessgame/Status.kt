@@ -10,4 +10,4 @@ object Checkmate: Win()
 object Stalemate: Draw()
 object FiftyMoveRule: Draw()
 object DeadPosition: Draw()
-object ThreefoldRepetition: Draw() // TODO
+object ThreefoldRepetition: Draw()

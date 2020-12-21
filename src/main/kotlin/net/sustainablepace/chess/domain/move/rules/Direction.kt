@@ -2,7 +2,7 @@ package net.sustainablepace.chess.domain.move.rules
 
 import net.sustainablepace.chess.domain.aggregate.chessgame.Square
 
-class Direction private constructor(val x: Int, val y: Int) {
+data class Direction constructor(val x: Int, val y: Int) {
 
     fun rotate(n: Int): Direction = when {
         n == 1 -> Direction(y, -x)

@@ -49,4 +49,19 @@ class BlackKingTest {
         assertThat(position.blackCastlingOptions.kingSide).isFalse()
     }
 
+    @Test
+    fun `kings can check each other`() {
+        val position = Position(
+            board = mapOf(
+                e1 to WhiteKing,
+                e3 to BlackKing
+            )
+        )
+
+        assertThat(position.moveOptions()).containsExactly(
+            Move(e1, f1),
+            Move(e1, d1)
+        )
+    }
+
 }

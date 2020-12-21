@@ -16,7 +16,7 @@ class WhiteRookTest {
             )
         )
 
-        val moves = position.moveOptionsIgnoringCheck(c3)
+        val moves = position.moveOptionsForSquare(c3)
         assertThat(moves).containsExactlyInAnyOrder(
             Move(c3, c4),
             Move(c3, c5),

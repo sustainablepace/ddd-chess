@@ -15,7 +15,7 @@ class WhiteKnightTest {
                 e1 to WhiteKing
             )
         )
-        val moves = position.moveOptionsIgnoringCheck(c2)
+        val moves = position.moveOptionsForSquare(c2)
         Assertions.assertThat(moves).containsExactlyInAnyOrder(
             Move(c2, d4),
             Move(c2, b4),

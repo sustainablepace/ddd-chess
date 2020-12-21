@@ -9,20 +9,20 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
     operator fun unaryMinus(): MoveRuleSet = MoveRuleSet(moveRules.map { -it }.toSet())
 
     companion object {
-        fun getRulesForPiece(piece: Piece): MoveRuleSet =
+        fun getRulesForPiece(piece: Piece): Set<MoveRule> =
             when (piece) {
-                is Rook -> rookMoveRules
-                is Knight -> knightMoveRules
-                is Bishop -> bishopMoveRules
-                is Queen -> queenMoveRules
-                is King -> kingMoveRules
-                is Pawn -> pawnMoveRules
-            }.let { moveRules ->
-                when (piece.side) {
-                    is White -> moveRules
-                    is Black -> -moveRules
-                }
+            is Rook -> rookMoveRules
+            is Knight -> knightMoveRules
+            is Bishop -> bishopMoveRules
+            is Queen -> queenMoveRules
+            is King -> kingMoveRules
+            is Pawn -> pawnMoveRules
+        }.let { moveRules ->
+            when (piece.side) {
+                is White -> moveRules
+                is Black -> -moveRules
             }
+        }.moveRules
 
         private val rookMoveRules = MoveRuleSet(
             MoveRule(
@@ -76,7 +76,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                             position.pieceOn(b1) is NoPiece &&
                             position.pieceOn(c1) is NoPiece &&
                             position.pieceOn(d1) is NoPiece &&
-                            !position.isInCheck() &&
+                            !position.isSquareThreatenedBy(e1, Black) &&
                             !position.isSquareThreatenedBy(b1, Black) &&
                             !position.isSquareThreatenedBy(c1, Black) &&
                             !position.isSquareThreatenedBy(d1, Black)
@@ -87,7 +87,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                             position.pieceOn(b8) is NoPiece &&
                             position.pieceOn(c8) is NoPiece &&
                             position.pieceOn(d8) is NoPiece &&
-                            !position.isInCheck() &&
+                            !position.isSquareThreatenedBy(e8, White) &&
                             !position.isSquareThreatenedBy(b8, White) &&
                             !position.isSquareThreatenedBy(c8, White) &&
                             !position.isSquareThreatenedBy(d8, White)
@@ -105,7 +105,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                             position.whiteCastlingOptions.kingSide &&
                             position.pieceOn(f1) is NoPiece &&
                             position.pieceOn(g1) is NoPiece &&
-                            !position.isInCheck() &&
+                            !position.isSquareThreatenedBy(e1, Black) &&
                             !position.isSquareThreatenedBy(f1, Black) &&
                             !position.isSquareThreatenedBy(g1, Black)
                         is BlackKing -> departureSquare == e8 &&
@@ -114,7 +114,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                             position.blackCastlingOptions.kingSide &&
                             position.pieceOn(f8) is NoPiece &&
                             position.pieceOn(g8) is NoPiece &&
-                            !position.isInCheck()&&
+                            !position.isSquareThreatenedBy(e8, White) &&
                             !position.isSquareThreatenedBy(f8, White) &&
                             !position.isSquareThreatenedBy(g8, White)
                         else -> false
@@ -126,7 +126,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
         private val pawnMoveRules = MoveRuleSet(
             MoveRule(
                 direction = Direction.straightLine(),
-                captureType = CaptureType.DISALLOWED
+                captureType = MoveRule.CaptureType.DISALLOWED
             ),
             MoveRule(
                 direction = Direction.initialPawnMove(),
@@ -146,15 +146,15 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
             ),
             MoveRule(
                 direction = Direction.diagonal(),
-                captureType = CaptureType.MANDATORY
+                captureType = MoveRule.CaptureType.MANDATORY
             ),
             MoveRule(
                 direction = -Direction.diagonal(),
-                captureType = CaptureType.MANDATORY
+                captureType = MoveRule.CaptureType.MANDATORY
             ),
             MoveRule(
                 direction = Direction.diagonal(),
-                captureType = CaptureType.MANDATORY,
+                captureType = MoveRule.CaptureType.MANDATORY,
                 moveCondition = { departureSquare, _, position ->
                     val neighbourSquare = departureSquare.rightNeighbour()
                     val movingPiece = position.pieceOn(departureSquare)
@@ -169,7 +169,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
             ),
             MoveRule(
                 direction = -Direction.diagonal(),
-                captureType = CaptureType.MANDATORY,
+                captureType = MoveRule.CaptureType.MANDATORY,
                 moveCondition = { departureSquare, _, position ->
                     val neighbourSquare = departureSquare.leftNeighbour()
                     val movingPiece = position.pieceOn(departureSquare)

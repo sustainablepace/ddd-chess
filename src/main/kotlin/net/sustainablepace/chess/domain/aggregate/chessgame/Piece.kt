@@ -1,10 +1,16 @@
 package net.sustainablepace.chess.domain.aggregate.chessgame
 
 sealed class PieceOrNoPiece
-object NoPiece: PieceOrNoPiece()
+object NoPiece : PieceOrNoPiece()
 
-sealed class Piece(val side: Side): PieceOrNoPiece() {
-    override fun toString() = when(side) {
+sealed class Piece(val side: Side) : PieceOrNoPiece() {
+    val isPromotionOption: Boolean
+        get() = when (this) {
+            is Pawn, is King -> false
+            is Knight, is Bishop, is Rook, is Queen -> true
+        }
+
+    override fun toString() = when (side) {
         is White -> "White"
         is Black -> "Black"
     } + when (this) {
@@ -16,6 +22,24 @@ sealed class Piece(val side: Side): PieceOrNoPiece() {
         is King -> "King"
     }
 }
+
+fun PromotionPiece(identifier: String, side: Side): PieceOrNoPiece =
+    when (side) {
+        is White -> when (identifier) {
+            "B" -> WhiteBishop
+            "N" -> WhiteKnight
+            "R" -> WhiteRook
+            "Q" -> WhiteQueen
+            else -> NoPiece
+        }
+        is Black -> when (identifier) {
+            "B" -> BlackBishop
+            "N" -> BlackKnight
+            "R" -> BlackRook
+            "Q" -> BlackQueen
+            else -> NoPiece
+        }
+    }
 
 abstract class Pawn(colour: Side) : Piece(colour)
 abstract class Knight(colour: Side) : Piece(colour)

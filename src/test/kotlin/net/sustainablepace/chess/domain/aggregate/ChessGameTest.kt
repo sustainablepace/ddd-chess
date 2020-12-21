@@ -58,4 +58,20 @@ class ChessGameTest {
         assertThat(chessGame.status).isEqualTo(DeadPosition)
     }
 
+
+    @Test
+    fun `two white bishops and kings are not dead position`() {
+        val chessGame = ChessGame(
+            Position(
+                mapOf(
+                    e1 to WhiteKing,
+                    e8 to BlackKing,
+                    c1 to WhiteBishop,
+                    f1 to WhiteBishop,
+                )
+            )
+        )
+        assertThat(chessGame.status).isEqualTo(InProgress)
+    }
+
 }

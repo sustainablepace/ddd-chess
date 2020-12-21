@@ -24,24 +24,30 @@
                 }
             }
 
-            let onDrop = function (departureSquare, arrivalSquare) {
-                let game = makeMove(departureSquare, arrivalSquare)
+            let onDrop = function (departureSquare, arrivalSquare, piece) {
+                let game = makeMove(departureSquare, arrivalSquare, piece)
                 if (game === null) {
                     return "snapback"
                 } else {
                     updateGame(game)
                     console.log(game)
-
                 }
             }
 
-            let makeMove = function (departureSquare, arrivalSquare) {
+            let makeMove = function (departureSquare, arrivalSquare, piece) {
                 let outcome = null
+                var promotionPiece = ""
+                if(piece === "wP" && arrivalSquare.substr(1,1) === "8" || piece === "bP" && arrivalSquare.substr(1,1) === "1") {
+                    promotionPiece = prompt("Which promotion piece? (b)ishop, k(n)ight, (r)ook, (q)ueen").toUpperCase()
+                    if(!(["B", "N", "R", "Q"].includes(promotionPiece))) {
+                        return makeMove(departureSquare, arrivalSquare, piece)
+                    }
+                }
                 $.ajax({
                     type: "post",
                     async: false,
                     url: "/move/" + chessGame.id,
-                    data: departureSquare + "-" + arrivalSquare,
+                    data: departureSquare + "-" + arrivalSquare + promotionPiece,
                     contentType: "text/plain",
                     success: function (game) {
                         outcome = game

@@ -2,14 +2,14 @@ package net.sustainablepace.chess.domain.event
 
 import net.sustainablepace.chess.domain.aggregate.ChessGame
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
-import net.sustainablepace.chess.domain.move.Move
+import net.sustainablepace.chess.domain.move.ValidMove
 
 interface ChessGameEvent : Event {
-    fun movePiece(move: Move): PieceMovedOrNot
+    fun movePiece(move: ValidMove): PieceMovedOrNot
 
     fun getActivePlayer(): Player
     fun pieceOn(arrivalSquare: Square): PieceOrNoPiece
-    fun moveOptions(): Set<Move>
+    fun moveOptions(): Set<ValidMove>
     val id: ChessGameId
     val position: Position
     val white: Player
@@ -27,7 +27,7 @@ sealed class PieceMovedOrNot : ChessGameEvent {
 }
 
 class PieceMoved(
-    val move: Move,
+    val move: ValidMove,
     override val chessGame: ChessGame
 ) : PieceMovedOrNot(), ChessGameEvent by chessGame
 
@@ -41,7 +41,7 @@ sealed class MoveCalculatedOrNot : ChessGameEvent {
 }
 
 class MoveCalculated(
-    val move: Move,
+    val move: ValidMove,
     override val chessGame: ChessGame
 ) : MoveCalculatedOrNot(), ChessGameEvent by chessGame
 

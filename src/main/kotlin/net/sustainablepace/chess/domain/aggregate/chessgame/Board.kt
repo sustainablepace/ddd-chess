@@ -1,6 +1,8 @@
 package net.sustainablepace.chess.domain.aggregate.chessgame
 
 import net.sustainablepace.chess.domain.move.Move
+import net.sustainablepace.chess.domain.move.PromotionMove
+import net.sustainablepace.chess.domain.move.ValidMove
 
 typealias Board = Map<Square, Piece>
 
@@ -14,28 +16,47 @@ fun Board.findSquares(side: Side): Set<Square> = filter {
     it.value.side == side
 }.keys
 
+fun Board.findPieces(side: Side): List<Pair<Square, Piece>> = filter {
+    it.value.side == side
+}.map { (square, piece) ->
+    square to piece
+}
+
 fun Board.isDeadPosition(): Boolean =
     containsOnlyKings() ||
         containsOnlyKingsAndOneBishop() ||
         containsOnlyKingsAndOneKnight() ||
         containsOnlyKingsAndTwoBishopsOnSameSquareColour()
 
-private fun Board.containsOnlyKings() = values.toSet() == setOf(WhiteKing, BlackKing)
+private fun Board.containsOnlyKings() = values.size == 2 && values.toSet() == setOf(WhiteKing, BlackKing)
 private fun Board.containsOnlyKingsAndOneBishop() = values.toSet().let {
-    it == setOf(WhiteKing, BlackKing, WhiteBishop) || it == setOf(WhiteKing, BlackKing, BlackBishop)
+    values.size == 3 && (it == setOf(WhiteKing, BlackKing, WhiteBishop) || it == setOf(
+        WhiteKing,
+        BlackKing,
+        BlackBishop
+    ))
 }
+
 private fun Board.containsOnlyKingsAndOneKnight() = values.toSet().let {
-    it == setOf(WhiteKing, BlackKing, WhiteKnight) || it == setOf(WhiteKing, BlackKing, BlackKnight)
+    values.size == 3 && (it == setOf(WhiteKing, BlackKing, WhiteKnight) || it == setOf(
+        WhiteKing,
+        BlackKing,
+        BlackKnight
+    ))
 }
+
 private fun Board.containsOnlyKingsAndTwoBishopsOnSameSquareColour() =
-    values.toSet() == setOf(WhiteKing, BlackKing, WhiteBishop, BlackBishop) &&
+    values.size == 4 && values.toSet() == setOf(WhiteKing, BlackKing, WhiteBishop, BlackBishop) &&
         filter { it.value is Bishop }.map { it.key.colour() }.distinct().size == 1
 
-fun Board.movePiece(move: Move, movingPiece: Piece, enPassantSquare: EnPassantSquare): Board {
+fun Board.movePiece(move: ValidMove, movingPiece: Piece, enPassantSquare: EnPassantSquare): Board {
     val updatedBoard = mutableMapOf<Square, Piece>()
     updatedBoard.putAll(this)
 
-    updatedBoard[move.arrivalSquare] = movingPiece
+    updatedBoard[move.arrivalSquare] = when (move) {
+        is Move -> movingPiece
+        is PromotionMove -> move.piece
+    }
     updatedBoard.remove(move.departureSquare)
 
     // castling
@@ -51,13 +72,6 @@ fun Board.movePiece(move: Move, movingPiece: Piece, enPassantSquare: EnPassantSq
     } else if (updatedBoard[move.arrivalSquare] is BlackKing && move == Move(e8, g8)) {
         updatedBoard[f8] = BlackRook
         updatedBoard.remove(h8)
-    }
-
-    // Promotion
-    if (updatedBoard[move.arrivalSquare] is WhitePawn && move.arrivalSquare.rank == 8) {
-        updatedBoard[move.arrivalSquare] = WhiteQueen
-    } else if (updatedBoard[move.arrivalSquare] is BlackPawn && move.arrivalSquare.rank == 1) {
-        updatedBoard[move.arrivalSquare] = BlackQueen
     }
 
     // En passant capturing

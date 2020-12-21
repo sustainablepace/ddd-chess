@@ -3,7 +3,7 @@ package net.sustainablepace.chess.domain.aggregate
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.event.PieceNotMoved
 import net.sustainablepace.chess.domain.move.Move
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class CastlingTest {
@@ -24,31 +24,31 @@ class CastlingTest {
                 )
             )
         )
-        Assertions.assertThat(chessGame.position.whiteCastlingOptions.kingSide).isTrue()
-        Assertions.assertThat(chessGame.position.whiteCastlingOptions.queenSide).isTrue()
-        Assertions.assertThat(chessGame.position.blackCastlingOptions.kingSide).isTrue()
-        Assertions.assertThat(chessGame.position.blackCastlingOptions.queenSide).isTrue()
+        assertThat(chessGame.position.whiteCastlingOptions.kingSide).isTrue()
+        assertThat(chessGame.position.whiteCastlingOptions.queenSide).isTrue()
+        assertThat(chessGame.position.blackCastlingOptions.kingSide).isTrue()
+        assertThat(chessGame.position.blackCastlingOptions.queenSide).isTrue()
 
         val gameAfterWhiteCastling = chessGame
             .movePiece(Move(e1, c1))
 
-        Assertions.assertThat(gameAfterWhiteCastling.numberOfNextMove).isEqualTo(2)
-        Assertions.assertThat(gameAfterWhiteCastling.pieceOn(c1)).isEqualTo(WhiteKing)
-        Assertions.assertThat(gameAfterWhiteCastling.pieceOn(d1)).isEqualTo(WhiteRook)
-        Assertions.assertThat(gameAfterWhiteCastling.position.whiteCastlingOptions.kingSide).isFalse()
-        Assertions.assertThat(gameAfterWhiteCastling.position.whiteCastlingOptions.queenSide).isFalse()
-        Assertions.assertThat(gameAfterWhiteCastling.position.blackCastlingOptions.kingSide).isTrue()
-        Assertions.assertThat(gameAfterWhiteCastling.position.blackCastlingOptions.queenSide).isTrue()
+        assertThat(gameAfterWhiteCastling.numberOfNextMove).isEqualTo(2)
+        assertThat(gameAfterWhiteCastling.pieceOn(c1)).isEqualTo(WhiteKing)
+        assertThat(gameAfterWhiteCastling.pieceOn(d1)).isEqualTo(WhiteRook)
+        assertThat(gameAfterWhiteCastling.position.whiteCastlingOptions.kingSide).isFalse()
+        assertThat(gameAfterWhiteCastling.position.whiteCastlingOptions.queenSide).isFalse()
+        assertThat(gameAfterWhiteCastling.position.blackCastlingOptions.kingSide).isTrue()
+        assertThat(gameAfterWhiteCastling.position.blackCastlingOptions.queenSide).isTrue()
 
         val gameAfterBlackCastling = gameAfterWhiteCastling
             .movePiece(Move(e8, c8))
-        Assertions.assertThat(gameAfterBlackCastling.numberOfNextMove).isEqualTo(3)
-        Assertions.assertThat(gameAfterBlackCastling.pieceOn(c8)).isEqualTo(BlackKing)
-        Assertions.assertThat(gameAfterBlackCastling.pieceOn(d8)).isEqualTo(BlackRook)
-        Assertions.assertThat(gameAfterBlackCastling.position.whiteCastlingOptions.kingSide).isFalse()
-        Assertions.assertThat(gameAfterBlackCastling.position.whiteCastlingOptions.queenSide).isFalse()
-        Assertions.assertThat(gameAfterBlackCastling.position.blackCastlingOptions.kingSide).isFalse()
-        Assertions.assertThat(gameAfterBlackCastling.position.blackCastlingOptions.queenSide).isFalse()
+        assertThat(gameAfterBlackCastling.numberOfNextMove).isEqualTo(3)
+        assertThat(gameAfterBlackCastling.pieceOn(c8)).isEqualTo(BlackKing)
+        assertThat(gameAfterBlackCastling.pieceOn(d8)).isEqualTo(BlackRook)
+        assertThat(gameAfterBlackCastling.position.whiteCastlingOptions.kingSide).isFalse()
+        assertThat(gameAfterBlackCastling.position.whiteCastlingOptions.queenSide).isFalse()
+        assertThat(gameAfterBlackCastling.position.blackCastlingOptions.kingSide).isFalse()
+        assertThat(gameAfterBlackCastling.position.blackCastlingOptions.queenSide).isFalse()
     }
 
 
@@ -64,10 +64,10 @@ class CastlingTest {
             )
         ).movePiece(Move(e1, g1))
 
-        Assertions.assertThat(chessGame).isInstanceOf(PieceNotMoved::class.java)
+        assertThat(chessGame).isInstanceOf(PieceNotMoved::class.java)
 
-        Assertions.assertThat(chessGame.position.whiteCastlingOptions.queenSide).isTrue()
-        Assertions.assertThat(chessGame.position.whiteCastlingOptions.kingSide).isTrue()
+        assertThat(chessGame.position.whiteCastlingOptions.queenSide).isTrue()
+        assertThat(chessGame.position.whiteCastlingOptions.kingSide).isTrue()
     }
 
     @Test
@@ -83,10 +83,10 @@ class CastlingTest {
             )
         ).movePiece(Move(e8, g8))
 
-        Assertions.assertThat(chessGame).isInstanceOf(PieceNotMoved::class.java)
+        assertThat(chessGame).isInstanceOf(PieceNotMoved::class.java)
 
-        Assertions.assertThat(chessGame.position.blackCastlingOptions.queenSide).isTrue()
-        Assertions.assertThat(chessGame.position.blackCastlingOptions.kingSide).isTrue()
+        assertThat(chessGame.position.blackCastlingOptions.queenSide).isTrue()
+        assertThat(chessGame.position.blackCastlingOptions.kingSide).isTrue()
     }
 
     @Test
@@ -101,10 +101,10 @@ class CastlingTest {
             )
         ).movePiece(Move(e1, c1))
 
-        Assertions.assertThat(chessGame).isInstanceOf(PieceNotMoved::class.java)
+        assertThat(chessGame).isInstanceOf(PieceNotMoved::class.java)
 
-        Assertions.assertThat(chessGame.position.whiteCastlingOptions.queenSide).isTrue()
-        Assertions.assertThat(chessGame.position.whiteCastlingOptions.kingSide).isTrue()
+        assertThat(chessGame.position.whiteCastlingOptions.queenSide).isTrue()
+        assertThat(chessGame.position.whiteCastlingOptions.kingSide).isTrue()
     }
 
     @Test
@@ -120,10 +120,10 @@ class CastlingTest {
             )
         ).movePiece(Move(e8, c8))
 
-        Assertions.assertThat(chessGame).isInstanceOf(PieceNotMoved::class.java)
+        assertThat(chessGame).isInstanceOf(PieceNotMoved::class.java)
 
-        Assertions.assertThat(chessGame.position.blackCastlingOptions.queenSide).isTrue()
-        Assertions.assertThat(chessGame.position.blackCastlingOptions.kingSide).isTrue()
+        assertThat(chessGame.position.blackCastlingOptions.queenSide).isTrue()
+        assertThat(chessGame.position.blackCastlingOptions.kingSide).isTrue()
     }
 
     @Test
@@ -138,10 +138,10 @@ class CastlingTest {
             )
         ).movePiece(Move(e1, g1))
 
-        Assertions.assertThat(chessGame).isInstanceOf(PieceNotMoved::class.java)
+        assertThat(chessGame).isInstanceOf(PieceNotMoved::class.java)
 
-        Assertions.assertThat(chessGame.position.whiteCastlingOptions.queenSide).isTrue()
-        Assertions.assertThat(chessGame.position.whiteCastlingOptions.kingSide).isTrue()
+        assertThat(chessGame.position.whiteCastlingOptions.queenSide).isTrue()
+        assertThat(chessGame.position.whiteCastlingOptions.kingSide).isTrue()
     }
 
     @Test
@@ -157,10 +157,10 @@ class CastlingTest {
             )
         ).movePiece(Move(e8, g8))
 
-        Assertions.assertThat(chessGame).isInstanceOf(PieceNotMoved::class.java)
+        assertThat(chessGame).isInstanceOf(PieceNotMoved::class.java)
 
-        Assertions.assertThat(chessGame.position.blackCastlingOptions.queenSide).isTrue()
-        Assertions.assertThat(chessGame.position.blackCastlingOptions.kingSide).isTrue()
+        assertThat(chessGame.position.blackCastlingOptions.queenSide).isTrue()
+        assertThat(chessGame.position.blackCastlingOptions.kingSide).isTrue()
     }
 
     @Test
@@ -175,10 +175,10 @@ class CastlingTest {
             )
         ).movePiece(Move(e1, c1))
 
-        Assertions.assertThat(chessGame).isInstanceOf(PieceNotMoved::class.java)
+        assertThat(chessGame).isInstanceOf(PieceNotMoved::class.java)
 
-        Assertions.assertThat(chessGame.position.whiteCastlingOptions.queenSide).isTrue()
-        Assertions.assertThat(chessGame.position.whiteCastlingOptions.kingSide).isTrue()
+        assertThat(chessGame.position.whiteCastlingOptions.queenSide).isTrue()
+        assertThat(chessGame.position.whiteCastlingOptions.kingSide).isTrue()
     }
 
     @Test
@@ -194,10 +194,10 @@ class CastlingTest {
             )
         ).movePiece(Move(e8, c8))
 
-        Assertions.assertThat(chessGame).isInstanceOf(PieceNotMoved::class.java)
+        assertThat(chessGame).isInstanceOf(PieceNotMoved::class.java)
 
-        Assertions.assertThat(chessGame.position.blackCastlingOptions.queenSide).isTrue()
-        Assertions.assertThat(chessGame.position.blackCastlingOptions.kingSide).isTrue()
+        assertThat(chessGame.position.blackCastlingOptions.queenSide).isTrue()
+        assertThat(chessGame.position.blackCastlingOptions.kingSide).isTrue()
     }
 
 
