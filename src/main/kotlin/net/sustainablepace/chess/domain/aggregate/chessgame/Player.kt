@@ -4,28 +4,40 @@ import net.sustainablepace.chess.domain.aggregate.ChessGame
 import net.sustainablepace.chess.domain.event.MoveCalculated
 import net.sustainablepace.chess.domain.event.MoveCalculatedOrNot
 import net.sustainablepace.chess.domain.event.NoMoveCalculated
-import kotlin.random.Random.Default.nextInt
+import net.sustainablepace.chess.domain.move.AlwaysCaptures
+import net.sustainablepace.chess.domain.move.Engine
+import net.sustainablepace.chess.domain.move.RandomMove
 
 sealed class Player
 
-abstract class ComputerPlayer : Player() {
+abstract class ComputerPlayer(val engine: Engine) : Player() {
     abstract fun calculateMove(chessGame: ChessGame): MoveCalculatedOrNot
 }
 
-object StupidComputerPlayer : ComputerPlayer() {
+object StupidComputerPlayer : ComputerPlayer(RandomMove) {
     override fun calculateMove(chessGame: ChessGame): MoveCalculatedOrNot =
-        chessGame.moveOptions().toList().let { moves ->
-            when (moves.size) {
-                0 -> NoMoveCalculated(
-                    reason = "No move available. Game is in status ${chessGame.status}",
-                    chessGame = chessGame
-                )
-                else -> MoveCalculated(
-                    move = moves[nextInt(0, moves.size)],
-                    chessGame = chessGame
-                )
-            }
-        }
+        engine.bestMove(chessGame)?.let {
+            MoveCalculated(
+                move = it,
+                chessGame = chessGame
+            )
+        } ?: NoMoveCalculated(
+            reason = "No move available. Game is in status ${chessGame.status}",
+            chessGame = chessGame
+        )
+}
+
+object AggressiveStupidComputerPlayer : ComputerPlayer(AlwaysCaptures) {
+    override fun calculateMove(chessGame: ChessGame): MoveCalculatedOrNot =
+        engine.bestMove(chessGame)?.let {
+            MoveCalculated(
+                move = it,
+                chessGame = chessGame
+            )
+        } ?: NoMoveCalculated(
+            reason = "No move available. Game is in status ${chessGame.status}",
+            chessGame = chessGame
+        )
 }
 
 object HumanPlayer : Player()

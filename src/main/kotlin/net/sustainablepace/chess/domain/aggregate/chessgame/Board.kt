@@ -50,8 +50,7 @@ private fun Board.containsOnlyKingsAndTwoBishopsOnSameSquareColour() =
         filter { it.value is Bishop }.map { it.key.colour() }.distinct().size == 1
 
 fun Board.movePiece(move: ValidMove, movingPiece: Piece, enPassantSquare: EnPassantSquare): Board {
-    val updatedBoard = mutableMapOf<Square, Piece>()
-    updatedBoard.putAll(this)
+    val updatedBoard = this.toMutableMap()
 
     updatedBoard[move.arrivalSquare] = when (move) {
         is Move -> movingPiece

@@ -66,6 +66,15 @@ class ChessGame private constructor(
 
 
     companion object {
+        operator fun invoke(white: ComputerPlayer, black: ComputerPlayer) =
+            PiecesHaveBeenSetUp(
+                ChessGame(
+                    id = chessGameId(),
+                    position = Position(),
+                    white = white,
+                    black = black
+                )
+            )
         operator fun invoke(): PiecesHaveBeenSetUp = ChessGame(Position())
         operator fun invoke(side: Side): PiecesHaveBeenSetUp = ChessGame(Position(turn = side))
         operator fun invoke(position: Position): PiecesHaveBeenSetUp =
@@ -73,9 +82,8 @@ class ChessGame private constructor(
                 ChessGame(
                     id = chessGameId(),
                     position = position,
-                    white = HumanPlayer, //StupidComputerPlayer,
-                    black = StupidComputerPlayer,
-                    movesWithoutCaptureOrPawnMove = 0
+                    white = HumanPlayer,
+                    black = AggressiveStupidComputerPlayer
                 )
             )
 

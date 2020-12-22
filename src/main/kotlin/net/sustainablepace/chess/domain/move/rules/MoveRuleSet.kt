@@ -6,23 +6,12 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
     constructor(vararg moveOptions: Set<MoveRule>) : this(moveOptions.flatMap { it }.toSet())
     constructor(vararg moveOptions: MoveRuleSet) : this(moveOptions.flatMap { it.moveRules }.toSet())
 
-    operator fun unaryMinus(): MoveRuleSet = MoveRuleSet(moveRules.map { -it }.toSet())
+    private operator fun unaryMinus(): MoveRuleSet = MoveRuleSet(moveRules.map { -it }.toSet())
 
     companion object {
+
         fun getRulesForPiece(piece: Piece): Set<MoveRule> =
-            when (piece) {
-                is Rook -> rookMoveRules
-                is Knight -> knightMoveRules
-                is Bishop -> bishopMoveRules
-                is Queen -> queenMoveRules
-                is King -> kingMoveRules
-                is Pawn -> pawnMoveRules
-            }.let { moveRules ->
-                when (piece.side) {
-                    is White -> moveRules
-                    is Black -> -moveRules
-                }
-            }.moveRules
+            rules[piece]?.moveRules ?: emptySet()
 
         private val rookMoveRules = MoveRuleSet(
             MoveRule(
@@ -193,5 +182,21 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                 }
             )
         )
+
+        private val rules = mapOf(
+            WhitePawn to pawnMoveRules,
+            BlackPawn to -pawnMoveRules,
+            WhiteRook to rookMoveRules,
+            BlackRook to -rookMoveRules,
+            WhiteKnight to knightMoveRules,
+            BlackKnight to -knightMoveRules,
+            WhiteBishop to bishopMoveRules,
+            BlackBishop to -bishopMoveRules,
+            WhiteQueen to queenMoveRules,
+            BlackQueen to -queenMoveRules,
+            WhiteKing to kingMoveRules,
+            BlackKing to -kingMoveRules
+         )
+
     }
 }

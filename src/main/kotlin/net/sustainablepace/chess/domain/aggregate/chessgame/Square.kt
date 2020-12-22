@@ -17,79 +17,160 @@ sealed class Square(val file: File, val rank: Rank) {
     override fun toString() = file + "" + rank
 
     companion object {
+        val charMap = mapOf<Char, Map<Int, Square>>(
+            'a' to mapOf<Int, Square>(
+                1 to a1,
+                2 to a2,
+                3 to a3,
+                4 to a4,
+                5 to a5,
+                6 to a6,
+                7 to a7,
+                8 to a8,
+            ),
+            'b' to mapOf<Int, Square>(
+                1 to b1,
+                2 to b2,
+                3 to b3,
+                4 to b4,
+                5 to b5,
+                6 to b6,
+                7 to b7,
+                8 to b8,
+            ),
+            'c' to mapOf<Int, Square>(
+                1 to c1,
+                2 to c2,
+                3 to c3,
+                4 to c4,
+                5 to c5,
+                6 to c6,
+                7 to c7,
+                8 to c8,
+            ),
+            'd' to mapOf<Int, Square>(
+                1 to d1,
+                2 to d2,
+                3 to d3,
+                4 to d4,
+                5 to d5,
+                6 to d6,
+                7 to d7,
+                8 to d8,
+            ),
+            'e' to mapOf<Int, Square>(
+                1 to e1,
+                2 to e2,
+                3 to e3,
+                4 to e4,
+                5 to e5,
+                6 to e6,
+                7 to e7,
+                8 to e8,
+            ),
+            'f' to mapOf<Int, Square>(
+                1 to f1,
+                2 to f2,
+                3 to f3,
+                4 to f4,
+                5 to f5,
+                6 to f6,
+                7 to f7,
+                8 to f8,
+            ),
+            'g' to mapOf<Int, Square>(
+                1 to g1,
+                2 to g2,
+                3 to g3,
+                4 to g4,
+                5 to g5,
+                6 to g6,
+                7 to g7,
+                8 to g8,
+            ),
+            'h' to mapOf<Int, Square>(
+                1 to h1,
+                2 to h2,
+                3 to h3,
+                4 to h4,
+                5 to h5,
+                6 to h6,
+                7 to h7,
+                8 to h8,
+            )
+        )
         operator fun invoke(square: String): Square? =
-            if (square.matches(Regex("[a-h][1-8]"))) {
-                invoke(square[0], square[1].toString().toInt())
-            } else null
-
-        operator fun invoke(file: File, rank: Rank): Square? =
-            when {
-                a1.file == file && a1.rank == rank -> a1
-                a2.file == file && a2.rank == rank -> a2
-                a3.file == file && a3.rank == rank -> a3
-                a4.file == file && a4.rank == rank -> a4
-                a5.file == file && a5.rank == rank -> a5
-                a6.file == file && a6.rank == rank -> a6
-                a7.file == file && a7.rank == rank -> a7
-                a8.file == file && a8.rank == rank -> a8
-                b1.file == file && b1.rank == rank -> b1
-                b2.file == file && b2.rank == rank -> b2
-                b3.file == file && b3.rank == rank -> b3
-                b4.file == file && b4.rank == rank -> b4
-                b5.file == file && b5.rank == rank -> b5
-                b6.file == file && b6.rank == rank -> b6
-                b7.file == file && b7.rank == rank -> b7
-                b8.file == file && b8.rank == rank -> b8
-                c1.file == file && c1.rank == rank -> c1
-                c2.file == file && c2.rank == rank -> c2
-                c3.file == file && c3.rank == rank -> c3
-                c4.file == file && c4.rank == rank -> c4
-                c5.file == file && c5.rank == rank -> c5
-                c6.file == file && c6.rank == rank -> c6
-                c7.file == file && c7.rank == rank -> c7
-                c8.file == file && c8.rank == rank -> c8
-                d1.file == file && d1.rank == rank -> d1
-                d2.file == file && d2.rank == rank -> d2
-                d3.file == file && d3.rank == rank -> d3
-                d4.file == file && d4.rank == rank -> d4
-                d5.file == file && d5.rank == rank -> d5
-                d6.file == file && d6.rank == rank -> d6
-                d7.file == file && d7.rank == rank -> d7
-                d8.file == file && d8.rank == rank -> d8
-                e1.file == file && e1.rank == rank -> e1
-                e2.file == file && e2.rank == rank -> e2
-                e3.file == file && e3.rank == rank -> e3
-                e4.file == file && e4.rank == rank -> e4
-                e5.file == file && e5.rank == rank -> e5
-                e6.file == file && e6.rank == rank -> e6
-                e7.file == file && e7.rank == rank -> e7
-                e8.file == file && e8.rank == rank -> e8
-                f1.file == file && f1.rank == rank -> f1
-                f2.file == file && f2.rank == rank -> f2
-                f3.file == file && f3.rank == rank -> f3
-                f4.file == file && f4.rank == rank -> f4
-                f5.file == file && f5.rank == rank -> f5
-                f6.file == file && f6.rank == rank -> f6
-                f7.file == file && f7.rank == rank -> f7
-                f8.file == file && f8.rank == rank -> f8
-                g1.file == file && g1.rank == rank -> g1
-                g2.file == file && g2.rank == rank -> g2
-                g3.file == file && g3.rank == rank -> g3
-                g4.file == file && g4.rank == rank -> g4
-                g5.file == file && g5.rank == rank -> g5
-                g6.file == file && g6.rank == rank -> g6
-                g7.file == file && g7.rank == rank -> g7
-                g8.file == file && g8.rank == rank -> g8
-                h1.file == file && h1.rank == rank -> h1
-                h2.file == file && h2.rank == rank -> h2
-                h3.file == file && h3.rank == rank -> h3
-                h4.file == file && h4.rank == rank -> h4
-                h5.file == file && h5.rank == rank -> h5
-                h6.file == file && h6.rank == rank -> h6
-                h7.file == file && h7.rank == rank -> h7
-                h8.file == file && h8.rank == rank -> h8
+            when(square) {
+                "a1" -> a1
+                "a2" -> a2
+                "a3" -> a3
+                "a4" -> a4
+                "a5" -> a5
+                "a6" -> a6
+                "a7" -> a7
+                "a8" -> a8
+                "b1" -> b1
+                "b2" -> b2
+                "b3" -> b3
+                "b4" -> b4
+                "b5" -> b5
+                "b6" -> b6
+                "b7" -> b7
+                "b8" -> b8
+                "c1" -> c1
+                "c2" -> c2
+                "c3" -> c3
+                "c4" -> c4
+                "c5" -> c5
+                "c6" -> c6
+                "c7" -> c7
+                "c8" -> c8
+                "d1" -> d1
+                "d2" -> d2
+                "d3" -> d3
+                "d4" -> d4
+                "d5" -> d5
+                "d6" -> d6
+                "d7" -> d7
+                "d8" -> d8
+                "e1" -> e1
+                "e2" -> e2
+                "e3" -> e3
+                "e4" -> e4
+                "e5" -> e5
+                "e6" -> e6
+                "e7" -> e7
+                "e8" -> e8
+                "f1" -> f1
+                "f2" -> f2
+                "f3" -> f3
+                "f4" -> f4
+                "f5" -> f5
+                "f6" -> f6
+                "f7" -> f7
+                "f8" -> f8
+                "g1" -> g1
+                "g2" -> g2
+                "g3" -> g3
+                "g4" -> g4
+                "g5" -> g5
+                "g6" -> g6
+                "g7" -> g7
+                "g8" -> g8
+                "h1" -> h1
+                "h2" -> h2
+                "h3" -> h3
+                "h4" -> h4
+                "h5" -> h5
+                "h6" -> h6
+                "h7" -> h7
+                "h8" -> h8
                 else -> null
             }
+
+
+        operator fun invoke(file: File, rank: Rank): Square? = charMap[file]?.get(rank)
+
     }
 }
 

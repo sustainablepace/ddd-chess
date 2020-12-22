@@ -54,18 +54,19 @@ data class Position(
             isSquareThreatenedBy(threatenedKingSquare, !side)
         } ?: false
 
-    override fun isSquareThreatenedBy(threatenedSquare: Square, side: Side): Boolean =
-        board.findPieces(side).find { (square, pieceToBeMoved) ->
-            MoveRuleSet.getRulesForPiece(pieceToBeMoved).flatMap { rule ->
-                if (rule.captureType == DISALLOWED) {
-                    emptySet()
-                } else {
-                    rule.findMoves(square, this)
+    override fun isSquareThreatenedBy(threatenedSquare: Square, side: Side): Boolean {
+        board.findPieces(side).forEach { (square, pieceToBeMoved) ->
+            val rules = MoveRuleSet.getRulesForPiece(pieceToBeMoved)
+            for (rule in rules) {
+                if (rule.captureType != DISALLOWED) {
+                    if(rule.isThreatened(threatenedSquare, this, square)) {
+                        return true
+                    }
                 }
-            }.toSet()
-                .map { it.arrivalSquare }
-                .contains(threatenedSquare)
-        } != null
+            }
+        }
+        return false
+    }
 
     override fun movePiece(move: ValidMove): PieceMovedOnBoardOrNot =
         when (val movingPiece = pieceOn(move.departureSquare)) {
