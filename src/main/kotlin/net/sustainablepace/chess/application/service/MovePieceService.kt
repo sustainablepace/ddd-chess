@@ -21,5 +21,5 @@ class MovePieceService(
                     is PieceNotMoved -> event
                 }
             }
-        } ?: throw IllegalArgumentException("Could not find game ${intent.chessGameId}.")
+        } ?: throw IllegalArgumentException("Could not find game ${intent.chessGameId}.") // TODO: Is this the best way?
 }

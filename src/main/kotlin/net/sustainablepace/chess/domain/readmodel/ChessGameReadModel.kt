@@ -18,14 +18,8 @@ data class ChessGameReadModel(
             when (side) {
                 is White -> "w"
                 is Black -> "b"
-            } + when (this) {
-                is Pawn -> "P"
-                is Knight -> "N"
-                is Rook -> "R"
-                is Bishop -> "B"
-                is Queen -> "Q"
-                is King -> "K"
-            }
+            } + this.shortType
+
 
         operator fun invoke(chessGame: ChessGame): ChessGameReadModel {
             return with(chessGame) {

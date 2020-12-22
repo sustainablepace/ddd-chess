@@ -11,22 +11,23 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
     companion object {
         fun getRulesForPiece(piece: Piece): Set<MoveRule> =
             when (piece) {
-            is Rook -> rookMoveRules
-            is Knight -> knightMoveRules
-            is Bishop -> bishopMoveRules
-            is Queen -> queenMoveRules
-            is King -> kingMoveRules
-            is Pawn -> pawnMoveRules
-        }.let { moveRules ->
-            when (piece.side) {
-                is White -> moveRules
-                is Black -> -moveRules
-            }
-        }.moveRules
+                is Rook -> rookMoveRules
+                is Knight -> knightMoveRules
+                is Bishop -> bishopMoveRules
+                is Queen -> queenMoveRules
+                is King -> kingMoveRules
+                is Pawn -> pawnMoveRules
+            }.let { moveRules ->
+                when (piece.side) {
+                    is White -> moveRules
+                    is Black -> -moveRules
+                }
+            }.moveRules
 
         private val rookMoveRules = MoveRuleSet(
             MoveRule(
                 direction = Direction.straightLine(),
+                captureType = MoveRule.CaptureType.ALLOWED,
                 pieceCanTakeMultipleSteps = true,
                 rotations = true
             )
@@ -35,10 +36,12 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
         private val knightMoveRules = MoveRuleSet(
             MoveRule(
                 direction = Direction.lShaped(),
+                captureType = MoveRule.CaptureType.ALLOWED,
                 rotations = true
             ),
             MoveRule(
                 direction = -Direction.lShaped(),
+                captureType = MoveRule.CaptureType.ALLOWED,
                 rotations = true
             )
         )
@@ -46,6 +49,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
         private val bishopMoveRules = MoveRuleSet(
             MoveRule(
                 direction = Direction.diagonal(),
+                captureType = MoveRule.CaptureType.ALLOWED,
                 pieceCanTakeMultipleSteps = true,
                 rotations = true
             )
@@ -59,44 +63,49 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
         private val kingMoveRules = MoveRuleSet(
             MoveRule(
                 direction = Direction.diagonal(),
+                captureType = MoveRule.CaptureType.ALLOWED,
                 rotations = true
             ),
             MoveRule(
                 direction = Direction.straightLine(),
+                captureType = MoveRule.CaptureType.ALLOWED,
                 rotations = true
             ),
+            // TODO Unify both castling rules (?)
             MoveRule(
                 direction = -Direction.castlingMove(), // queenside
+                captureType = MoveRule.CaptureType.DISALLOWED,
                 moveCondition = { departureSquare, arrivalSquare, position ->
-                    when (position.pieceOn(departureSquare)) {
-                        is WhiteKing -> departureSquare == e1 &&
-                            arrivalSquare == c1 &&
-                            position.pieceOn(a1) is WhiteRook &&
-                            position.whiteCastlingOptions.queenSide &&
-                            position.pieceOn(b1) is NoPiece &&
-                            position.pieceOn(c1) is NoPiece &&
-                            position.pieceOn(d1) is NoPiece &&
-                            !position.isSquareThreatenedBy(e1, Black) &&
-                            !position.isSquareThreatenedBy(b1, Black) &&
-                            !position.isSquareThreatenedBy(c1, Black) &&
-                            !position.isSquareThreatenedBy(d1, Black)
-                        is BlackKing -> departureSquare == e8 &&
-                            arrivalSquare == c8 &&
-                            position.pieceOn(a8) is BlackRook &&
-                            position.blackCastlingOptions.queenSide &&
-                            position.pieceOn(b8) is NoPiece &&
-                            position.pieceOn(c8) is NoPiece &&
-                            position.pieceOn(d8) is NoPiece &&
-                            !position.isSquareThreatenedBy(e8, White) &&
-                            !position.isSquareThreatenedBy(b8, White) &&
-                            !position.isSquareThreatenedBy(c8, White) &&
-                            !position.isSquareThreatenedBy(d8, White)
-                        else -> false
+                    with(position) {
+                        when (pieceOn(departureSquare)) {
+                            is WhiteKing -> departureSquare == e1 &&
+                                arrivalSquare == c1 &&
+                                pieceOn(a1) is WhiteRook &&
+                                whiteCastlingOptions.queenSide &&
+                                pieceOn(b1) is NoPiece &&
+                                pieceOn(c1) is NoPiece &&
+                                pieceOn(d1) is NoPiece &&
+                                !isSquareThreatenedBy(e1, Black) &&
+                                !isSquareThreatenedBy(b1, Black) &&
+                                !isSquareThreatenedBy(c1, Black) &&
+                                !isSquareThreatenedBy(d1, Black)
+                            is BlackKing ->
+                                blackCastlingOptions.queenSide &&
+                                    departureSquare == e8 && !isSquareThreatenedBy(e8, White) &&
+                                    pieceOn(d8) is NoPiece && !isSquareThreatenedBy(d8, White) &&
+                                    arrivalSquare == c8 &&
+                                    pieceOn(c8) is NoPiece && !isSquareThreatenedBy(c8, White) &&
+                                    pieceOn(b8) is NoPiece && !isSquareThreatenedBy(b8, White) &&
+                                    pieceOn(a8) is BlackRook
+                            else -> false
+                        }
                     }
+
                 }
             ),
             MoveRule(
                 direction = Direction.castlingMove(), // kingside
+                captureType = MoveRule.CaptureType.DISALLOWED,
                 moveCondition = { departureSquare, arrivalSquare, position ->
                     when (position.pieceOn(departureSquare)) {
                         is WhiteKing -> departureSquare == e1 &&
@@ -130,6 +139,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
             ),
             MoveRule(
                 direction = Direction.initialPawnMove(),
+                captureType = MoveRule.CaptureType.DISALLOWED,
                 moveCondition = { departureSquare, arrivalSquare, position ->
                     when (val movingPiece = position.pieceOn(departureSquare)) {
                         is NoPiece -> false

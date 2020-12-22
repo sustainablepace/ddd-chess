@@ -23,5 +23,5 @@ class CalculateMoveService(
                     chessGame = chessGame
                 )
             }
-        } ?: throw IllegalArgumentException("Could not find game ${intent.chessGameId}.")
+        } ?: throw IllegalArgumentException("Could not find game ${intent.chessGameId}.") // TODO: Is this the best way?
 }

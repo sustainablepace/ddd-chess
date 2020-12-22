@@ -2,13 +2,11 @@ package net.sustainablepace.chess.adapter.web
 
 import net.sustainablepace.chess.application.ApplicationService
 import net.sustainablepace.chess.application.port.`in`.command.CalculateMove
-import net.sustainablepace.chess.application.port.`in`.command.MoveString
-import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.domain.aggregate.chessgame.ChessGameId
 import net.sustainablepace.chess.domain.event.MoveCalculated
 import net.sustainablepace.chess.domain.event.MoveCalculatedOrNot
 import net.sustainablepace.chess.domain.event.NoMoveCalculated
-import net.sustainablepace.chess.domain.move.Move
-import net.sustainablepace.chess.domain.move.PromotionMove
+import net.sustainablepace.chess.domain.move.MoveInput
 import net.sustainablepace.chess.logger
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.badRequest
@@ -18,34 +16,22 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class CalculateMoveController(val calculateMoveService: ApplicationService<CalculateMove, MoveCalculatedOrNot>) {
+class CalculateMoveController(
+    val calculateMoveService: ApplicationService<CalculateMove, MoveCalculatedOrNot>
+) {
 
     val log = logger<CalculateMoveController>()
 
     @PostMapping("/calculateMove/{id}")
-    fun move(@PathVariable id: ChessGameId): ResponseEntity<MoveString> =
+    fun move(@PathVariable id: ChessGameId): ResponseEntity<MoveInput> =
         calculateMoveService.process(CalculateMove(id)).let { event ->
-            when(event) {
-                is MoveCalculated -> event.move.run {
-                    when(this) {
-                        is Move -> ok().body("$departureSquare-$arrivalSquare")
-                        is PromotionMove -> when (piece) {
-                            is Pawn -> "P"
-                            is Knight -> "N"
-                            is Rook -> "R"
-                            is Bishop -> "B"
-                            is Queen -> "Q"
-                            is King -> "K"
-                        }.let { promotionPiece ->
-                            ok().body("$departureSquare-$arrivalSquare$promotionPiece")
-                        }
-                    }
-
-                }
+            when (event) {
+                is MoveCalculated -> ok().body(event.move.toString())
                 is NoMoveCalculated -> event.run {
                     log.warn(reason)
                     badRequest().build()
                 }
             }
         }
+
 }

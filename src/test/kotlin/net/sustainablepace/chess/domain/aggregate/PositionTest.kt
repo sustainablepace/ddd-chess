@@ -205,4 +205,14 @@ class PositionTest {
         ))
         assertThat(position.isDeadPosition()).isTrue()
     }
+
+    @Test
+    fun `pawn advance does not threaten square ahead`() {
+        val position = Position(mapOf(
+            e5 to WhitePawn,
+            e7 to BlackKing
+        ))
+        assertThat(position.moveOptions()).contains(Move(e5, e6))
+        assertThat(position.isSquareThreatenedBy(e6, White)).isFalse()
+    }
 }

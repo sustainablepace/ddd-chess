@@ -11,7 +11,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.resource.PathResourceResolver
 import java.util.concurrent.TimeUnit
 
-
 @SpringBootApplication
 class ChessApplication
 
@@ -22,7 +21,7 @@ fun main(args: Array<String>) {
 inline fun <reified T> logger(): Logger = LoggerFactory.getLogger(T::class.java)
 
 @Configuration
-class CustomWebMVCConfig : WebMvcConfigurer {
+class CustomWebMVCConfig : WebMvcConfigurer { // TODO: how can this be configured?
 	override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
 		registry.addResourceHandler("/**")
 			.addResourceLocations("classpath:/static/")

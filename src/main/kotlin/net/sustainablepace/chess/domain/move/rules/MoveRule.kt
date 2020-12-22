@@ -4,7 +4,8 @@ import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.move.Move
 import net.sustainablepace.chess.domain.move.PromotionMove
 import net.sustainablepace.chess.domain.move.ValidMove
-import net.sustainablepace.chess.domain.move.rules.MoveRule.CaptureType.*
+import net.sustainablepace.chess.domain.move.rules.MoveRule.CaptureType.DISALLOWED
+import net.sustainablepace.chess.domain.move.rules.MoveRule.CaptureType.MANDATORY
 
 typealias MoveCondition = (
     departureSquare: Square,
@@ -15,6 +16,7 @@ typealias MoveCondition = (
 sealed class MoveRule {
 
     abstract val direction: Direction
+    abstract val captureType: CaptureType
 
     abstract fun findMoves(
         departureSquare: Square,
@@ -26,13 +28,13 @@ sealed class MoveRule {
     companion object {
         operator fun invoke(
             direction: Direction,
-            captureType: CaptureType = ALLOWED,
+            captureType: CaptureType,
             pieceCanTakeMultipleSteps: Boolean = false,
             rotations: Boolean = false,
             moveCondition: MoveCondition? = null
         ): Set<MoveRule> =
             when (moveCondition) {
-                is MoveCondition -> setOf(CustomizedRule(direction, moveCondition))
+                is MoveCondition -> setOf(CustomizedRule(direction, captureType, moveCondition))
                 else -> when (rotations) {
                     true -> (1..4).map { direction.rotate(it % 4) }
                     false -> listOf(direction)
@@ -48,7 +50,7 @@ sealed class MoveRule {
 
     class ParameterizedRule(
         override val direction: Direction,
-        private val captureType: CaptureType,
+        override val captureType: CaptureType,
         private val pieceCanTakeMultipleSteps: Boolean = false
     ) : MoveRule() {
         override fun findMoves(
@@ -101,6 +103,7 @@ sealed class MoveRule {
 
     class CustomizedRule(
         override val direction: Direction,
+        override val captureType: CaptureType,
         private val moveCondition: MoveCondition
     ) : MoveRule() {
         override fun findMoves(
@@ -121,6 +124,7 @@ sealed class MoveRule {
 
         override operator fun unaryMinus(): MoveRule = CustomizedRule(
             direction = !direction,
+            captureType = captureType,
             moveCondition = moveCondition
         )
     }

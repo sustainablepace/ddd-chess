@@ -5,7 +5,7 @@ import net.sustainablepace.chess.domain.event.PieceMovedOnBoardOrNot
 import net.sustainablepace.chess.domain.event.PieceNotMovedOnBoard
 import net.sustainablepace.chess.domain.event.PositionEvent
 import net.sustainablepace.chess.domain.move.ValidMove
-import net.sustainablepace.chess.domain.move.rules.Direction.Companion.castlingMove
+import net.sustainablepace.chess.domain.move.rules.MoveRule.CaptureType.DISALLOWED
 import net.sustainablepace.chess.domain.move.rules.MoveRuleSet
 
 typealias EnPassantSquare = Square?
@@ -57,8 +57,7 @@ data class Position(
     override fun isSquareThreatenedBy(threatenedSquare: Square, side: Side): Boolean =
         board.findPieces(side).find { (square, pieceToBeMoved) ->
             MoveRuleSet.getRulesForPiece(pieceToBeMoved).flatMap { rule ->
-                // Ignore castling moves because they don't threaten immediately
-                if (pieceToBeMoved is King && rule.direction in setOf(castlingMove(), -castlingMove())) {
+                if (rule.captureType == DISALLOWED) {
                     emptySet()
                 } else {
                     rule.findMoves(square, this)

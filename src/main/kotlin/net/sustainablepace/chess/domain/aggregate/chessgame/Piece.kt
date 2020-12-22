@@ -10,6 +10,16 @@ sealed class Piece(val side: Side) : PieceOrNoPiece() {
             is Knight, is Bishop, is Rook, is Queen -> true
         }
 
+    val shortType: Char
+        get() = when (this) {
+            is Pawn -> 'P'
+            is Knight -> 'N'
+            is Rook -> 'R'
+            is Bishop -> 'B'
+            is Queen -> 'Q'
+            is King -> 'K'
+        }
+
     override fun toString() = when (side) {
         is White -> "White"
         is Black -> "Black"
@@ -23,20 +33,20 @@ sealed class Piece(val side: Side) : PieceOrNoPiece() {
     }
 }
 
-fun PromotionPiece(identifier: String, side: Side): PieceOrNoPiece =
+fun PromotionPiece(identifier: Char, side: Side): PieceOrNoPiece =
     when (side) {
         is White -> when (identifier) {
-            "B" -> WhiteBishop
-            "N" -> WhiteKnight
-            "R" -> WhiteRook
-            "Q" -> WhiteQueen
+            WhiteBishop.shortType -> WhiteBishop
+            WhiteKnight.shortType -> WhiteKnight
+            WhiteRook.shortType -> WhiteRook
+            WhiteQueen.shortType -> WhiteQueen
             else -> NoPiece
         }
         is Black -> when (identifier) {
-            "B" -> BlackBishop
-            "N" -> BlackKnight
-            "R" -> BlackRook
-            "Q" -> BlackQueen
+            BlackBishop.shortType -> BlackBishop
+            BlackKnight.shortType -> BlackKnight
+            BlackRook.shortType -> BlackRook
+            BlackQueen.shortType -> BlackQueen
             else -> NoPiece
         }
     }
