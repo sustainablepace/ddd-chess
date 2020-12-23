@@ -17,87 +17,15 @@ sealed class Square(val file: File, val rank: Rank) {
     override fun toString() = file + "" + rank
 
     companion object {
-        val charMap = mapOf<Char, Map<Int, Square>>(
-            'a' to mapOf<Int, Square>(
-                1 to a1,
-                2 to a2,
-                3 to a3,
-                4 to a4,
-                5 to a5,
-                6 to a6,
-                7 to a7,
-                8 to a8,
-            ),
-            'b' to mapOf<Int, Square>(
-                1 to b1,
-                2 to b2,
-                3 to b3,
-                4 to b4,
-                5 to b5,
-                6 to b6,
-                7 to b7,
-                8 to b8,
-            ),
-            'c' to mapOf<Int, Square>(
-                1 to c1,
-                2 to c2,
-                3 to c3,
-                4 to c4,
-                5 to c5,
-                6 to c6,
-                7 to c7,
-                8 to c8,
-            ),
-            'd' to mapOf<Int, Square>(
-                1 to d1,
-                2 to d2,
-                3 to d3,
-                4 to d4,
-                5 to d5,
-                6 to d6,
-                7 to d7,
-                8 to d8,
-            ),
-            'e' to mapOf<Int, Square>(
-                1 to e1,
-                2 to e2,
-                3 to e3,
-                4 to e4,
-                5 to e5,
-                6 to e6,
-                7 to e7,
-                8 to e8,
-            ),
-            'f' to mapOf<Int, Square>(
-                1 to f1,
-                2 to f2,
-                3 to f3,
-                4 to f4,
-                5 to f5,
-                6 to f6,
-                7 to f7,
-                8 to f8,
-            ),
-            'g' to mapOf<Int, Square>(
-                1 to g1,
-                2 to g2,
-                3 to g3,
-                4 to g4,
-                5 to g5,
-                6 to g6,
-                7 to g7,
-                8 to g8,
-            ),
-            'h' to mapOf<Int, Square>(
-                1 to h1,
-                2 to h2,
-                3 to h3,
-                4 to h4,
-                5 to h5,
-                6 to h6,
-                7 to h7,
-                8 to h8,
-            )
+        private val charMap = arrayOf(
+            arrayOf(a1,a2,a3,a4,a5,a6,a7,a8),
+            arrayOf(b1,b2,b3,b4,b5,b6,b7,b8),
+            arrayOf(c1,c2,c3,c4,c5,c6,c7,c8),
+            arrayOf(d1,d2,d3,d4,d5,d6,d7,d8),
+            arrayOf(e1,e2,e3,e4,e5,e6,e7,e8),
+            arrayOf(f1,f2,f3,f4,f5,f6,f7,f8),
+            arrayOf(g1,g2,g3,g4,g5,g6,g7,g8),
+            arrayOf(h1,h2,h3,h4,h5,h6,h7,h8)
         )
         operator fun invoke(square: String): Square? =
             when(square) {
@@ -168,9 +96,9 @@ sealed class Square(val file: File, val rank: Rank) {
                 else -> null
             }
 
-
-        operator fun invoke(file: File, rank: Rank): Square? = charMap[file]?.get(rank)
-
+        operator fun invoke(file: File, rank: Rank): Square? = if(file - 'a' in 0..7 && rank-1 in 0..7 ) {
+            charMap[file-'a'][rank-1]
+        } else null
     }
 }
 
