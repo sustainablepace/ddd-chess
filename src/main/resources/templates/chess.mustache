@@ -93,8 +93,9 @@
                 }
 
                 if(chessGame.computerTurn && chessGame.status === "InProgress") {
+                    await new Promise(r => setTimeout(r, 100));
                     let move = suggestMove()
-                    await new Promise(r => setTimeout(r, 500));
+                    await new Promise(r => setTimeout(r, 100));
                     if(move !== null) {
                         let squares = move.split("-")
                         onDrop(squares[0], squares[1])

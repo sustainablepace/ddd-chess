@@ -82,8 +82,8 @@ class ChessGame private constructor(
                 ChessGame(
                     id = chessGameId(),
                     position = position,
-                    white = HumanPlayer,
-                    black = MinimaxComputerPlayer
+                    white = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer,
+                    black = HumanPlayer
                 )
             )
 

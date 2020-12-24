@@ -20,7 +20,7 @@ sealed class Engine {
                     is Rook -> 50
                     is Queen -> 90
                     is King -> 900
-                } * Weight(square, piece)
+                } + Weight(square, piece)
             }
         }
     }
@@ -153,5 +153,65 @@ object MinimaxWithDepth : Engine() {
             else -> engineMove to 0
         }
     }
+}
+
+data class MinimaxData(val engineMove: ValidMove?, val score: Double, val depth: Int)
+
+object MinimaxWithDepthAndSophisticatedEvaluation : Engine() {
+    override fun bestMove(chessGame: ChessGameEvent): ValidMove? {
+        val moves = minimax(chessGame, 4, chessGame.position.turn)
+
+        return if (moves.size > 0) {
+            moves.sortedBy { it.depth }.last().engineMove
+        } else null
+    }
+
+    private fun minimax(chessGame: ChessGameEvent, depth: Int, maximizingSide: Side): List<MinimaxData> {
+        return when (chessGame.status) {
+            Checkmate -> listOf(
+                MinimaxData(
+                    engineMove = null,
+                    score = if(chessGame.position.turn == maximizingSide) Double.MIN_VALUE else Double.MAX_VALUE,
+                    depth = depth
+                )
+            )
+            InProgress ->
+                chessGame.moveOptions().flatMap { engineMove ->
+                    when (val event = chessGame.movePiece(engineMove)) {
+                        is PieceMoved -> event.let { opponentChessGame ->
+                            if (depth == 1) {
+                                listOf(
+                                    MinimaxData(
+                                        engineMove,
+                                        sophisticatedEvaluation(
+                                            opponentChessGame.position.board,
+                                            maximizingSide
+                                        ),
+                                        depth
+                                    )
+                                )
+                            } else {
+                                minimax(opponentChessGame, depth - 1, maximizingSide).map {
+                                    MinimaxData(engineMove, it.score, it.depth)
+                                }
+                            }
+                        }
+                        is PieceNotMoved -> emptyList()
+                    }
+                }.let { minimaxDataList ->
+                    val agg = if(chessGame.position.turn == maximizingSide) {
+                        minimaxDataList.map { it.score }.maxOrNull()
+                    } else {
+                        minimaxDataList.map { it.score }.minOrNull()
+                    }
+                    minimaxDataList.filter {
+                        it.score == agg
+                    }.distinct()
+                }
+            else -> listOf(MinimaxData(null, 0.0, depth))
+        }
+    }
+
+
 }
 

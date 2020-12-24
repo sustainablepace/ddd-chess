@@ -26,8 +26,25 @@ class MinimaxTest {
             is MoveCalculated -> assertThat(moveCalculated.move).isEqualTo(Move(b1, c2))
             else -> fail("no move calculated")
         }
+    }
 
+    @Test
+    fun `find best move minimax with depth`() {
+        // see https://www.freecodecamp.org/news/simple-chess-ai-step-by-step-1d55a9266977/
+        val chessGame = ChessGame(
+            position = Position(
+                board = mapOf(
+                    b1 to WhiteBishop,
+                    a2 to BlackKnight,
+                    c2 to BlackBishop,
+                    a3 to BlackRook
+                )
+            )
+        )
 
-
+        when(val moveCalculated = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer.calculateMove(chessGame.chessGame)){
+            is MoveCalculated -> assertThat(moveCalculated.move).isEqualTo(Move(b1, c2))
+            else -> fail("no move calculated")
+        }
     }
 }

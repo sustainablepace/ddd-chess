@@ -12,9 +12,9 @@ object Weight {
 
         return when (piece) {
             is Pawn -> pawnWeights
-            is Knight -> TODO()
-            is Rook -> TODO()
-            is Bishop -> TODO()
+            is Knight -> knightWeights
+            is Rook -> rookWeights
+            is Bishop -> bishopWeights
             is Queen -> queenWeights
             is King -> kingWeights
         }[rankIndex][fileIndex]
@@ -53,6 +53,37 @@ object Weight {
         doubleArrayOf(-2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0)
     )
 
+    private val bishopWeights = arrayOf(
+        doubleArrayOf(-2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0),
+        doubleArrayOf(-1.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, -1.0),
+        doubleArrayOf(-1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0),
+        doubleArrayOf(-1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, -1.0),
+        doubleArrayOf(-1.0, 0.5, 0.5, 1.0, 1.0, 0.5, 0.5, -1.0),
+        doubleArrayOf(-1.0, 0.0, 0.5, 1.0, 1.0, 0.5, 0.0, -1.0),
+        doubleArrayOf(-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0),
+        doubleArrayOf(-2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0)
+    )
 
+    private val knightWeights = arrayOf(
+        doubleArrayOf(-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0),
+        doubleArrayOf(-4.0, -2.0, 0.0, 0.5, 0.5, 0.0, -2.0, -4.0),
+        doubleArrayOf(-3.0, 0.5, 1.0, 1.5, 1.5, 1.0, 0.5, -3.0),
+        doubleArrayOf(-3.0, 0.0, 1.5, 2.0, 2.0, 1.5, 0.0, -3.0),
+        doubleArrayOf(-3.0, 0.5, 1.5, 2.0, 2.0, 1.5, 0.5, -3.0),
+        doubleArrayOf(-3.0, 0.0, 1.0, 1.5, 1.5, 1.0, 0.0, -3.0),
+        doubleArrayOf(-4.0, -2.0, 0.0, 0.0, 0.0, 0.0, -2.0, -4.0),
+        doubleArrayOf(-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0)
+    )
+
+    private val rookWeights = arrayOf(
+        doubleArrayOf(0.0, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.0),
+        doubleArrayOf(-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5),
+        doubleArrayOf(-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5),
+        doubleArrayOf(-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5),
+        doubleArrayOf(-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5),
+        doubleArrayOf(-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5),
+        doubleArrayOf(0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5),
+        doubleArrayOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    )
 }
 
