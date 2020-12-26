@@ -12,7 +12,7 @@ sealed class Engine {
     fun sophisticatedEvaluation(board: Board, engineSide: Side): Double {
         return setOf(White, Black).sumByDouble { side ->
             val factor = if (side == engineSide) 1 else -1
-            factor * board.findPieces(side).sumByDouble { (square, piece) ->
+            val s = factor * board.findPieces(side).sumByDouble { (square, piece) ->
                 when (piece) {
                     is Pawn -> 10
                     is Knight -> 30
@@ -22,6 +22,7 @@ sealed class Engine {
                     is King -> 900
                 } + Weight(square, piece)
             }
+            s
         }
     }
 
@@ -147,7 +148,6 @@ object MinimaxWithDepth : Engine() {
                         engineMove to bestCase.second
                     }
                 }
-                //println("$r, $depth")
                 r
             }
             else -> engineMove to 0
@@ -159,57 +159,121 @@ data class MinimaxData(val engineMove: ValidMove?, val score: Double, val depth:
 
 object MinimaxWithDepthAndSophisticatedEvaluation : Engine() {
     override fun bestMove(chessGame: ChessGameEvent): ValidMove? {
-        val moves = minimax(chessGame, 4, chessGame.position.turn)
+        val moves = minimax(chessGame, 4, chessGame.position.turn, -Double.MAX_VALUE, Double.MAX_VALUE)
 
         return if (moves.size > 0) {
-            moves.sortedBy { it.depth }.last().engineMove
+            moves.sortedBy { it.depth }[Random.nextInt(0, moves.size)].engineMove
         } else null
     }
 
-    private fun minimax(chessGame: ChessGameEvent, depth: Int, maximizingSide: Side): List<MinimaxData> {
-        return when (chessGame.status) {
-            Checkmate -> listOf(
-                MinimaxData(
-                    engineMove = null,
-                    score = if(chessGame.position.turn == maximizingSide) Double.MIN_VALUE else Double.MAX_VALUE,
-                    depth = depth
+    private fun minimax(
+        chessGame: ChessGameEvent,
+        depth: Int,
+        maximizingSide: Side,
+        alpha: Double,
+        beta: Double
+    ): List<MinimaxData> {
+        var maxEval = -Double.MAX_VALUE
+        var minEval = Double.MAX_VALUE
+        var a = alpha
+        var b = beta
+        return if (chessGame.position.turn == maximizingSide) {
+            when (chessGame.status) {
+                Checkmate -> listOf(
+                    MinimaxData(
+                        engineMove = null,
+                        score = -Double.MAX_VALUE,
+                        depth = depth
+                    )
                 )
-            )
-            InProgress ->
-                chessGame.moveOptions().flatMap { engineMove ->
-                    when (val event = chessGame.movePiece(engineMove)) {
-                        is PieceMoved -> event.let { opponentChessGame ->
-                            if (depth == 1) {
-                                listOf(
-                                    MinimaxData(
-                                        engineMove,
-                                        sophisticatedEvaluation(
-                                            opponentChessGame.position.board,
-                                            maximizingSide
-                                        ),
-                                        depth
+                InProgress -> {
+                    val moves = chessGame.moveOptions()
+                    val minimaxDataList: MutableList<MinimaxData> = mutableListOf()
+
+                    for (engineMove in moves) {
+                        val event = chessGame.movePiece(engineMove)
+                        if (event is PieceMoved) {
+                            val minimaxData = if (depth == 1) {
+                                sophisticatedEvaluation(
+                                    event.position.board,
+                                    maximizingSide
+                                ).let { eval ->
+                                    listOf(
+                                        MinimaxData(
+                                            engineMove,
+                                            eval,
+                                            depth
+                                        )
                                     )
-                                )
-                            } else {
-                                minimax(opponentChessGame, depth - 1, maximizingSide).map {
-                                    MinimaxData(engineMove, it.score, it.depth)
                                 }
+                            } else {
+                                minimax(event.chessGame, depth - 1, maximizingSide, a, b)
+                            }
+                            val eval = minimaxData.map { it.score }.firstOrNull() ?: -Double.MAX_VALUE
+                            maxEval = if (eval > maxEval) eval else maxEval
+                            a = if (eval > a) eval else a
+
+                            minimaxDataList.addAll(minimaxData.map { it.copy(engineMove = engineMove) }.distinct())
+
+                            if (b < a) {
+                                break
                             }
                         }
-                        is PieceNotMoved -> emptyList()
                     }
-                }.let { minimaxDataList ->
-                    val agg = if(chessGame.position.turn == maximizingSide) {
-                        minimaxDataList.map { it.score }.maxOrNull()
-                    } else {
-                        minimaxDataList.map { it.score }.minOrNull()
-                    }
-                    minimaxDataList.filter {
-                        it.score == agg
-                    }.distinct()
+                    minimaxDataList.filter { it.score == maxEval }
                 }
-            else -> listOf(MinimaxData(null, 0.0, depth))
+                else -> listOf(MinimaxData(null, 0.0, depth))
+            }
+        } else {
+            when (chessGame.status) {
+                Checkmate -> listOf(
+                    MinimaxData(
+                        engineMove = null,
+                        score = Double.MAX_VALUE,
+                        depth = depth
+                    )
+                )
+                InProgress -> {
+                    val moves = chessGame.moveOptions()
+                    val minimaxDataList: MutableList<MinimaxData> = mutableListOf()
+
+                    for (engineMove in moves) {
+                        val event = chessGame.movePiece(engineMove)
+                        if (event is PieceMoved) {
+                            val minimaxData = if (depth == 1) {
+                                sophisticatedEvaluation(
+                                    event.position.board,
+                                    maximizingSide
+                                ).let { eval ->
+                                    listOf(
+                                        MinimaxData(
+                                            engineMove,
+                                            eval,
+                                            depth
+                                        )
+                                    )
+                                }
+                            } else {
+                                minimax(event.chessGame, depth - 1, maximizingSide, a, b)
+                            }
+                            val eval = minimaxData.map { it.score }.firstOrNull() ?: Double.MAX_VALUE
+
+                                minEval = if (eval < minEval) eval else minEval
+                                b = if (eval < b) eval else b
+
+                            minimaxDataList.addAll(minimaxData.map { it.copy(engineMove = engineMove) })
+
+                            if (b < a) {
+                                break
+                            }
+                        }
+                    }
+                    minimaxDataList.filter { it.score == minEval }.distinct()
+                }
+                else -> listOf(MinimaxData(null, 0.0, depth))
+            }
         }
+
     }
 
 

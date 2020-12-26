@@ -5,6 +5,7 @@ import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.event.MoveCalculated
 import net.sustainablepace.chess.domain.event.NoMoveCalculated
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
 
@@ -15,22 +16,22 @@ class EngineTest {
         var stupidPoints = 0f
         var aggressiveStupidPoints = 0f
         (1..10).map { numberOfGame ->
-            var chessGame = if(numberOfGame % 2 == 0) {
+            var chessGame = if (numberOfGame % 2 == 0) {
                 ChessGame(AggressiveStupidComputerPlayer, StupidComputerPlayer)
             } else {
                 ChessGame(StupidComputerPlayer, AggressiveStupidComputerPlayer)
             }.chessGame
             while (chessGame.status == InProgress) {
                 val player = chessGame.getActivePlayer() as ComputerPlayer
-                when(val move = player.calculateMove(chessGame)) {
+                when (val move = player.calculateMove(chessGame)) {
                     is MoveCalculated -> chessGame = chessGame.movePiece(move.move).chessGame
                     is NoMoveCalculated -> throw IllegalStateException("If the game is in progress, there should be at least one valid move.")
                 }
             }
             when (chessGame.status) {
-                Checkmate -> when( chessGame.position.turn ) {
-                    White -> if(chessGame.white is AggressiveStupidComputerPlayer) 0f to 1f else 1f to 0f
-                    Black -> if(chessGame.black is AggressiveStupidComputerPlayer) 0f to 1f else 1f to 0f
+                Checkmate -> when (chessGame.position.turn) {
+                    White -> if (chessGame.white is AggressiveStupidComputerPlayer) 0f to 1f else 1f to 0f
+                    Black -> if (chessGame.black is AggressiveStupidComputerPlayer) 0f to 1f else 1f to 0f
                 }
                 InProgress -> throw IllegalStateException("Game should be over!")
                 else -> 0.5f to 0.5f
@@ -48,22 +49,22 @@ class EngineTest {
         var stupidPoints = 0f
         var aggressiveStupidPoints = 0f
         (1..3).map { numberOfGame ->
-            var chessGame = if(numberOfGame % 2 == 0) {
+            var chessGame = if (numberOfGame % 2 == 0) {
                 ChessGame(AggressiveStupidComputerPlayer, MinimaxComputerPlayer)
             } else {
                 ChessGame(MinimaxComputerPlayer, AggressiveStupidComputerPlayer)
             }.chessGame
             while (chessGame.status == InProgress) {
                 val player = chessGame.getActivePlayer() as ComputerPlayer
-                when(val move = player.calculateMove(chessGame)) {
+                when (val move = player.calculateMove(chessGame)) {
                     is MoveCalculated -> chessGame = chessGame.movePiece(move.move).chessGame
                     is NoMoveCalculated -> throw IllegalStateException("If the game is in progress, there should be at least one valid move.")
                 }
             }
             when (chessGame.status) {
-                Checkmate -> when( chessGame.position.turn ) {
-                    White -> if(chessGame.white is AggressiveStupidComputerPlayer) 0f to 1f else 1f to 0f
-                    Black -> if(chessGame.black is AggressiveStupidComputerPlayer) 0f to 1f else 1f to 0f
+                Checkmate -> when (chessGame.position.turn) {
+                    White -> if (chessGame.white is AggressiveStupidComputerPlayer) 0f to 1f else 1f to 0f
+                    Black -> if (chessGame.black is AggressiveStupidComputerPlayer) 0f to 1f else 1f to 0f
                 }
                 InProgress -> throw IllegalStateException("Game should be over!")
                 else -> 0.5f to 0.5f
@@ -77,26 +78,27 @@ class EngineTest {
     }
 
     @Test
+    @Disabled
     fun `minimax vs minimax with depth`() {
         var stupidPoints = 0f
         var aggressiveStupidPoints = 0f
         (1..1).map { numberOfGame ->
-            var chessGame = if(numberOfGame % 2 == 0) {
+            var chessGame = if (numberOfGame % 2 == 0) {
                 ChessGame(MinimaxWithDepthComputerPlayer, MinimaxComputerPlayer)
             } else {
                 ChessGame(MinimaxComputerPlayer, MinimaxWithDepthComputerPlayer)
             }.chessGame
             while (chessGame.status == InProgress) {
                 val player = chessGame.getActivePlayer() as ComputerPlayer
-                when(val move = player.calculateMove(chessGame)) {
+                when (val move = player.calculateMove(chessGame)) {
                     is MoveCalculated -> chessGame = chessGame.movePiece(move.move).chessGame
                     is NoMoveCalculated -> throw IllegalStateException("If the game is in progress, there should be at least one valid move.")
                 }
             }
             when (chessGame.status) {
-                Checkmate -> when( chessGame.position.turn ) {
-                    White -> if(chessGame.white is MinimaxWithDepthComputerPlayer) 0f to 1f else 1f to 0f
-                    Black -> if(chessGame.black is MinimaxWithDepthComputerPlayer) 0f to 1f else 1f to 0f
+                Checkmate -> when (chessGame.position.turn) {
+                    White -> if (chessGame.white is MinimaxWithDepthComputerPlayer) 0f to 1f else 1f to 0f
+                    Black -> if (chessGame.black is MinimaxWithDepthComputerPlayer) 0f to 1f else 1f to 0f
                 }
                 InProgress -> throw IllegalStateException("Game should be over!")
                 else -> 0.5f to 0.5f
@@ -138,14 +140,14 @@ class EngineTest {
             )
         )
         val result = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer.calculateMove(chessGame.chessGame)
-        when(result) {
+        when (result) {
             is MoveCalculated -> assertThat(result.move).isEqualTo(Move(f3, g5))
             is NoMoveCalculated -> fail("No move calculated.")
         }
         val updatedGame = result.chessGame.movePiece(Move(f3, g5)).movePiece(Move(f7, g8))
 
         val mate = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer.calculateMove(updatedGame.chessGame)
-        when(mate) {
+        when (mate) {
             is MoveCalculated -> assertThat(mate.move).isEqualTo(Move(c2, h7))
             is NoMoveCalculated -> fail("No move calculated.")
         }
@@ -181,18 +183,97 @@ class EngineTest {
             )
         )
         val result = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer.calculateMove(chessGame.chessGame)
-        when(result) {
+        when (result) {
             is MoveCalculated -> assertThat(result.move).isIn(Move(d7, c8), Move(d7, e8))
             is NoMoveCalculated -> fail("No move calculated.")
         }
         val updatedGame = result.chessGame.movePiece(result.move).movePiece(Move(h8, result.move.arrivalSquare))
 
         val mate = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer.calculateMove(updatedGame.chessGame)
-        when(mate) {
+        when (mate) {
             is MoveCalculated -> assertThat(mate.move).isEqualTo(Move(f6, d7))
             is NoMoveCalculated -> fail("No move calculated.")
         }
         assertThat(mate.movePiece(mate.move).chessGame.status).isEqualTo(Checkmate)
+
+    }
+
+    @Test
+    fun `first move`() {
+        val chessGame = ChessGame()
+        val moveEvent = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer.calculateMove(chessGame.chessGame)
+        when (moveEvent) {
+            is MoveCalculated -> {
+                val score = Minimax.sophisticatedEvaluation(moveEvent.movePiece(moveEvent.move).position.board, White)
+                assertThat(score).isGreaterThan(0.0)
+            }
+            is NoMoveCalculated -> fail("Must find a first move.")
+        }
+
+    }
+
+
+    @Test
+    fun `second move`() {
+        val chessGame = ChessGame().movePiece(Move(g1, f3)).movePiece(Move(d7, d6))
+        val moveEvent = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer.calculateMove(chessGame.chessGame)
+        when (moveEvent) {
+            is MoveCalculated -> {
+                val score = Minimax.sophisticatedEvaluation(moveEvent.position.board, White)
+                assertThat(score).isGreaterThan(0.0)
+            }
+            is NoMoveCalculated -> fail("Must find a first move.")
+        }
+
+    }
+
+    @Test
+    fun `prevents mate in one`() {
+        val chessGame = ChessGame(position = Position(
+            board = mapOf(
+                a1 to WhiteRook,
+                b1 to WhiteKnight,
+                c1 to WhiteBishop,
+                d1 to WhiteQueen,
+                e1 to WhiteKing,
+                f1 to WhiteBishop,
+                f3 to WhiteKnight,
+                h1 to WhiteRook,
+                a2 to WhitePawn,
+                c2 to WhitePawn,
+                d2 to WhitePawn,
+                e2 to WhitePawn,
+                f2 to WhitePawn,
+                g2 to WhitePawn,
+                h4 to WhitePawn,
+                a8 to BlackRook,
+                b8 to BlackKnight,
+                c8 to BlackBishop,
+                b6 to BlackQueen,
+                e8 to BlackKing,
+                c5 to BlackBishop,
+                g8 to BlackKnight,
+                h8 to BlackRook,
+                a7 to BlackPawn,
+                b7 to BlackPawn,
+                c6 to BlackPawn,
+                d7 to BlackPawn,
+                e6 to BlackPawn,
+                f7 to BlackPawn,
+                g7 to BlackPawn,
+                h7 to BlackPawn
+            )
+        ))
+        val moveEvent = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer.calculateMove(chessGame.chessGame)
+        when (moveEvent) {
+            is MoveCalculated -> {
+                chessGame.movePiece(moveEvent.move).let {
+                    assertThat(it.numberOfNextMove).isEqualTo(2)
+                    assertThat(it.moveOptions()).doesNotContain(Move(c5, f2))
+                }
+            }
+            is NoMoveCalculated -> fail("Must find a defensive move.")
+        }
 
     }
 }

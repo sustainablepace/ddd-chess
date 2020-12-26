@@ -137,82 +137,110 @@ class PositionTest {
 
     @Test
     fun `dead position (only two kings)`() {
-        val position = Position(mapOf(
-            e1 to WhiteKing,
-            e8 to BlackKing
-        ))
+        val position = Position(
+            mapOf(
+                e1 to WhiteKing,
+                e8 to BlackKing
+            )
+        )
         assertThat(position.isDeadPosition()).isTrue()
     }
 
     @Test
     fun `dead position (only two kings and a white bishop)`() {
-        val position = Position(mapOf(
-            e1 to WhiteKing,
-            c1 to WhiteBishop,
-            e8 to BlackKing
-        ))
+        val position = Position(
+            mapOf(
+                e1 to WhiteKing,
+                c1 to WhiteBishop,
+                e8 to BlackKing
+            )
+        )
         assertThat(position.isDeadPosition()).isTrue()
     }
 
     @Test
     fun `dead position (only two kings and a black bishop)`() {
-        val position = Position(mapOf(
-            e1 to WhiteKing,
-            c8 to BlackBishop,
-            e8 to BlackKing
-        ))
+        val position = Position(
+            mapOf(
+                e1 to WhiteKing,
+                c8 to BlackBishop,
+                e8 to BlackKing
+            )
+        )
         assertThat(position.isDeadPosition()).isTrue()
     }
 
     @Test
     fun `dead position (only two kings and two bishops on different coloured squares)`() {
-        val position = Position(mapOf(
-            e1 to WhiteKing,
-            c1 to WhiteBishop,
-            e8 to BlackKing,
-            c8 to BlackBishop
-        ))
+        val position = Position(
+            mapOf(
+                e1 to WhiteKing,
+                c1 to WhiteBishop,
+                e8 to BlackKing,
+                c8 to BlackBishop
+            )
+        )
         assertThat(position.isDeadPosition()).isFalse()
     }
 
     @Test
     fun `dead position (only two kings and two bishops on identical coloured squares)`() {
-        val position = Position(mapOf(
-            e1 to WhiteKing,
-            c1 to WhiteBishop,
-            e8 to BlackKing,
-            f8 to BlackBishop
-        ))
+        val position = Position(
+            mapOf(
+                e1 to WhiteKing,
+                c1 to WhiteBishop,
+                e8 to BlackKing,
+                f8 to BlackBishop
+            )
+        )
         assertThat(position.isDeadPosition()).isTrue()
     }
 
     @Test
     fun `dead position (only two kings and a white knight)`() {
-        val position = Position(mapOf(
-            e1 to WhiteKing,
-            b1 to WhiteKnight,
-            e8 to BlackKing
-        ))
+        val position = Position(
+            mapOf(
+                e1 to WhiteKing,
+                b1 to WhiteKnight,
+                e8 to BlackKing
+            )
+        )
         assertThat(position.isDeadPosition()).isTrue()
     }
 
     @Test
     fun `dead position (only two kings and a black knight)`() {
-        val position = Position(mapOf(
-            e1 to WhiteKing,
-            b8 to BlackKnight,
-            e8 to BlackKing
-        ))
+        val position = Position(
+            mapOf(
+                e1 to WhiteKing,
+                b8 to BlackKnight,
+                e8 to BlackKing
+            )
+        )
         assertThat(position.isDeadPosition()).isTrue()
     }
 
     @Test
     fun `pawn advance does not threaten square ahead`() {
-        val position = Position(mapOf(
-            e5 to WhitePawn,
-            e7 to BlackKing
-        ))
+        val position = Position(
+            mapOf(
+                e5 to WhitePawn,
+                e7 to BlackKing
+            )
+        )
         assertThat(position.moveOptions()).contains(Move(e5, e6))
         assertThat(position.isSquareThreatenedBy(e6, White)).isFalse()
+    }
+
+    @Test
+    fun `bishop threatens rook`() {
+        val position = Position(
+            board = mapOf(
+                g7 to BlackBishop
+            ),
+            turn = Black
+        )
+        assertThat(position.moveOptions()).contains(Move(g7, a1))
+        assertThat(position.isSquareThreatenedBy(a1, Black)).isTrue()
     }
 }

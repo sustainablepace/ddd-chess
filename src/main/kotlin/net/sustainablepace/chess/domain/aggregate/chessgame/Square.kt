@@ -4,7 +4,7 @@ package net.sustainablepace.chess.domain.aggregate.chessgame
 
 import kotlin.math.abs
 
-sealed class Square(val file: File, val rank: Rank) {
+sealed class Square private constructor(val file: File, val rank: Rank) {
     init {
         check((file + "" + rank).matches(Regex("[a-h][1-8]")))
     }
@@ -17,16 +17,6 @@ sealed class Square(val file: File, val rank: Rank) {
     override fun toString() = file + "" + rank
 
     companion object {
-        private val charMap = arrayOf(
-            arrayOf(a1,a2,a3,a4,a5,a6,a7,a8),
-            arrayOf(b1,b2,b3,b4,b5,b6,b7,b8),
-            arrayOf(c1,c2,c3,c4,c5,c6,c7,c8),
-            arrayOf(d1,d2,d3,d4,d5,d6,d7,d8),
-            arrayOf(e1,e2,e3,e4,e5,e6,e7,e8),
-            arrayOf(f1,f2,f3,f4,f5,f6,f7,f8),
-            arrayOf(g1,g2,g3,g4,g5,g6,g7,g8),
-            arrayOf(h1,h2,h3,h4,h5,h6,h7,h8)
-        )
         operator fun invoke(square: String): Square? =
             when(square) {
                 "a1" -> a1
@@ -166,6 +156,17 @@ object h5 : Square('h', 5)
 object h6 : Square('h', 6)
 object h7 : Square('h', 7)
 object h8 : Square('h', 8)
+
+val charMap = arrayOf(
+    arrayOf(a1,a2,a3,a4,a5,a6,a7,a8),
+    arrayOf(b1,b2,b3,b4,b5,b6,b7,b8),
+    arrayOf(c1,c2,c3,c4,c5,c6,c7,c8),
+    arrayOf(d1,d2,d3,d4,d5,d6,d7,d8),
+    arrayOf(e1,e2,e3,e4,e5,e6,e7,e8),
+    arrayOf(f1,f2,f3,f4,f5,f6,f7,f8),
+    arrayOf(g1,g2,g3,g4,g5,g6,g7,g8),
+    arrayOf(h1,h2,h3,h4,h5,h6,h7,h8)
+)
 
 typealias File = Char
 typealias Rank = Int

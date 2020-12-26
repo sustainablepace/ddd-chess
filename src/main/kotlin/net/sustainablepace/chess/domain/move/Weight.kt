@@ -22,7 +22,7 @@ object Weight {
 
     private val pawnWeights = arrayOf(
         doubleArrayOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-        doubleArrayOf(0.5, 1.0, 1.0, -1.0, -2.0, 1.0, 1.0, 0.5),
+        doubleArrayOf(0.5, 1.0, 1.0, -2.0, -2.0, 1.0, 1.0, 0.5),
         doubleArrayOf(0.5, -0.5, -1.0, 0.0, 0.0, -1.0, -0.5, 0.5),
         doubleArrayOf(0.0, 0.0, 0.0, 2.0, 2.0, 0.0, 0.0, 0.0),
         doubleArrayOf(0.5, 0.5, 1.0, 2.5, 2.5, 1.0, 0.5, 0.5),
