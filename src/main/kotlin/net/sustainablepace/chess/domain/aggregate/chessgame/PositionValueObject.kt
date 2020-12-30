@@ -3,7 +3,6 @@ package net.sustainablepace.chess.domain.aggregate.chessgame
 import net.sustainablepace.chess.domain.event.PieceMovedOnBoard
 import net.sustainablepace.chess.domain.event.PieceMovedOnBoardOrNot
 import net.sustainablepace.chess.domain.event.PieceNotMovedOnBoard
-import net.sustainablepace.chess.domain.event.PositionEvent
 import net.sustainablepace.chess.domain.move.ValidMove
 import net.sustainablepace.chess.domain.move.rules.MoveRule.CaptureType.DISALLOWED
 import net.sustainablepace.chess.domain.move.rules.MoveRuleSet
@@ -14,15 +13,42 @@ interface MoveOptionsCalculator {
     fun moveOptions(): Set<ValidMove>
 }
 
-data class Position(
+interface Position: MoveOptionsCalculator {
+    fun movePiece(move: ValidMove): PieceMovedOnBoardOrNot
+
+    fun isInCheck(): Boolean
+    fun isInCheck(side: Side): Boolean
+    fun isSquareThreatenedBy(threatenedSquare: Square, side: Side): Boolean
+    fun pieceOn(square: Square?): PieceOrNoPiece
+    fun moveOptionsForSquare(square: Square): Set<ValidMove>
+    fun isCheckMate(): Boolean
+    fun isStaleMate(): Boolean
+    fun isDeadPosition(): Boolean
+
+    val board: Board
+    val enPassantSquare: EnPassantSquare
+    val whiteCastlingOptions: CastlingOptions
+    val blackCastlingOptions: CastlingOptions
+    val turn: Side
+}
+
+fun position(
+    board: Board = PositionValueObject.defaultBoard,
+    enPassantSquare: EnPassantSquare = null,
+    whiteCastlingOptions: CastlingOptions = CastlingOptions(White),
+    blackCastlingOptions: CastlingOptions = CastlingOptions(Black),
+    turn: Side = White
+) = PositionValueObject(board, enPassantSquare, whiteCastlingOptions, blackCastlingOptions, turn)
+
+data class PositionValueObject(
     override val board: Board = defaultBoard,
     override val enPassantSquare: EnPassantSquare = null,
     override val whiteCastlingOptions: CastlingOptions = CastlingOptions(White),
     override val blackCastlingOptions: CastlingOptions = CastlingOptions(Black),
     override val turn: Side = White
-) : PositionEvent, MoveOptionsCalculator {
+) : Position {
 
-    override fun pieceOn(square: Square): PieceOrNoPiece = board[square] ?: NoPiece
+    override fun pieceOn(square: Square?): PieceOrNoPiece = board[square] ?: NoPiece
 
     override fun moveOptionsForSquare(square: Square): Set<ValidMove> =
         pieceOn(square).let { pieceToBeMoved ->
@@ -40,16 +66,16 @@ data class Position(
         board
             .findSquares(turn)
             .flatMap { square -> moveOptionsForSquare(square) }
-            .filterNot { move -> movePiece(move).position.isInCheck(turn) }
+            .filterNot { move -> movePiece(move).isInCheck(turn) }
             .toSet()
 
-    fun isCheckMate(): Boolean = moveOptions().isEmpty() && isInCheck()
-    fun isStaleMate(): Boolean = moveOptions().isEmpty() && !isInCheck()
-    fun isDeadPosition(): Boolean = board.isDeadPosition()
+    override fun isCheckMate(): Boolean = moveOptions().isEmpty() && isInCheck()
+    override fun isStaleMate(): Boolean = moveOptions().isEmpty() && !isInCheck()
+    override fun isDeadPosition(): Boolean = board.isDeadPosition()
 
     override fun isInCheck(): Boolean = isInCheck(turn)
 
-    private fun isInCheck(side: Side): Boolean =
+    override fun isInCheck(side: Side): Boolean =
         board.findKing(side)?.let { threatenedKingSquare ->
             isSquareThreatenedBy(threatenedKingSquare, !side)
         } ?: false
@@ -59,7 +85,7 @@ data class Position(
             val rules = MoveRuleSet.getRulesForPiece(pieceToBeMoved)
             for (rule in rules) {
                 if (rule.captureType != DISALLOWED) {
-                    if(rule.isThreatened(threatenedSquare, this, square)) {
+                    if (rule.isThreatened(threatenedSquare, this, square)) {
                         return true
                     }
                 }
@@ -77,7 +103,7 @@ data class Position(
             )
             is Piece -> PieceMovedOnBoard(
                 move = move,
-                position = Position(
+                position = position(
                     board = board.movePiece(move, movingPiece, enPassantSquare),
                     enPassantSquare = if (
                         movingPiece is Pawn &&
@@ -98,7 +124,7 @@ data class Position(
         }
 
     companion object {
-        private val defaultBoard = mapOf(
+        val defaultBoard = mapOf(
             a1 to WhiteRook,
             b1 to WhiteKnight,
             c1 to WhiteBishop,
@@ -134,3 +160,4 @@ data class Position(
         )
     }
 }
+

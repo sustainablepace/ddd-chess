@@ -1,6 +1,6 @@
 package net.sustainablepace.chess.domain.move
 
-import net.sustainablepace.chess.domain.aggregate.ChessGame
+import net.sustainablepace.chess.domain.aggregate.chessGame
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.event.MoveCalculated
 import org.assertj.core.api.Assertions.assertThat
@@ -11,8 +11,8 @@ class MinimaxWithDepthTest {
     @Test
     fun `find best move`() {
         // see https://www.freecodecamp.org/news/simple-chess-ai-step-by-step-1d55a9266977/
-        val chessGame = ChessGame(
-            position = Position(
+        val chessGame = chessGame(
+            position = position(
                 board = mapOf(
                     b1 to WhiteBishop,
                     a2 to BlackKnight,

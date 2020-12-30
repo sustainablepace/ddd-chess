@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test
 class FiftyMoveRuleTest {
     @Test
     fun `Fifty move rule reset because pawn moved`() {
-        val chessGame = ChessGame(
-            Position(
+        val chessGame = chessGame(
+            position(
                 mapOf(
                     e1 to WhiteKing,
                     e8 to BlackKing,
@@ -35,8 +35,8 @@ class FiftyMoveRuleTest {
 
     @Test
     fun `Fifty move rule reset because piece was captured`() {
-        val chessGame = ChessGame(
-            Position(
+        val chessGame = chessGame(
+            position(
                 mapOf(
                     e1 to WhiteKing,
                     e8 to BlackKing,
@@ -63,8 +63,8 @@ class FiftyMoveRuleTest {
 
     @Test
     fun `Fifty move rule because no pawn moved and no piece captured`() {
-        val chessGame = ChessGame(
-            Position(
+        val chessGame = chessGame(
+            position(
                 mapOf(
                     e1 to WhiteKing,
                     e8 to BlackKing,

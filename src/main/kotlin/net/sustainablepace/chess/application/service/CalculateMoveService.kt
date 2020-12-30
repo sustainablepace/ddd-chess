@@ -16,7 +16,7 @@ class CalculateMoveService(
 
     override fun process(intent: CalculateMove) =
         chessGameRepository.findById(intent.chessGameId)?.let { chessGame ->
-            when (val player = chessGame.getActivePlayer()) {
+            when (val player = chessGame.activePlayer) {
                 is ComputerPlayer -> player.calculateMove(chessGame)
                 is HumanPlayer -> NoMoveCalculated(
                     reason = "Human players must calculate their own moves.",

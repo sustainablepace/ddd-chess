@@ -9,14 +9,14 @@ import org.junit.jupiter.api.Test
 class PositionTest {
     @Test
     fun `initial position is not in check (white)`() {
-        val position = Position()
+        val position = position()
 
         assertThat(position.isInCheck()).isFalse()
     }
 
     @Test
     fun `initial position is not in check (black)`() {
-        val position = Position(turn = Black)
+        val position = position(turn = Black)
 
         assertThat(position.isInCheck()).isFalse()
     }
@@ -24,7 +24,7 @@ class PositionTest {
 
     @Test
     fun `black is in check by bishop`() {
-        val position = Position()
+        val position = position()
             .movePiece(Move(e2, e4))
             .movePiece(Move(d7, d6))
             .movePiece(Move(f1, b5))
@@ -35,7 +35,7 @@ class PositionTest {
 
     @Test
     fun `en passant (white)`() {
-        val position = Position()
+        val position = position()
         assertThat(position.enPassantSquare).isNull()
 
         position.movePiece(Move(e2, e4)).let {
@@ -49,7 +49,7 @@ class PositionTest {
 
     @Test
     fun `en passant (black)`() {
-        val position = Position()
+        val position = position()
         assertThat(position.enPassantSquare).isNull()
 
         position.movePiece(Move(e7, e6)).let {
@@ -64,7 +64,7 @@ class PositionTest {
 
     @Test
     fun `find moves for white in default position`() {
-        val position = Position()
+        val position = position()
 
         val moves = position.moveOptions()
 
@@ -94,7 +94,7 @@ class PositionTest {
 
     @Test
     fun `find moves for black in default position`() {
-        val position = Position(turn = Black)
+        val position = position(turn = Black)
 
         val moves = position.moveOptions()
 
@@ -124,20 +124,20 @@ class PositionTest {
 
     @Test
     fun `position not updated after move`() {
-        val position = Position().movePiece(Move(a3, a4))
+        val position = position().movePiece(Move(a3, a4))
 
         assertThat(position).isInstanceOf(PieceNotMovedOnBoard::class.java)
     }
 
     @Test
     fun `initial position is not a dead position`() {
-        val position = Position()
+        val position = position()
         assertThat(position.isDeadPosition()).isFalse()
     }
 
     @Test
     fun `dead position (only two kings)`() {
-        val position = Position(
+        val position = position(
             mapOf(
                 e1 to WhiteKing,
                 e8 to BlackKing
@@ -148,7 +148,7 @@ class PositionTest {
 
     @Test
     fun `dead position (only two kings and a white bishop)`() {
-        val position = Position(
+        val position = position(
             mapOf(
                 e1 to WhiteKing,
                 c1 to WhiteBishop,
@@ -160,7 +160,7 @@ class PositionTest {
 
     @Test
     fun `dead position (only two kings and a black bishop)`() {
-        val position = Position(
+        val position = position(
             mapOf(
                 e1 to WhiteKing,
                 c8 to BlackBishop,
@@ -172,7 +172,7 @@ class PositionTest {
 
     @Test
     fun `dead position (only two kings and two bishops on different coloured squares)`() {
-        val position = Position(
+        val position = position(
             mapOf(
                 e1 to WhiteKing,
                 c1 to WhiteBishop,
@@ -185,7 +185,7 @@ class PositionTest {
 
     @Test
     fun `dead position (only two kings and two bishops on identical coloured squares)`() {
-        val position = Position(
+        val position = position(
             mapOf(
                 e1 to WhiteKing,
                 c1 to WhiteBishop,
@@ -198,7 +198,7 @@ class PositionTest {
 
     @Test
     fun `dead position (only two kings and a white knight)`() {
-        val position = Position(
+        val position = position(
             mapOf(
                 e1 to WhiteKing,
                 b1 to WhiteKnight,
@@ -210,7 +210,7 @@ class PositionTest {
 
     @Test
     fun `dead position (only two kings and a black knight)`() {
-        val position = Position(
+        val position = position(
             mapOf(
                 e1 to WhiteKing,
                 b8 to BlackKnight,
@@ -222,7 +222,7 @@ class PositionTest {
 
     @Test
     fun `pawn advance does not threaten square ahead`() {
-        val position = Position(
+        val position = position(
             mapOf(
                 e5 to WhitePawn,
                 e7 to BlackKing
@@ -234,7 +234,7 @@ class PositionTest {
 
     @Test
     fun `bishop threatens rook`() {
-        val position = Position(
+        val position = position(
             board = mapOf(
                 g7 to BlackBishop
             ),

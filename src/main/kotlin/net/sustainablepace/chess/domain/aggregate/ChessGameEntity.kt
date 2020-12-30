@@ -7,7 +7,28 @@ import net.sustainablepace.chess.domain.move.ValidMove
 fun List<PositionChanged>.identicalPositions() =
     groupBy { it.position }.map { it.value.size }.maxOrNull() ?: 0
 
-class ChessGame private constructor(
+fun chessGame(): PiecesHaveBeenSetUp = chessGame(position())
+fun chessGame(side: Side): PiecesHaveBeenSetUp = chessGame(position(turn = side))
+fun chessGame(white: ComputerPlayer, black: ComputerPlayer): ChessGame =
+    PiecesHaveBeenSetUp(
+        ChessGameEntity(
+            id = chessGameId(),
+            position = position(),
+            white = white,
+            black = black
+        )
+    )
+fun chessGame(position: Position): PiecesHaveBeenSetUp =
+    PiecesHaveBeenSetUp(
+        ChessGameEntity(
+            id = chessGameId(),
+            position = position,
+            white = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer,
+            black = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer
+        )
+    )
+
+class ChessGameEntity(
     override val id: ChessGameId,
     override val position: Position,
     override val white: Player,
@@ -15,7 +36,7 @@ class ChessGame private constructor(
     override val numberOfNextMove: Int = 1,
     override val movesWithoutCaptureOrPawnMove: Int = 0,
     override val moves: List<PositionChanged> = listOf(PositionSetUp(position))
-) : ChessGameEvent, MoveOptionsCalculator by position {
+) : ChessGame, MoveOptionsCalculator by position {
 
     override val status: Status
         get() = when {
@@ -27,7 +48,8 @@ class ChessGame private constructor(
             else -> InProgress
         }
 
-    override fun getActivePlayer(): Player = when (position.turn) {
+    override val activePlayer: Player
+        get() = when (position.turn) {
         White -> white
         Black -> black
     }
@@ -44,7 +66,7 @@ class ChessGame private constructor(
             when (val event = position.movePiece(move)) {
                 is PieceMovedOnBoard -> PieceMoved(
                     move = move,
-                    chessGame = ChessGame(
+                    chessGame = ChessGameEntity(
                         id = id,
                         position = event.position,
                         numberOfNextMove = numberOfNextMove + 1,
@@ -63,29 +85,20 @@ class ChessGame private constructor(
                 )
             }
         }
+}
 
+interface ChessGame {
+    fun movePiece(move: ValidMove): PieceMovedOrNot
 
-    companion object {
-        operator fun invoke(white: ComputerPlayer, black: ComputerPlayer) =
-            PiecesHaveBeenSetUp(
-                ChessGame(
-                    id = chessGameId(),
-                    position = Position(),
-                    white = white,
-                    black = black
-                )
-            )
-        operator fun invoke(): PiecesHaveBeenSetUp = ChessGame(Position())
-        operator fun invoke(side: Side): PiecesHaveBeenSetUp = ChessGame(Position(turn = side))
-        operator fun invoke(position: Position): PiecesHaveBeenSetUp =
-            PiecesHaveBeenSetUp(
-                ChessGame(
-                    id = chessGameId(),
-                    position = position,
-                    white = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer,
-                    black = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer
-                )
-            )
-
-    }
+    fun pieceOn(arrivalSquare: Square): PieceOrNoPiece
+    fun moveOptions(): Set<ValidMove>
+    val id: ChessGameId
+    val position: Position
+    val white: Player
+    val black: Player
+    val numberOfNextMove: Int
+    val movesWithoutCaptureOrPawnMove: Int
+    val moves: List<PositionChanged>
+    val status: Status
+    val activePlayer: Player
 }

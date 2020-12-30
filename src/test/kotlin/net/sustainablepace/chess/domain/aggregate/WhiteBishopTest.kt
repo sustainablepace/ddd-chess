@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class WhiteBishopTest {
     @Test
     fun `finds valid bishop movements on empty board`() {
-        val position = Position(mapOf(
+        val position = position(mapOf(
                 e4 to WhiteBishop
             )
         )
@@ -32,7 +32,7 @@ class WhiteBishopTest {
 
     @Test
     fun `finds valid bishop movements on crowded board`() {
-        val position = Position(mapOf(
+        val position = position(mapOf(
                 e4 to WhiteBishop,
                 d5 to BlackPawn,
                 g2 to WhiteQueen

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class WhiteKingTest {
     @Test
     fun `finds valid king movements on empty board`() {
-        val position = Position(
+        val position = position(
             mapOf(
                 e4 to WhiteKing
             )
@@ -28,7 +28,7 @@ class WhiteKingTest {
 
     @Test
     fun `finds valid king movements on crowded board`() {
-        val position = Position(
+        val position = position(
             mapOf(
                 e4 to WhiteKing,
                 d5 to BlackPawn,
@@ -49,7 +49,7 @@ class WhiteKingTest {
 
     @Test
     fun `castling queenside on empty board`() {
-        val position = Position(
+        val position = position(
             mapOf(
                 e1 to WhiteKing,
                 a1 to WhiteRook
@@ -67,7 +67,7 @@ class WhiteKingTest {
 
     @Test
     fun `castling kingside on empty board`() {
-        val position = Position(
+        val position = position(
             mapOf(
                 e1 to WhiteKing,
                 h1 to WhiteRook
@@ -85,7 +85,7 @@ class WhiteKingTest {
 
     @Test
     fun `moving king makes castling unavailable`() {
-        val position = Position().movePiece(Move(e2, e4))
+        val position = position().movePiece(Move(e2, e4))
             .movePiece(Move(e7, e6))
             .movePiece(Move(e1, e2))
 

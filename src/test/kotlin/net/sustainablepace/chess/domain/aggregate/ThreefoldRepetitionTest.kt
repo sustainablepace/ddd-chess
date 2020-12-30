@@ -9,8 +9,8 @@ class ThreefoldRepetitionTest {
 
     @Test
     fun `Threefold repetition`() {
-        val chessGame = ChessGame(
-            Position(
+        val chessGame = chessGame(
+            position(
                 mapOf(
                     e1 to WhiteKing,
                     e8 to BlackKing,
@@ -41,8 +41,8 @@ class ThreefoldRepetitionTest {
 
     @Test
     fun `Threefold repetition (with castling options changing)`() {
-        val chessGame = ChessGame(
-            Position(
+        val chessGame = chessGame(
+            position(
                 mapOf(
                     e1 to WhiteKing,
                     e8 to BlackKing,
@@ -74,8 +74,8 @@ class ThreefoldRepetitionTest {
 
     @Test
     fun `Threefold repetition (taking en passant into account)`() {
-        val chessGame = ChessGame(
-            Position(
+        val chessGame = chessGame(
+            position(
                 board = mapOf(
                     e1 to WhiteKing,
                     e8 to BlackKing,

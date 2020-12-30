@@ -9,7 +9,7 @@ class WhiteRookTest {
 
     @Test
     fun `finds valid rook movements`() {
-        val position = Position(mapOf(
+        val position = position(mapOf(
                 c3 to WhiteRook,
                 c7 to BlackPawn,
                 e3 to WhitePawn
@@ -32,7 +32,7 @@ class WhiteRookTest {
 
     @Test
     fun `moving left rook makes castling unavailable`() {
-        val position = Position().movePiece(Move(a2, a4))
+        val position = position().movePiece(Move(a2, a4))
             .movePiece(Move(a7, a6))
             .movePiece(Move(a1, a3))
 
@@ -42,7 +42,7 @@ class WhiteRookTest {
 
     @Test
     fun `moving right rook makes castling unavailable`() {
-        val position = Position().movePiece(Move(h2, h4))
+        val position = position().movePiece(Move(h2, h4))
             .movePiece(Move(h7, h6))
             .movePiece(Move(h1, h3))
 

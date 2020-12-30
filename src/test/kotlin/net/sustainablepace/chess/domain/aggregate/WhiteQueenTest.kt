@@ -9,7 +9,7 @@ class WhiteQueenTest {
 
     @Test
     fun `finds valid queen movements on empty board`() {
-        val position = Position(mapOf(
+        val position = position(mapOf(
                 e4 to WhiteQueen
             )
         )
@@ -48,7 +48,7 @@ class WhiteQueenTest {
 
     @Test
     fun `finds valid queen movements on crowded board`() {
-        val position = Position(mapOf(
+        val position = position(mapOf(
                 e4 to WhiteQueen,
                 d5 to BlackPawn,
                 g2 to WhiteBishop,

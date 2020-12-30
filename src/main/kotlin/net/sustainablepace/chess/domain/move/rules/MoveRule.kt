@@ -23,7 +23,7 @@ sealed class MoveRule {
         position: Position,
     ): Set<ValidMove>
 
-    abstract fun isThreatened(square: Square, position: Position, departureSquare: Square): Boolean
+    abstract fun isThreatened(threatenedSquare: Square, position: Position, departureSquare: Square): Boolean
 
     abstract operator fun unaryMinus(): MoveRule
 
@@ -151,8 +151,8 @@ sealed class MoveRule {
                 else -> emptySet()
             }
 
-        override fun isThreatened(square: Square, position: Position, departureSquare: Square): Boolean {
-            findMoves(departureSquare, position).forEach { if(it.arrivalSquare == square) {
+        override fun isThreatened(threatenedSquare: Square, position: Position, departureSquare: Square): Boolean {
+            findMoves(departureSquare, position).forEach { if(it.arrivalSquare == threatenedSquare) {
                 return true
             } }
             return false

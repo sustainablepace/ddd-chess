@@ -4,7 +4,7 @@ package net.sustainablepace.chess.domain.aggregate.chessgame
 
 import kotlin.math.abs
 
-sealed class Square private constructor(val file: File, val rank: Rank) {
+sealed class Square(val file: File, val rank: Rank) {
     init {
         check((file + "" + rank).matches(Regex("[a-h][1-8]")))
     }

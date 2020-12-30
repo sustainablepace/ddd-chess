@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class WhitePawnTest {
     @Test
     fun `finds valid pawn movements on empty board in initial position`() {
-        val chessGame = Position(mapOf(
+        val chessGame = position(mapOf(
                 e2 to WhitePawn
             )
         )
@@ -22,7 +22,7 @@ class WhitePawnTest {
 
     @Test
     fun `finds valid pawn movements on empty board`() {
-        val chessGame = Position(mapOf(
+        val chessGame = position(mapOf(
                 e4 to WhitePawn
             )
         )
@@ -34,7 +34,7 @@ class WhitePawnTest {
 
     @Test
     fun `finds valid pawn movements on crowded board`() {
-        val chessGame = Position(mapOf(
+        val chessGame = position(mapOf(
                 e4 to WhitePawn,
                 e5 to WhiteQueen,
                 d5 to BlackPawn,
@@ -50,7 +50,7 @@ class WhitePawnTest {
 
     @Test
     fun `finds valid initial pawn movements on crowded board`() {
-        val chessGame = Position(mapOf(
+        val chessGame = position(mapOf(
                 a2 to WhitePawn,
                 a4 to BlackPawn
             ))
@@ -63,7 +63,7 @@ class WhitePawnTest {
 
     @Test
     fun `finds valid initial pawn movements on crowded board when blocked`() {
-        val chessGame = Position(mapOf(
+        val chessGame = position(mapOf(
                 a2 to WhitePawn,
                 a3 to BlackPawn
             )
@@ -74,7 +74,7 @@ class WhitePawnTest {
 
     @Test
     fun `finds en passant capture moves to the right`() {
-        val chessGame = Position(mapOf(
+        val chessGame = position(mapOf(
                 d4 to BlackPawn,
                 e2 to WhitePawn
             )
@@ -88,7 +88,7 @@ class WhitePawnTest {
 
     @Test
     fun `finds en passant capture moves to the left`() {
-        val chessGame = Position(mapOf(
+        val chessGame = position(mapOf(
                 f4 to BlackPawn,
                 e2 to WhitePawn
             )
@@ -102,7 +102,7 @@ class WhitePawnTest {
 
     @Test
     fun `promotion to all options`() {
-        val chessGame = Position(mapOf(
+        val chessGame = position(mapOf(
                 f7 to WhitePawn
             )
         )

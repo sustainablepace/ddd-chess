@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 class ChessGameIdTest {
     @Test
     fun `test serialization`() {
-        val game = ChessGame()
+        val game = chessGame()
 
         val json = ObjectMapper()
             .registerModule(KotlinModule())

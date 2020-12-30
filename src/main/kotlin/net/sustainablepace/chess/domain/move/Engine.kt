@@ -1,13 +1,13 @@
 package net.sustainablepace.chess.domain.move
 
+import net.sustainablepace.chess.domain.aggregate.ChessGame
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
-import net.sustainablepace.chess.domain.event.ChessGameEvent
 import net.sustainablepace.chess.domain.event.PieceMoved
 import net.sustainablepace.chess.domain.event.PieceNotMoved
 import kotlin.random.Random
 
 sealed class Engine {
-    abstract fun bestMove(chessGame: ChessGameEvent): ValidMove?
+    abstract fun bestMove(chessGame: ChessGame): ValidMove?
 
     fun sophisticatedEvaluation(board: Board, engineSide: Side): Double {
         return setOf(White, Black).sumByDouble { side ->
@@ -43,14 +43,14 @@ sealed class Engine {
 }
 
 object RandomMove : Engine() {
-    override fun bestMove(chessGame: ChessGameEvent) =
+    override fun bestMove(chessGame: ChessGame) =
         chessGame.moveOptions().let { moves ->
             moves.toList()[Random.nextInt(0, moves.size)]
         }
 }
 
 object AlwaysCaptures : Engine() {
-    override fun bestMove(chessGame: ChessGameEvent): ValidMove? =
+    override fun bestMove(chessGame: ChessGame): ValidMove? =
         chessGame.moveOptions().let { moves ->
             moves.maxByOrNull { move ->
                 chessGame.movePiece(move).chessGame.let {
@@ -74,10 +74,10 @@ object AlwaysCaptures : Engine() {
 }
 
 object Minimax : Engine() {
-    override fun bestMove(chessGame: ChessGameEvent): ValidMove? =
+    override fun bestMove(chessGame: ChessGame): ValidMove? =
         bestCase(chessGame, chessGame.position.turn)?.first
 
-    fun bestCase(chessGame: ChessGameEvent, engineSide: Side): Pair<ValidMove, Int>? {
+    fun bestCase(chessGame: ChessGame, engineSide: Side): Pair<ValidMove, Int>? {
         return chessGame.moveOptions().map { engineMove ->
             chessGame.movePiece(engineMove).let { opponentChessGame ->
                 worstCase(opponentChessGame, engineMove, engineSide)
@@ -85,7 +85,7 @@ object Minimax : Engine() {
         }.maxByOrNull { it.second }
     }
 
-    fun worstCase(opponentChessGame: ChessGameEvent, engineMove: ValidMove, engineSide: Side): Pair<ValidMove, Int> {
+    fun worstCase(opponentChessGame: ChessGame, engineMove: ValidMove, engineSide: Side): Pair<ValidMove, Int> {
         return when (opponentChessGame.status) {
             Checkmate -> engineMove to 10000000
             InProgress -> opponentChessGame.moveOptions().map { opponentMove ->
@@ -100,10 +100,10 @@ object Minimax : Engine() {
 
 
 object MinimaxWithDepth : Engine() {
-    override fun bestMove(chessGame: ChessGameEvent): ValidMove? =
+    override fun bestMove(chessGame: ChessGame): ValidMove? =
         bestCase(chessGame, chessGame.position.turn, 2)?.first
 
-    private fun bestCase(chessGame: ChessGameEvent, engineSide: Side, depth: Int): Pair<ValidMove, Int>? {
+    private fun bestCase(chessGame: ChessGame, engineSide: Side, depth: Int): Pair<ValidMove, Int>? {
         return when (chessGame.status) {
             InProgress ->
                 if (chessGame.position.turn != engineSide) {
@@ -121,7 +121,7 @@ object MinimaxWithDepth : Engine() {
     }
 
     private fun worstCase(
-        opponentChessGame: ChessGameEvent,
+        opponentChessGame: ChessGame,
         engineMove: ValidMove,
         engineSide: Side,
         depth: Int
@@ -158,7 +158,7 @@ object MinimaxWithDepth : Engine() {
 data class MinimaxData(val engineMove: ValidMove?, val score: Double, val depth: Int)
 
 object MinimaxWithDepthAndSophisticatedEvaluation : Engine() {
-    override fun bestMove(chessGame: ChessGameEvent): ValidMove? {
+    override fun bestMove(chessGame: ChessGame): ValidMove? { // TODO: return all moves, pick random one in service?
         val moves = minimax(chessGame, 4, chessGame.position.turn, -Double.MAX_VALUE, Double.MAX_VALUE)
 
         return if (moves.size > 0) {
@@ -167,7 +167,7 @@ object MinimaxWithDepthAndSophisticatedEvaluation : Engine() {
     }
 
     private fun minimax(
-        chessGame: ChessGameEvent,
+        chessGame: ChessGame,
         depth: Int,
         maximizingSide: Side,
         alpha: Double,

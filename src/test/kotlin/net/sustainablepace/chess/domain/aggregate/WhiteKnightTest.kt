@@ -9,7 +9,7 @@ class WhiteKnightTest {
 
     @Test
     fun `finds valid knight movements`() {
-        val position = Position(mapOf(
+        val position = position(mapOf(
                 c2 to WhiteKnight,
                 b4 to BlackPawn,
                 e1 to WhiteKing

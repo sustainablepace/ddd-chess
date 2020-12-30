@@ -10,8 +10,8 @@ class CastlingTest {
 
     @Test
     fun `castling sets the game stats accordingly`() {
-        val chessGame = ChessGame(
-            Position(
+        val chessGame = chessGame(
+            position(
                 mapOf(
                     e1 to WhiteKing,
                     a1 to WhiteRook,
@@ -54,8 +54,8 @@ class CastlingTest {
 
     @Test
     fun `white cannot castle kingside in checked position`() {
-        val chessGame = ChessGame(
-            Position(
+        val chessGame = chessGame(
+            position(
                 mapOf(
                     e1 to WhiteKing,
                     h1 to WhiteRook,
@@ -72,8 +72,8 @@ class CastlingTest {
 
     @Test
     fun `black cannot castle kingside in checked position`() {
-        val chessGame = ChessGame(
-            Position(
+        val chessGame = chessGame(
+            position(
                 board = mapOf(
                     e8 to BlackKing,
                     h8 to BlackRook,
@@ -91,8 +91,8 @@ class CastlingTest {
 
     @Test
     fun `white cannot castle queenside in checked position`() {
-        val chessGame = ChessGame(
-            Position(
+        val chessGame = chessGame(
+            position(
                 mapOf(
                     e1 to WhiteKing,
                     a1 to WhiteRook,
@@ -109,8 +109,8 @@ class CastlingTest {
 
     @Test
     fun `black cannot castle queenside in checked position`() {
-        val chessGame = ChessGame(
-            Position(
+        val chessGame = chessGame(
+            position(
                 board = mapOf(
                     e8 to BlackKing,
                     a8 to BlackRook,
@@ -128,8 +128,8 @@ class CastlingTest {
 
     @Test
     fun `white cannot castle kingside via threatened square`() {
-        val chessGame = ChessGame(
-            Position(
+        val chessGame = chessGame(
+            position(
                 mapOf(
                     e1 to WhiteKing,
                     h1 to WhiteRook,
@@ -146,8 +146,8 @@ class CastlingTest {
 
     @Test
     fun `black cannot castle kingside via threatened square`() {
-        val chessGame = ChessGame(
-            Position(
+        val chessGame = chessGame(
+            position(
                 board = mapOf(
                     e8 to BlackKing,
                     h8 to BlackRook,
@@ -165,8 +165,8 @@ class CastlingTest {
 
     @Test
     fun `white cannot castle queenside via threatened square`() {
-        val chessGame = ChessGame(
-            Position(
+        val chessGame = chessGame(
+            position(
                 mapOf(
                     e1 to WhiteKing,
                     a1 to WhiteRook,
@@ -183,8 +183,8 @@ class CastlingTest {
 
     @Test
     fun `black cannot castle queenside via threatened square`() {
-        val chessGame = ChessGame(
-            Position(
+        val chessGame = chessGame(
+            position(
                 board = mapOf(
                     e8 to BlackKing,
                     a8 to BlackRook,

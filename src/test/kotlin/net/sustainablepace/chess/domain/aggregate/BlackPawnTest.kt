@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class BlackPawnTest {
     @Test
     fun `finds valid pawn movements on empty board in initial position`() {
-        val position = Position(
+        val position = position(
             mapOf(
                 e7 to BlackPawn
             )
@@ -23,7 +23,7 @@ class BlackPawnTest {
 
     @Test
     fun `finds valid pawn movements on empty board`() {
-        val position = Position(
+        val position = position(
             mapOf(
                 e5 to BlackPawn
             )
@@ -36,7 +36,7 @@ class BlackPawnTest {
 
     @Test
     fun `finds en passant capture moves to the right`() {
-        val position = Position(
+        val position = position(
             board = mapOf(
                 f7 to BlackPawn,
                 e5 to WhitePawn
@@ -52,7 +52,7 @@ class BlackPawnTest {
 
     @Test
     fun `finds en passant capture moves to the left`() {
-        val position = Position(
+        val position = position(
             board = mapOf(
                 d7 to BlackPawn,
                 e5 to WhitePawn
@@ -69,7 +69,7 @@ class BlackPawnTest {
 
     @Test
     fun `promotion to all options`() {
-        val chessGame = Position(
+        val chessGame = position(
             board = mapOf(
                 f2 to BlackPawn
             ),
@@ -96,7 +96,7 @@ class BlackPawnTest {
 
     @Test
     fun `moving left rook makes castling unavailable`() {
-        val position = Position()
+        val position = position()
             .movePiece(Move(a7, a5))
             .movePiece(Move(a2, a3))
             .movePiece(Move(a8, a6))
@@ -107,7 +107,7 @@ class BlackPawnTest {
 
     @Test
     fun `moving right rook makes castling unavailable`() {
-        val position = Position()
+        val position = position()
             .movePiece(Move(h7, h5))
             .movePiece(Move(h2, h3))
             .movePiece(Move(h8, h6))
