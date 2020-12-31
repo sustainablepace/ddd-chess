@@ -16,8 +16,7 @@ class WhiteRookTest {
             )
         )
 
-        val moves = position.moveOptionsForSquare(c3)
-        assertThat(moves).containsExactlyInAnyOrder(
+        assertThat(position.moveOptions.filter { it.departureSquare == c3 }).containsExactlyInAnyOrder(
             Move(c3, c4),
             Move(c3, c5),
             Move(c3, c6),

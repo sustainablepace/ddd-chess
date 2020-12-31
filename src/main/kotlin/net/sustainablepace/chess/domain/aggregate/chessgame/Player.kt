@@ -51,19 +51,6 @@ object MinimaxComputerPlayer : ComputerPlayer(Minimax) {
         )
 }
 
-object MinimaxWithDepthComputerPlayer : ComputerPlayer(MinimaxWithDepth) {
-    override fun calculateMove(chessGame: ChessGame): MoveCalculatedOrNot =
-        engine.bestMove(chessGame)?.let {
-            MoveCalculated(
-                move = it,
-                chessGame = chessGame
-            )
-        } ?: NoMoveCalculated(
-            reason = "No move available. Game is in status ${chessGame.status}",
-            chessGame = chessGame
-        )
-}
-
 object MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer : ComputerPlayer(MinimaxWithDepthAndSophisticatedEvaluation) {
     override fun calculateMove(chessGame: ChessGame): MoveCalculatedOrNot =
         engine.bestMove(chessGame)?.let {

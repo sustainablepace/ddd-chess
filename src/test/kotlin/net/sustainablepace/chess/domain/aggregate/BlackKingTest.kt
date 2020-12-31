@@ -58,7 +58,7 @@ class BlackKingTest {
             )
         )
 
-        assertThat(position.moveOptions()).containsExactly(
+        assertThat(position.moveOptions).containsExactly(
             Move(e1, f1),
             Move(e1, d1)
         )

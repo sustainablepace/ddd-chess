@@ -15,8 +15,7 @@ class WhiteKnightTest {
                 e1 to WhiteKing
             )
         )
-        val moves = position.moveOptionsForSquare(c2)
-        Assertions.assertThat(moves).containsExactlyInAnyOrder(
+        Assertions.assertThat(position.moveOptions.filter { it.departureSquare == c2 }).containsExactlyInAnyOrder(
             Move(c2, d4),
             Move(c2, b4),
             Move(c2, e3),

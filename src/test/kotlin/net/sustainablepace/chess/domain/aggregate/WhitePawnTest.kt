@@ -13,8 +13,7 @@ class WhitePawnTest {
                 e2 to WhitePawn
             )
         )
-        val moves = chessGame.moveOptionsForSquare(e2)
-        assertThat(moves).containsExactlyInAnyOrder(
+        assertThat(chessGame.moveOptions).containsExactlyInAnyOrder(
             Move(e2, e3),
             Move(e2, e4)
         )
@@ -26,8 +25,7 @@ class WhitePawnTest {
                 e4 to WhitePawn
             )
         )
-        val moves = chessGame.moveOptionsForSquare(e4)
-        assertThat(moves).containsExactlyInAnyOrder(
+        assertThat(chessGame.moveOptions).containsExactlyInAnyOrder(
             Move(e4, e5)
         )
     }
@@ -41,8 +39,7 @@ class WhitePawnTest {
                 f5 to BlackPawn
             )
         )
-        val moves = chessGame.moveOptionsForSquare(e4)
-        assertThat(moves).containsExactlyInAnyOrder(
+        assertThat(chessGame.moveOptions.filter { it.departureSquare == e4 }).containsExactlyInAnyOrder(
             Move(e4, f5),
             Move(e4, d5)
         )
@@ -55,8 +52,7 @@ class WhitePawnTest {
                 a4 to BlackPawn
             ))
 
-        val moves = chessGame.moveOptionsForSquare(a2)
-        assertThat(moves).containsExactlyInAnyOrder(
+        assertThat(chessGame.moveOptions).containsExactlyInAnyOrder(
             Move(a2, a3)
         )
     }
@@ -68,8 +64,7 @@ class WhitePawnTest {
                 a3 to BlackPawn
             )
         )
-        val moves = chessGame.moveOptionsForSquare(a2)
-        assertThat(moves).isEmpty()
+        assertThat(chessGame.moveOptions).isEmpty()
     }
 
     @Test
@@ -81,7 +76,7 @@ class WhitePawnTest {
         )
         val position = chessGame.movePiece(Move(e2, e4))
 
-        assertThat(position.moveOptions()).contains(
+        assertThat(position.moveOptions).contains(
             Move(d4, e3)
         )
     }
@@ -95,7 +90,7 @@ class WhitePawnTest {
         )
         val updatedPosition = chessGame.movePiece(Move(e2, e4))
 
-        assertThat(updatedPosition.moveOptions()).contains(
+        assertThat(updatedPosition.moveOptions).contains(
             Move(f4, e3)
         )
     }
@@ -106,7 +101,7 @@ class WhitePawnTest {
                 f7 to WhitePawn
             )
         )
-        assertThat(chessGame.moveOptions()).containsExactly(
+        assertThat(chessGame.moveOptions).containsExactly(
             PromotionMove(f7, f8, WhiteQueen),
             PromotionMove(f7, f8, WhiteRook),
             PromotionMove(f7, f8, WhiteBishop),

@@ -4,6 +4,22 @@ import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.event.*
 import net.sustainablepace.chess.domain.move.ValidMove
 
+interface ChessGame {
+    fun movePiece(move: ValidMove): PieceMovedOrNot
+    fun pieceOn(arrivalSquare: Square): PieceOrNoPiece
+
+    val id: ChessGameId
+    val position: Position
+    val white: Player
+    val black: Player
+    val numberOfNextMove: Int
+    val movesWithoutCaptureOrPawnMove: Int
+    val moves: List<PositionChanged>
+    val status: Status
+    val activePlayer: Player
+    val moveOptions: Set<ValidMove>
+}
+
 fun List<PositionChanged>.identicalPositions() =
     groupBy { it.position }.map { it.value.size }.maxOrNull() ?: 0
 
@@ -18,18 +34,18 @@ fun chessGame(white: ComputerPlayer, black: ComputerPlayer): ChessGame =
             black = black
         )
     )
+
 fun chessGame(position: Position): PiecesHaveBeenSetUp =
     PiecesHaveBeenSetUp(
         ChessGameEntity(
-            id = chessGameId(),
             position = position,
-            white = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer,
+            white = AggressiveStupidComputerPlayer,
             black = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer
         )
     )
 
 class ChessGameEntity(
-    override val id: ChessGameId,
+    override val id: ChessGameId = chessGameId(),
     override val position: Position,
     override val white: Player,
     override val black: Player,
@@ -38,26 +54,28 @@ class ChessGameEntity(
     override val moves: List<PositionChanged> = listOf(PositionSetUp(position))
 ) : ChessGame, MoveOptionsCalculator by position {
 
-    override val status: Status
-        get() = when {
-            position.isCheckMate() -> Checkmate
-            position.isStaleMate() -> Stalemate
-            position.isDeadPosition() -> DeadPosition
+    override val status: Status by lazy {
+        when {
+            position.isCheckMate -> Checkmate
+            position.isStaleMate -> Stalemate
+            position.isDeadPosition -> DeadPosition
             movesWithoutCaptureOrPawnMove >= 50 -> FiftyMoveRule
             moves.identicalPositions() >= 3 -> ThreefoldRepetition
             else -> InProgress
         }
+    }
 
-    override val activePlayer: Player
-        get() = when (position.turn) {
-        White -> white
-        Black -> black
+    override val activePlayer: Player by lazy {
+        when (position.turn) {
+            White -> white
+            Black -> black
+        }
     }
 
     override fun pieceOn(arrivalSquare: Square): PieceOrNoPiece = position.pieceOn(arrivalSquare)
 
     override fun movePiece(move: ValidMove): PieceMovedOrNot =
-        if (move !in moveOptions())
+        if (move !in moveOptions)
             PieceNotMoved(
                 reason = "Move $move not possible in game $id.",
                 chessGame = this
@@ -85,20 +103,4 @@ class ChessGameEntity(
                 )
             }
         }
-}
-
-interface ChessGame {
-    fun movePiece(move: ValidMove): PieceMovedOrNot
-
-    fun pieceOn(arrivalSquare: Square): PieceOrNoPiece
-    fun moveOptions(): Set<ValidMove>
-    val id: ChessGameId
-    val position: Position
-    val white: Player
-    val black: Player
-    val numberOfNextMove: Int
-    val movesWithoutCaptureOrPawnMove: Int
-    val moves: List<PositionChanged>
-    val status: Status
-    val activePlayer: Player
 }

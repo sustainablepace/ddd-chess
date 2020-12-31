@@ -42,7 +42,8 @@ class ChessGameTest {
             .movePiece(Move(e7, e6))
             .movePiece(Move(f1, b5))
 
-        assertThat(chessGame.moveOptions()).doesNotContain(Move(d7, d6), Move(d7, d5))
+        assertThat(chessGame.numberOfNextMove).isEqualTo(4)
+        assertThat(chessGame.moveOptions).doesNotContain(Move(d7, d6), Move(d7, d5))
     }
 
     @Test

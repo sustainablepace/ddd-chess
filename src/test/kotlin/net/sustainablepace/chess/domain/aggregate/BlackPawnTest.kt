@@ -10,11 +10,12 @@ class BlackPawnTest {
     @Test
     fun `finds valid pawn movements on empty board in initial position`() {
         val position = position(
-            mapOf(
+            board = mapOf(
                 e7 to BlackPawn
-            )
+            ),
+            turn = Black
         )
-        val moves = position.moveOptionsForSquare(e7)
+        val moves = position.moveOptions
         assertThat(moves).containsExactlyInAnyOrder(
             Move(e7, e6),
             Move(e7, e5)
@@ -24,12 +25,12 @@ class BlackPawnTest {
     @Test
     fun `finds valid pawn movements on empty board`() {
         val position = position(
-            mapOf(
+            board = mapOf(
                 e5 to BlackPawn
-            )
+            ),
+            turn = Black
         )
-        val moves = position.moveOptionsForSquare(e5)
-        assertThat(moves).containsExactlyInAnyOrder(
+        assertThat(position.moveOptions).containsExactlyInAnyOrder(
             Move(e5, e4)
         )
     }
@@ -45,7 +46,7 @@ class BlackPawnTest {
         )
         val updatedPosition = position.movePiece(Move(f7, f5))
 
-        assertThat(updatedPosition.moveOptions()).contains(
+        assertThat(updatedPosition.moveOptions).contains(
             Move(e5, f6)
         )
     }
@@ -61,7 +62,7 @@ class BlackPawnTest {
         )
         val updatedPosition = position.movePiece(Move(d7, d5))
 
-        assertThat(updatedPosition.moveOptions()).contains(
+        assertThat(updatedPosition.moveOptions).contains(
             Move(e5, d6)
         )
     }
@@ -75,7 +76,7 @@ class BlackPawnTest {
             ),
             turn = Black
         )
-        assertThat(chessGame.moveOptions()).containsExactly(
+        assertThat(chessGame.moveOptions).containsExactly(
             PromotionMove(f2, f1, BlackQueen),
             PromotionMove(f2, f1, BlackRook),
             PromotionMove(f2, f1, BlackBishop),

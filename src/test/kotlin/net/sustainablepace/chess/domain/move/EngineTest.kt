@@ -5,36 +5,37 @@ import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.event.MoveCalculated
 import net.sustainablepace.chess.domain.event.NoMoveCalculated
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
 
 class EngineTest {
     @Test
     fun `stupid vs aggressive stupid`() {
-        (1..10)
+        (1..20)
             .play(AggressiveStupidComputerPlayer, StupidComputerPlayer)
             .let { (player1Points, player2Points) ->
                 println("Aggressive stupid: $player1Points, Stupid: $player2Points")
+                assertThat(player1Points).isGreaterThan(player2Points)
             }
     }
 
     @Test
     fun `minimax vs aggressive stupid`() {
         (1..3)
-            .play(AggressiveStupidComputerPlayer, MinimaxComputerPlayer)
+            .play(MinimaxComputerPlayer, AggressiveStupidComputerPlayer)
             .let { (player1Points, player2Points) ->
-                println("Aggressive stupid: $player1Points, Minimax: $player2Points")
+                println("Minimax: $player1Points, Aggressive stupid: $player2Points")
+                assertThat(player1Points).isGreaterThan(player2Points)
             }
     }
 
     @Test
-    @Disabled
-    fun `minimax vs minimax with depth`() {
+    fun `minimax with depth vs minimax`() {
         (1..1)
-            .play(MinimaxWithDepthComputerPlayer, MinimaxComputerPlayer)
+            .play(MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer, MinimaxComputerPlayer)
             .let { (player1Points, player2Points) ->
                 println("Minimax with depth: $player1Points, Minimax: $player2Points")
+                assertThat(player1Points).isGreaterThanOrEqualTo(player2Points)
             }
     }
 
@@ -206,7 +207,7 @@ class EngineTest {
                 is MoveCalculated -> {
                     chessGame.movePiece(move).let {
                         assertThat(it.numberOfNextMove).isEqualTo(2)
-                        assertThat(it.moveOptions()).doesNotContain(Move(c5, f2))
+                        assertThat(it.moveOptions).doesNotContain(Move(c5, f2))
                     }
                 }
                 is NoMoveCalculated -> fail("Must find a defensive move.")
@@ -234,8 +235,8 @@ class EngineTest {
         }.map { chessGame ->
             when (chessGame.status) {
                 Checkmate -> when (chessGame.position.turn) {
-                    White -> if (chessGame.white is StupidComputerPlayer) 0.0 to 1.0 else 1.0 to 0.0
-                    Black -> if (chessGame.black is StupidComputerPlayer) 0.0 to 1.0 else 1.0 to 0.0
+                    White -> if (chessGame.white == player1) 0.0 to 1.0 else 1.0 to 0.0
+                    Black -> if (chessGame.black == player1) 0.0 to 1.0 else 1.0 to 0.0
                 }
                 InProgress -> fail("Game should be over!")
                 else -> 0.5 to 0.5

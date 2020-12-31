@@ -24,7 +24,7 @@ class MinimaxWithDepthTest {
             )
         )
 
-        when(val moveCalculated = MinimaxWithDepthComputerPlayer.calculateMove(chessGame.chessGame)){
+        when(val moveCalculated = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer.calculateMove(chessGame.chessGame)){
             is MoveCalculated -> assertThat(moveCalculated.move).isEqualTo(Move(b1, c2))
             else -> fail("no move calculated")
         }

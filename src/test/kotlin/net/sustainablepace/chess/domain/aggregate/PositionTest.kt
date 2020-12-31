@@ -9,18 +9,13 @@ import org.junit.jupiter.api.Test
 class PositionTest {
     @Test
     fun `initial position is not in check (white)`() {
-        val position = position()
-
-        assertThat(position.isInCheck()).isFalse()
+        assertThat(position().isInCheck).isFalse()
     }
 
     @Test
     fun `initial position is not in check (black)`() {
-        val position = position(turn = Black)
-
-        assertThat(position.isInCheck()).isFalse()
+        assertThat(position(turn = Black).isInCheck).isFalse()
     }
-
 
     @Test
     fun `black is in check by bishop`() {
@@ -29,8 +24,7 @@ class PositionTest {
             .movePiece(Move(d7, d6))
             .movePiece(Move(f1, b5))
 
-        assertThat(position.moveOptionsForSquare(b5)).contains(Move(b5, e8))
-        assertThat(position.isInCheck()).isTrue()
+        assertThat(position.isInCheck).isTrue()
     }
 
     @Test
@@ -64,11 +58,7 @@ class PositionTest {
 
     @Test
     fun `find moves for white in default position`() {
-        val position = position()
-
-        val moves = position.moveOptions()
-
-        assertThat(moves).containsExactlyInAnyOrder(
+        assertThat(position().moveOptions).containsExactlyInAnyOrder(
             Move(a2, a3),
             Move(b2, b3),
             Move(c2, c3),
@@ -94,11 +84,7 @@ class PositionTest {
 
     @Test
     fun `find moves for black in default position`() {
-        val position = position(turn = Black)
-
-        val moves = position.moveOptions()
-
-        assertThat(moves).containsExactlyInAnyOrder(
+        assertThat(position(turn = Black).moveOptions).containsExactlyInAnyOrder(
             Move(a7, a6),
             Move(b7, b6),
             Move(c7, c6),
@@ -131,8 +117,7 @@ class PositionTest {
 
     @Test
     fun `initial position is not a dead position`() {
-        val position = position()
-        assertThat(position.isDeadPosition()).isFalse()
+        assertThat(position().isDeadPosition).isFalse()
     }
 
     @Test
@@ -143,7 +128,7 @@ class PositionTest {
                 e8 to BlackKing
             )
         )
-        assertThat(position.isDeadPosition()).isTrue()
+        assertThat(position.isDeadPosition).isTrue()
     }
 
     @Test
@@ -155,7 +140,7 @@ class PositionTest {
                 e8 to BlackKing
             )
         )
-        assertThat(position.isDeadPosition()).isTrue()
+        assertThat(position.isDeadPosition).isTrue()
     }
 
     @Test
@@ -167,7 +152,7 @@ class PositionTest {
                 e8 to BlackKing
             )
         )
-        assertThat(position.isDeadPosition()).isTrue()
+        assertThat(position.isDeadPosition).isTrue()
     }
 
     @Test
@@ -180,7 +165,7 @@ class PositionTest {
                 c8 to BlackBishop
             )
         )
-        assertThat(position.isDeadPosition()).isFalse()
+        assertThat(position.isDeadPosition).isFalse()
     }
 
     @Test
@@ -193,7 +178,7 @@ class PositionTest {
                 f8 to BlackBishop
             )
         )
-        assertThat(position.isDeadPosition()).isTrue()
+        assertThat(position.isDeadPosition).isTrue()
     }
 
     @Test
@@ -205,7 +190,7 @@ class PositionTest {
                 e8 to BlackKing
             )
         )
-        assertThat(position.isDeadPosition()).isTrue()
+        assertThat(position.isDeadPosition).isTrue()
     }
 
     @Test
@@ -217,7 +202,7 @@ class PositionTest {
                 e8 to BlackKing
             )
         )
-        assertThat(position.isDeadPosition()).isTrue()
+        assertThat(position.isDeadPosition).isTrue()
     }
 
     @Test
@@ -228,7 +213,7 @@ class PositionTest {
                 e7 to BlackKing
             )
         )
-        assertThat(position.moveOptions()).contains(Move(e5, e6))
+        assertThat(position.moveOptions).contains(Move(e5, e6))
         assertThat(position.isSquareThreatenedBy(e6, White)).isFalse()
     }
 
@@ -240,7 +225,7 @@ class PositionTest {
             ),
             turn = Black
         )
-        assertThat(position.moveOptions()).contains(Move(g7, a1))
+        assertThat(position.moveOptions).contains(Move(g7, a1))
         assertThat(position.isSquareThreatenedBy(a1, Black)).isTrue()
     }
 }

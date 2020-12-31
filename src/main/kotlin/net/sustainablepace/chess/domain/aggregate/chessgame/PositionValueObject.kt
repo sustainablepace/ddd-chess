@@ -10,21 +10,20 @@ import net.sustainablepace.chess.domain.move.rules.MoveRuleSet
 typealias EnPassantSquare = Square?
 
 interface MoveOptionsCalculator {
-    fun moveOptions(): Set<ValidMove>
+    val moveOptions: Set<ValidMove>
 }
 
-interface Position: MoveOptionsCalculator {
+interface Position : MoveOptionsCalculator {
     fun movePiece(move: ValidMove): PieceMovedOnBoardOrNot
 
-    fun isInCheck(): Boolean
     fun isInCheck(side: Side): Boolean
     fun isSquareThreatenedBy(threatenedSquare: Square, side: Side): Boolean
     fun pieceOn(square: Square?): PieceOrNoPiece
-    fun moveOptionsForSquare(square: Square): Set<ValidMove>
-    fun isCheckMate(): Boolean
-    fun isStaleMate(): Boolean
-    fun isDeadPosition(): Boolean
 
+    val isInCheck: Boolean
+    val isCheckMate: Boolean
+    val isStaleMate: Boolean
+    val isDeadPosition: Boolean
     val board: Board
     val enPassantSquare: EnPassantSquare
     val whiteCastlingOptions: CastlingOptions
@@ -48,9 +47,17 @@ data class PositionValueObject(
     override val turn: Side = White
 ) : Position {
 
+    override val moveOptions: Set<ValidMove> by lazy {
+        board
+            .findSquares(turn)
+            .flatMap { square -> moveOptionsForSquare(square) }
+            .filterNot { move -> movePiece(move).isInCheck(turn) }
+            .toSet()
+    }
+
     override fun pieceOn(square: Square?): PieceOrNoPiece = board[square] ?: NoPiece
 
-    override fun moveOptionsForSquare(square: Square): Set<ValidMove> =
+    private fun moveOptionsForSquare(square: Square): Set<ValidMove> =
         pieceOn(square).let { pieceToBeMoved ->
             when (pieceToBeMoved) {
                 is NoPiece -> emptySet()
@@ -62,18 +69,19 @@ data class PositionValueObject(
             }
         }
 
-    override fun moveOptions(): Set<ValidMove> =
-        board
-            .findSquares(turn)
-            .flatMap { square -> moveOptionsForSquare(square) }
-            .filterNot { move -> movePiece(move).isInCheck(turn) }
-            .toSet()
+    override val isCheckMate: Boolean by lazy {
+        moveOptions.isEmpty() && isInCheck
+    }
+    override val isStaleMate: Boolean by lazy {
+        moveOptions.isEmpty() && !isInCheck
+    }
+    override val isDeadPosition: Boolean by lazy {
+        board.isDeadPosition()
+    }
 
-    override fun isCheckMate(): Boolean = moveOptions().isEmpty() && isInCheck()
-    override fun isStaleMate(): Boolean = moveOptions().isEmpty() && !isInCheck()
-    override fun isDeadPosition(): Boolean = board.isDeadPosition()
-
-    override fun isInCheck(): Boolean = isInCheck(turn)
+    override val isInCheck: Boolean by lazy {
+        isInCheck(turn)
+    }
 
     override fun isInCheck(side: Side): Boolean =
         board.findKing(side)?.let { threatenedKingSquare ->
@@ -160,4 +168,6 @@ data class PositionValueObject(
         )
     }
 }
+
+
 
