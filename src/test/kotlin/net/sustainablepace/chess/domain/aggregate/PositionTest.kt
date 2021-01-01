@@ -117,7 +117,8 @@ class PositionTest {
 
     @Test
     fun `initial position is not a dead position`() {
-        assertThat(position().isDeadPosition).isFalse()
+        val position = position()
+        assertThat(position.isDeadPosition).isFalse()
     }
 
     @Test

@@ -8,36 +8,33 @@ import kotlin.random.Random
 sealed class Engine {
     abstract fun bestMove(chessGame: ChessGame): ValidMove?
 
-    fun sophisticatedEvaluation(board: Board, engineSide: Side): Double {
-        return setOf(White, Black).sumByDouble { side ->
-            val factor = if (side == engineSide) 1 else -1
-            val s = factor * board.findPieces(side).sumByDouble { (square, piece) ->
-                when (piece) {
-                    is Pawn -> 10
-                    is Knight -> 30
-                    is Bishop -> 30
-                    is Rook -> 50
-                    is Queen -> 90
-                    is King -> 900
-                } + Weight(square, piece)
-            }
-            s
-        }
+    private fun Piece.value() = when (this) {
+        is Pawn -> 10
+        is Knight -> 30
+        is Bishop -> 30
+        is Rook -> 50
+        is Queen -> 90
+        is King -> 900
     }
+
+    fun sophisticatedEvaluation(board: Board, engineSide: Side): Double =
+        setOf(White, Black).sumByDouble { side ->
+            when (side) {
+                White -> board.whitePieces
+                Black -> board.blackPieces
+            }.sumByDouble { (square, piece) ->
+                piece.value() + Weight(square, piece)
+            } * if (side == engineSide) 1 else -1
+        }
 
     fun simpleEvaluation(board: Board, engineSide: Side): Int =
         setOf(White, Black).sumBy { side ->
-            val factor = if (side == engineSide) 1 else -1
-            factor * board.findPieces(side).sumBy { (_, piece) ->
-                when (piece) {
-                    is Pawn -> 10
-                    is Knight -> 30
-                    is Bishop -> 30
-                    is Rook -> 50
-                    is Queen -> 90
-                    is King -> 900
-                }
-            }
+            when (side) {
+                White -> board.whitePieces
+                Black -> board.blackPieces
+            }.sumBy { (_, piece) ->
+                piece.value()
+            } * if (side == engineSide) 1 else -1
         }
 }
 
@@ -50,24 +47,9 @@ object RandomMove : Engine() {
 
 object AlwaysCaptures : Engine() {
     override fun bestMove(chessGame: ChessGame): ValidMove? =
-        chessGame.moveOptions.let { moves ->
-            moves.maxByOrNull { move ->
-                chessGame.movePiece(move).chessGame.let {
-                    setOf(White, Black).sumBy { side ->
-                        val factor = if (side != it.position.turn) 1 else -1
-
-                        factor * it.position.board.findPieces(side).sumBy { (_, piece) ->
-                            when (piece) {
-                                is Pawn -> 10
-                                is Knight -> 30
-                                is Bishop -> 30
-                                is Rook -> 50
-                                is Queen -> 90
-                                is King -> 900
-                            }
-                        }
-                    }
-                }
+        chessGame.moveOptions.maxByOrNull { move ->
+            chessGame.movePiece(move).let {
+                simpleEvaluation(it.position.board, chessGame.position.turn)
             }
         }
 }
@@ -200,8 +182,8 @@ object MinimaxWithDepthAndSophisticatedEvaluation : Engine() {
                             }
                             val eval = minimaxData.map { it.score }.firstOrNull() ?: Double.MAX_VALUE
 
-                                minEval = if (eval < minEval) eval else minEval
-                                b = if (eval < b) eval else b
+                            minEval = if (eval < minEval) eval else minEval
+                            b = if (eval < b) eval else b
 
                             minimaxDataList.addAll(minimaxData.map { it.copy(engineMove = engineMove) })
 

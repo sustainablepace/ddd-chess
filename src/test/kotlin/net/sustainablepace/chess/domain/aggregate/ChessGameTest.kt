@@ -49,8 +49,8 @@ class ChessGameTest {
     @Test
     fun `dead position`() {
         val chessGame = chessGame(
-            position(
-                mapOf(
+            position = position(
+                board = mapOf(
                     e1 to WhiteKing,
                     e8 to BlackKing
                 )

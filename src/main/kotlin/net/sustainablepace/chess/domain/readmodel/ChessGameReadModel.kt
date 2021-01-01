@@ -25,7 +25,7 @@ data class ChessGameReadModel(
             return with(chessGame) {
                 ChessGameReadModel(
                     id = id,
-                    position = position.board.map { it.key.toString() to it.value.stringify() }.toMap(),
+                    position = position.board.pieces.map { it.first.toString() to it.second.stringify() }.toMap(),
                     turn = when (position.turn) {
                         White -> "white"
                         Black -> "black"

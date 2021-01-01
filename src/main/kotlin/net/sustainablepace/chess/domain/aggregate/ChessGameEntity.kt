@@ -4,9 +4,8 @@ import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.event.*
 import net.sustainablepace.chess.domain.move.ValidMove
 
-interface ChessGame {
+interface ChessGame : Board {
     fun movePiece(move: ValidMove): PieceMovedOrNot
-    fun pieceOn(arrivalSquare: Square): PieceOrNoPiece
 
     val id: ChessGameId
     val position: Position
@@ -52,7 +51,7 @@ class ChessGameEntity(
     override val numberOfNextMove: Int = 1,
     override val movesWithoutCaptureOrPawnMove: Int = 0,
     override val moves: List<PositionChanged> = listOf(PositionSetUp(position))
-) : ChessGame, MoveOptionsCalculator by position {
+) : ChessGame, MoveOptionsCalculator by position, Board by position {
 
     override val status: Status by lazy {
         when {
@@ -71,8 +70,6 @@ class ChessGameEntity(
             Black -> black
         }
     }
-
-    override fun pieceOn(arrivalSquare: Square): PieceOrNoPiece = position.pieceOn(arrivalSquare)
 
     override fun movePiece(move: ValidMove): PieceMovedOrNot =
         if (move !in moveOptions)
