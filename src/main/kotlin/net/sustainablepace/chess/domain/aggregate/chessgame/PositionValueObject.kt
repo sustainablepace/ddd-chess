@@ -4,7 +4,6 @@ import net.sustainablepace.chess.domain.event.PieceMovedOnBoard
 import net.sustainablepace.chess.domain.event.PieceMovedOnBoardOrNot
 import net.sustainablepace.chess.domain.event.PieceNotMovedOnBoard
 import net.sustainablepace.chess.domain.move.ValidMove
-import net.sustainablepace.chess.domain.move.rules.MoveRule.CaptureType.DISALLOWED
 import net.sustainablepace.chess.domain.move.rules.MoveRuleSet
 
 typealias EnPassantSquare = Square?
@@ -15,9 +14,7 @@ interface MoveOptionsCalculator {
 
 interface Position : MoveOptionsCalculator, Board {
     fun movePiece(move: ValidMove): PieceMovedOnBoardOrNot
-
     fun isInCheck(side: Side): Boolean
-    fun isSquareThreatenedBy(threatenedSquare: Square, side: Side): Boolean
 
     val isInCheck: Boolean
     val isCheckMate: Boolean
@@ -32,10 +29,12 @@ interface Position : MoveOptionsCalculator, Board {
 fun position(
     board: Map<Square, Piece>
 ) = position(board = board(board))
+
 fun position(
     board: Map<Square, Piece>,
     turn: Side
 ) = position(board = board(board), turn = turn)
+
 fun position(
     board: Board = PositionValueObject.defaultBoard,
     enPassantSquare: EnPassantSquare = null,
@@ -65,11 +64,7 @@ data class PositionValueObject(
         pieceOn(square).let { pieceToBeMoved ->
             when (pieceToBeMoved) {
                 is NoPiece -> emptySet()
-                is Piece -> when {
-                    else -> MoveRuleSet.getRulesForPiece(pieceToBeMoved).flatMap { rule ->
-                        rule.findMoves(square, this)
-                    }.toSet()
-                }
+                is Piece -> MoveRuleSet.findMoves(pieceToBeMoved, square, this)
             }
         }
 
@@ -89,25 +84,8 @@ data class PositionValueObject(
             White -> board.whiteKing
             Black -> board.blackKing
         }?.let { threatenedKingSquare ->
-            isSquareThreatenedBy(threatenedKingSquare, !side)
+            MoveRuleSet.isSquareThreatenedBy(threatenedKingSquare, !side, this)
         } ?: false
-
-    override fun isSquareThreatenedBy(threatenedSquare: Square, side: Side): Boolean {
-        when (side) {
-            White -> board.whitePieces
-            Black -> board.blackPieces
-        }.forEach { (square, pieceToBeMoved) ->
-            val rules = MoveRuleSet.getRulesForPiece(pieceToBeMoved)
-            for (rule in rules) {
-                if (rule.captureType != DISALLOWED) {
-                    if (rule.isThreatened(threatenedSquare, this, square)) {
-                        return true
-                    }
-                }
-            }
-        }
-        return false
-    }
 
     override fun movePiece(move: ValidMove): PieceMovedOnBoardOrNot =
         when (val movingPiece = pieceOn(move.departureSquare)) {

@@ -4,7 +4,7 @@ import net.sustainablepace.chess.domain.aggregate.ChessGame
 import net.sustainablepace.chess.domain.event.MoveCalculated
 import net.sustainablepace.chess.domain.event.MoveCalculatedOrNot
 import net.sustainablepace.chess.domain.event.NoMoveCalculated
-import net.sustainablepace.chess.domain.move.*
+import net.sustainablepace.chess.domain.move.engine.*
 
 sealed class Player
 
@@ -51,7 +51,9 @@ object MinimaxComputerPlayer : ComputerPlayer(Minimax) {
         )
 }
 
-object MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer : ComputerPlayer(MinimaxWithDepthAndSophisticatedEvaluation) {
+object MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer : ComputerPlayer(
+    MinimaxWithDepthAndSophisticatedEvaluation
+) {
     override fun calculateMove(chessGame: ChessGame): MoveCalculatedOrNot =
         engine.bestMove(chessGame)?.let {
             MoveCalculated(

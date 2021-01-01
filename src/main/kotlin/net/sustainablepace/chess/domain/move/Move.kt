@@ -60,16 +60,17 @@ data class PromotionMove(
         operator fun invoke(moveInput: String): PromotionMove? =
             if (!moveInput.matches(Regex("[a-h][27]-[a-h][18][BNRQ]"))) {
                 null
-            } else moveInput.let {
-                Pair(Square(moveInput.substring(0, 2)), Square(moveInput.substring(3, 5)))
-            }.let { (departureSquare, arrivalSquare) ->
+            } else Pair(
+                Square(moveInput.substring(0, 2)),
+                Square(moveInput.substring(3, 5))
+            ).let { (departureSquare, arrivalSquare) ->
                 if (departureSquare is Square && arrivalSquare is Square) {
                     when (arrivalSquare.rank) {
                         White.baseLine -> Black
                         Black.baseLine -> White
                         else -> null
                     }?.let { side ->
-                        when (val promotionPiece = PromotionPiece(moveInput[5], side)) {
+                        when (val promotionPiece = promotionPiece(moveInput[5], side)) {
                             is Piece -> promotionPiece
                             is NoPiece -> throw IllegalArgumentException("Unknown promotion piece $promotionPiece")
                         }

@@ -1,91 +1,22 @@
-package net.sustainablepace.chess.domain.move
+package net.sustainablepace.chess.domain.move.engine
 
 import net.sustainablepace.chess.domain.aggregate.ChessGame
-import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.domain.aggregate.chessgame.Checkmate
+import net.sustainablepace.chess.domain.aggregate.chessgame.InProgress
+import net.sustainablepace.chess.domain.aggregate.chessgame.Piece
+import net.sustainablepace.chess.domain.aggregate.chessgame.Side
 import net.sustainablepace.chess.domain.event.PieceMoved
+import net.sustainablepace.chess.domain.move.ValidMove
+import net.sustainablepace.chess.domain.move.evaluation.WeighedEvaluation
+import net.sustainablepace.chess.domain.move.evaluation.value
 import kotlin.random.Random
 
-sealed class Engine {
-    abstract fun bestMove(chessGame: ChessGame): ValidMove?
-
-    private fun Piece.value() = when (this) {
-        is Pawn -> 10
-        is Knight -> 30
-        is Bishop -> 30
-        is Rook -> 50
-        is Queen -> 90
-        is King -> 900
-    }
-
-    fun sophisticatedEvaluation(board: Board, engineSide: Side): Double =
-        setOf(White, Black).sumByDouble { side ->
-            when (side) {
-                White -> board.whitePieces
-                Black -> board.blackPieces
-            }.sumByDouble { (square, piece) ->
-                piece.value() + Weight(square, piece)
-            } * if (side == engineSide) 1 else -1
-        }
-
-    fun simpleEvaluation(board: Board, engineSide: Side): Int =
-        setOf(White, Black).sumBy { side ->
-            when (side) {
-                White -> board.whitePieces
-                Black -> board.blackPieces
-            }.sumBy { (_, piece) ->
-                piece.value()
-            } * if (side == engineSide) 1 else -1
-        }
-}
-
-object RandomMove : Engine() {
-    override fun bestMove(chessGame: ChessGame) =
-        chessGame.moveOptions.let { moves ->
-            moves.toList()[Random.nextInt(0, moves.size)]
-        }
-}
-
-object AlwaysCaptures : Engine() {
-    override fun bestMove(chessGame: ChessGame): ValidMove? =
-        chessGame.moveOptions.maxByOrNull { move ->
-            chessGame.movePiece(move).let {
-                simpleEvaluation(it.position.board, chessGame.position.turn)
-            }
-        }
-}
-
-object Minimax : Engine() {
-    override fun bestMove(chessGame: ChessGame): ValidMove? =
-        bestCase(chessGame, chessGame.position.turn)?.first
-
-    fun bestCase(chessGame: ChessGame, engineSide: Side): Pair<ValidMove, Int>? {
-        return chessGame.moveOptions.map { engineMove ->
-            chessGame.movePiece(engineMove).let { opponentChessGame ->
-                worstCase(opponentChessGame, engineMove, engineSide)
-            }
-        }.maxByOrNull { it.second }
-    }
-
-    fun worstCase(opponentChessGame: ChessGame, engineMove: ValidMove, engineSide: Side): Pair<ValidMove, Int> {
-        return when (opponentChessGame.status) {
-            Checkmate -> engineMove to 10000000
-            InProgress -> opponentChessGame.moveOptions.map { opponentMove ->
-                opponentChessGame.movePiece(opponentMove).let {
-                    engineMove to simpleEvaluation(it.position.board, engineSide)
-                }
-            }.minByOrNull { it.second }!!
-            else -> engineMove to 0
-        }
-    }
-}
-
 data class MinimaxData(val engineMove: ValidMove?, val score: Double, val depth: Int)
-
 object MinimaxWithDepthAndSophisticatedEvaluation : Engine() {
     override fun bestMove(chessGame: ChessGame): ValidMove? { // TODO: return all moves, pick random one in service?
         val moves = minimax(chessGame, 4, chessGame.position.turn, -Double.MAX_VALUE, Double.MAX_VALUE)
 
-        return if (moves.size > 0) {
+        return if (moves.isNotEmpty()) {
             moves.sortedBy { it.depth }[Random.nextInt(0, moves.size)].engineMove
         } else null
     }
@@ -97,6 +28,7 @@ object MinimaxWithDepthAndSophisticatedEvaluation : Engine() {
         alpha: Double,
         beta: Double
     ): List<MinimaxData> {
+
         var maxEval = -Double.MAX_VALUE
         var minEval = Double.MAX_VALUE
         var a = alpha
@@ -111,14 +43,24 @@ object MinimaxWithDepthAndSophisticatedEvaluation : Engine() {
                     )
                 )
                 InProgress -> {
-                    val moves = chessGame.moveOptions
+                    val moves = chessGame.moveOptions.sortedByDescending { move ->
+                        val piece = chessGame.pieceOn(move.departureSquare)
+                        val capturedPiece = chessGame.pieceOn(move.arrivalSquare)
+                        when(piece) {
+                            is Piece -> piece.value() + when(capturedPiece) {
+                                is Piece -> 1000.0
+                                else -> 0.0
+                            }
+                            else -> 0.0
+                        }
+                    }
                     val minimaxDataList: MutableList<MinimaxData> = mutableListOf()
 
                     for (engineMove in moves) {
                         val event = chessGame.movePiece(engineMove)
                         if (event is PieceMoved) {
                             val minimaxData = if (depth == 1) {
-                                sophisticatedEvaluation(
+                                WeighedEvaluation.evaluate(
                                     event.position.board,
                                     maximizingSide
                                 ).let { eval ->
@@ -158,14 +100,24 @@ object MinimaxWithDepthAndSophisticatedEvaluation : Engine() {
                     )
                 )
                 InProgress -> {
-                    val moves = chessGame.moveOptions
+                    val moves = chessGame.moveOptions.sortedByDescending { move ->
+                        val piece = chessGame.pieceOn(move.departureSquare)
+                        val capturedPiece = chessGame.pieceOn(move.arrivalSquare)
+                        when(piece) {
+                            is Piece -> piece.value() + when(capturedPiece) {
+                                is Piece -> 1000.0
+                                else -> 0.0
+                            }
+                            else -> 0.0
+                        }
+                    }
                     val minimaxDataList: MutableList<MinimaxData> = mutableListOf()
 
                     for (engineMove in moves) {
                         val event = chessGame.movePiece(engineMove)
                         if (event is PieceMoved) {
                             val minimaxData = if (depth == 1) {
-                                sophisticatedEvaluation(
+                                WeighedEvaluation.evaluate(
                                     event.position.board,
                                     maximizingSide
                                 ).let { eval ->
@@ -197,9 +149,5 @@ object MinimaxWithDepthAndSophisticatedEvaluation : Engine() {
                 else -> listOf(MinimaxData(null, 0.0, depth))
             }
         }
-
     }
-
-
 }
-

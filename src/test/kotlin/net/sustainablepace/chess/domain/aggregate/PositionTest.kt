@@ -3,6 +3,7 @@ package net.sustainablepace.chess.domain.aggregate
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.event.PieceNotMovedOnBoard
 import net.sustainablepace.chess.domain.move.Move
+import net.sustainablepace.chess.domain.move.rules.MoveRuleSet
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -215,7 +216,7 @@ class PositionTest {
             )
         )
         assertThat(position.moveOptions).contains(Move(e5, e6))
-        assertThat(position.isSquareThreatenedBy(e6, White)).isFalse()
+        assertThat(MoveRuleSet.isSquareThreatenedBy(e6, White, position)).isFalse()
     }
 
     @Test
@@ -227,6 +228,6 @@ class PositionTest {
             turn = Black
         )
         assertThat(position.moveOptions).contains(Move(g7, a1))
-        assertThat(position.isSquareThreatenedBy(a1, Black)).isTrue()
+        assertThat(MoveRuleSet.isSquareThreatenedBy(a1, Black, position)).isTrue()
     }
 }

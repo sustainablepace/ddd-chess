@@ -4,6 +4,7 @@ import net.sustainablepace.chess.domain.aggregate.chessGame
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 import net.sustainablepace.chess.domain.event.MoveCalculated
 import net.sustainablepace.chess.domain.event.NoMoveCalculated
+import net.sustainablepace.chess.domain.move.evaluation.WeighedEvaluation
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
@@ -36,6 +37,15 @@ class EngineTest {
             .let { (player1Points, player2Points) ->
                 println("Minimax with depth: $player1Points, Minimax: $player2Points")
                 assertThat(player1Points).isGreaterThanOrEqualTo(player2Points)
+            }
+    }
+
+    @Test
+    fun `minimax with depth vs minimax vs depth`() {
+        (1..1)
+            .play(MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer, MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer)
+            .let { (player1Points, player2Points) ->
+                println("Minimax with depth: $player1Points, Minimax: $player2Points")
             }
     }
 
@@ -138,7 +148,7 @@ class EngineTest {
         MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer.calculateMove(chessGame()).run {
             when (this) {
                 is MoveCalculated -> {
-                    val score = Minimax.sophisticatedEvaluation(movePiece(move).position.board, White)
+                    val score = WeighedEvaluation.evaluate(movePiece(move).position.board, White)
                     assertThat(score).isGreaterThan(0.0)
                 }
                 is NoMoveCalculated -> fail("Must find a first move.")
@@ -153,7 +163,7 @@ class EngineTest {
         MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer.calculateMove(chessGame).run {
             when (this) {
                 is MoveCalculated -> {
-                    val score = Minimax.sophisticatedEvaluation(position.board, White)
+                    val score = WeighedEvaluation.evaluate(position.board, White)
                     assertThat(score).isGreaterThan(0.0)
                 }
                 is NoMoveCalculated -> fail("Must find a first move.")

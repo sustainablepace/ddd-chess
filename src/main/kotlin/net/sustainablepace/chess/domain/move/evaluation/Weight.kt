@@ -1,4 +1,4 @@
-package net.sustainablepace.chess.domain.move
+package net.sustainablepace.chess.domain.move.evaluation
 
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 
@@ -76,7 +76,7 @@ object Weight {
     )
 
     private val rookWeights = arrayOf(
-        doubleArrayOf(0.0, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.0),
+        doubleArrayOf(0.0, -0.5, 0.0, 0.5, 0.5, 0.0, -0.5, 0.0),
         doubleArrayOf(-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5),
         doubleArrayOf(-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5),
         doubleArrayOf(-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5),

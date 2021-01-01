@@ -1,6 +1,7 @@
 package net.sustainablepace.chess.domain.move.rules
 
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.domain.move.ValidMove
 
 class MoveRuleSet(val moveRules: Set<MoveRule>) {
     constructor(vararg moveOptions: Set<MoveRule>) : this(moveOptions.flatMap { it }.toSet())
@@ -9,14 +10,33 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
     private operator fun unaryMinus(): MoveRuleSet = MoveRuleSet(moveRules.map { -it }.toSet())
 
     companion object {
+        fun findMoves(
+            pieceToBeMoved: Piece,
+            departureSquare: Square,
+            position: Position,
+        ): Set<ValidMove> =
+            (rules[pieceToBeMoved]?.moveRules ?: emptySet()).flatMap { rule ->
+                rule.findMoves(departureSquare, position)
+            }.toSet()
 
-        fun getRulesForPiece(piece: Piece): Set<MoveRule> =
-            rules[piece]?.moveRules ?: emptySet()
+        fun isSquareThreatenedBy(threatenedSquare: Square, side: Side, position: Position): Boolean {
+            when (side) {
+                White -> position.whitePieces
+                Black -> position.blackPieces
+            }.forEach { (square, pieceToBeMoved) ->
+
+                for (rule in capturingRules[pieceToBeMoved]?.moveRules ?: emptyList()) {
+                    if (rule.isThreatened(threatenedSquare, position, square)) {
+                        return true
+                    }
+                }
+            }
+            return false
+        }
 
         private val rookMoveRules = MoveRuleSet(
             MoveRule(
                 direction = Direction.straightLine(),
-                captureType = MoveRule.CaptureType.ALLOWED,
                 pieceCanTakeMultipleSteps = true,
                 rotations = true
             )
@@ -25,12 +45,10 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
         private val knightMoveRules = MoveRuleSet(
             MoveRule(
                 direction = Direction.lShaped(),
-                captureType = MoveRule.CaptureType.ALLOWED,
                 rotations = true
             ),
             MoveRule(
                 direction = -Direction.lShaped(),
-                captureType = MoveRule.CaptureType.ALLOWED,
                 rotations = true
             )
         )
@@ -38,7 +56,6 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
         private val bishopMoveRules = MoveRuleSet(
             MoveRule(
                 direction = Direction.diagonal(),
-                captureType = MoveRule.CaptureType.ALLOWED,
                 pieceCanTakeMultipleSteps = true,
                 rotations = true
             )
@@ -52,12 +69,10 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
         private val kingMoveRules = MoveRuleSet(
             MoveRule(
                 direction = Direction.diagonal(),
-                captureType = MoveRule.CaptureType.ALLOWED,
                 rotations = true
             ),
             MoveRule(
                 direction = Direction.straightLine(),
-                captureType = MoveRule.CaptureType.ALLOWED,
                 rotations = true
             ),
             // TODO Unify both castling rules (?)
@@ -74,17 +89,17 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                                 pieceOn(b1) is NoPiece &&
                                 pieceOn(c1) is NoPiece &&
                                 pieceOn(d1) is NoPiece &&
-                                !isSquareThreatenedBy(e1, Black) &&
-                                !isSquareThreatenedBy(b1, Black) &&
-                                !isSquareThreatenedBy(c1, Black) &&
-                                !isSquareThreatenedBy(d1, Black)
+                                !isSquareThreatenedBy(e1, Black, this) &&
+                                !isSquareThreatenedBy(b1, Black, this) &&
+                                !isSquareThreatenedBy(c1, Black, this) &&
+                                !isSquareThreatenedBy(d1, Black, this)
                             is BlackKing ->
                                 blackCastlingOptions.queenSide &&
-                                    departureSquare == e8 && !isSquareThreatenedBy(e8, White) &&
-                                    pieceOn(d8) is NoPiece && !isSquareThreatenedBy(d8, White) &&
+                                    departureSquare == e8 && !isSquareThreatenedBy(e8, White, this) &&
+                                    pieceOn(d8) is NoPiece && !isSquareThreatenedBy(d8, White, this) &&
                                     arrivalSquare == c8 &&
-                                    pieceOn(c8) is NoPiece && !isSquareThreatenedBy(c8, White) &&
-                                    pieceOn(b8) is NoPiece && !isSquareThreatenedBy(b8, White) &&
+                                    pieceOn(c8) is NoPiece && !isSquareThreatenedBy(c8, White, this) &&
+                                    pieceOn(b8) is NoPiece && !isSquareThreatenedBy(b8, White, this) &&
                                     pieceOn(a8) is BlackRook
                             else -> false
                         }
@@ -103,18 +118,18 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                             position.whiteCastlingOptions.kingSide &&
                             position.pieceOn(f1) is NoPiece &&
                             position.pieceOn(g1) is NoPiece &&
-                            !position.isSquareThreatenedBy(e1, Black) &&
-                            !position.isSquareThreatenedBy(f1, Black) &&
-                            !position.isSquareThreatenedBy(g1, Black)
+                            !isSquareThreatenedBy(e1, Black, position) &&
+                            !isSquareThreatenedBy(f1, Black, position) &&
+                            !isSquareThreatenedBy(g1, Black, position)
                         is BlackKing -> departureSquare == e8 &&
                             arrivalSquare == g8 &&
                             position.pieceOn(h8) is BlackRook &&
                             position.blackCastlingOptions.kingSide &&
                             position.pieceOn(f8) is NoPiece &&
                             position.pieceOn(g8) is NoPiece &&
-                            !position.isSquareThreatenedBy(e8, White) &&
-                            !position.isSquareThreatenedBy(f8, White) &&
-                            !position.isSquareThreatenedBy(g8, White)
+                            !isSquareThreatenedBy(e8, White, position) &&
+                            !isSquareThreatenedBy(f8, White, position) &&
+                            !isSquareThreatenedBy(g8, White, position)
                         else -> false
                     }
                 }
@@ -196,7 +211,10 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
             BlackQueen to -queenMoveRules,
             WhiteKing to kingMoveRules,
             BlackKing to -kingMoveRules
-         )
+        )
 
+        private val capturingRules = rules.map {  (piece, ruleSet) ->
+            piece to MoveRuleSet(ruleSet.moveRules.filter { it.captureType != MoveRule.CaptureType.DISALLOWED }.toSet())
+        }.toMap()
     }
 }

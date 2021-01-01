@@ -33,7 +33,7 @@ sealed class Piece(val side: Side) : PieceOrNoPiece() {
     }
 }
 
-fun PromotionPiece(identifier: Char, side: Side): PieceOrNoPiece =
+fun promotionPiece(identifier: Char, side: Side): PieceOrNoPiece =
     when (side) {
         is White -> when (identifier) {
             WhiteBishop.shortType -> WhiteBishop

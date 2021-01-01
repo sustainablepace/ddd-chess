@@ -17,10 +17,8 @@ interface ChessGame : Board {
     val status: Status
     val activePlayer: Player
     val moveOptions: Set<ValidMove>
+    val identicalPositions: Int
 }
-
-fun List<PositionChanged>.identicalPositions() =
-    groupBy { it.position }.map { it.value.size }.maxOrNull() ?: 0
 
 fun chessGame(): PiecesHaveBeenSetUp = chessGame(position())
 fun chessGame(side: Side): PiecesHaveBeenSetUp = chessGame(position(turn = side))
@@ -38,7 +36,7 @@ fun chessGame(position: Position): PiecesHaveBeenSetUp =
     PiecesHaveBeenSetUp(
         ChessGameEntity(
             position = position,
-            white = AggressiveStupidComputerPlayer,
+            white = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer,
             black = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer
         )
     )
@@ -59,7 +57,7 @@ class ChessGameEntity(
             position.isStaleMate -> Stalemate
             position.isDeadPosition -> DeadPosition
             movesWithoutCaptureOrPawnMove >= 50 -> FiftyMoveRule
-            moves.identicalPositions() >= 3 -> ThreefoldRepetition
+            identicalPositions >= 3 -> ThreefoldRepetition
             else -> InProgress
         }
     }
@@ -69,6 +67,10 @@ class ChessGameEntity(
             White -> white
             Black -> black
         }
+    }
+
+    override val identicalPositions: Int by lazy {
+        moves.groupBy { it.position }.map { it.value.size }.maxOrNull() ?: 0
     }
 
     override fun movePiece(move: ValidMove): PieceMovedOrNot =
