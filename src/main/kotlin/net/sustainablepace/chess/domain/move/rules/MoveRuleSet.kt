@@ -16,7 +16,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
             position: Position,
         ): Set<ValidMove> =
             (rules[pieceToBeMoved]?.moveRules ?: emptySet()).flatMap { rule ->
-                rule.findMoves(departureSquare, position)
+                rule.findMoves(pieceToBeMoved, departureSquare, position)
             }.toSet()
 
         fun isSquareThreatenedBy(threatenedSquare: Square, side: Side, position: Position): Boolean {
@@ -24,12 +24,14 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                 White -> position.whitePieces
                 Black -> position.blackPieces
             }.forEach { (square, pieceToBeMoved) ->
-
-                for (rule in capturingRules[pieceToBeMoved]?.moveRules ?: emptyList()) {
-                    if (rule.isThreatened(threatenedSquare, position, square)) {
-                        return true
+                capturingRules[pieceToBeMoved]
+                    ?.moveRules
+                    ?.any { it.isThreatened(pieceToBeMoved, threatenedSquare, position, square) }
+                    ?.also { isThreatened ->
+                        if (isThreatened) {
+                            return true
+                        }
                     }
-                }
             }
             return false
         }
@@ -79,9 +81,9 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
             MoveRule(
                 direction = -Direction.castlingMove(), // queenside
                 captureType = MoveRule.CaptureType.DISALLOWED,
-                moveCondition = { departureSquare, arrivalSquare, position ->
+                moveCondition = { pieceToBeMoved, departureSquare, arrivalSquare, position ->
                     with(position) {
-                        when (pieceOn(departureSquare)) {
+                        when (pieceToBeMoved) {
                             is WhiteKing -> departureSquare == e1 &&
                                 arrivalSquare == c1 &&
                                 pieceOn(a1) is WhiteRook &&
@@ -110,8 +112,8 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
             MoveRule(
                 direction = Direction.castlingMove(), // kingside
                 captureType = MoveRule.CaptureType.DISALLOWED,
-                moveCondition = { departureSquare, arrivalSquare, position ->
-                    when (position.pieceOn(departureSquare)) {
+                moveCondition = { pieceToBeMoved, departureSquare, arrivalSquare, position ->
+                    when (pieceToBeMoved) {
                         is WhiteKing -> departureSquare == e1 &&
                             arrivalSquare == g1 &&
                             position.pieceOn(h1) is WhiteRook &&
@@ -144,17 +146,15 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
             MoveRule(
                 direction = Direction.initialPawnMove(),
                 captureType = MoveRule.CaptureType.DISALLOWED,
-                moveCondition = { departureSquare, arrivalSquare, position ->
-                    when (val movingPiece = position.pieceOn(departureSquare)) {
-                        is NoPiece -> false
-                        is Piece -> when (movingPiece.side) {
-                            White -> departureSquare.rank == 2 &&
-                                position.pieceOn(departureSquare.upperNeighbour()!!) is NoPiece &&
-                                position.pieceOn(arrivalSquare) is NoPiece
-                            Black -> departureSquare.rank == 7 &&
-                                position.pieceOn(departureSquare.lowerNeighbour()!!) is NoPiece &&
-                                position.pieceOn(arrivalSquare) is NoPiece
-                        }
+                moveCondition = { pieceToBeMoved, departureSquare, arrivalSquare, position ->
+                    when (pieceToBeMoved.side) {
+                        White -> departureSquare.rank == 2 &&
+                            position.pieceOn(departureSquare.upperNeighbour()!!) is NoPiece &&
+                            position.pieceOn(arrivalSquare) is NoPiece
+                        Black -> departureSquare.rank == 7 &&
+                            position.pieceOn(departureSquare.lowerNeighbour()!!) is NoPiece &&
+                            position.pieceOn(arrivalSquare) is NoPiece
+
                     }
                 }
             ),
@@ -169,31 +169,36 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
             MoveRule(
                 direction = Direction.diagonal(),
                 captureType = MoveRule.CaptureType.MANDATORY,
-                moveCondition = { departureSquare, _, position ->
-                    val neighbourSquare = departureSquare.rightNeighbour()
-                    val movingPiece = position.pieceOn(departureSquare)
-                    if (
-                        position.enPassantSquare is Square &&
-                        position.enPassantSquare == neighbourSquare
-                    ) {
-                        val neighbourPiece = position.pieceOn(neighbourSquare)
-                        neighbourPiece is Pawn && movingPiece is Pawn && movingPiece.side != neighbourPiece.side
-                    } else false
+                moveCondition = { pieceToBeMoved, departureSquare, _, position ->
+                    if (position.enPassantSquare == null) {
+                        false
+                    } else {
+                        val neighbourSquare = departureSquare.rightNeighbour()
+                        if (
+
+                            position.enPassantSquare == neighbourSquare
+                        ) {
+                            val neighbourPiece = position.pieceOn(neighbourSquare)
+                            neighbourPiece is Pawn && pieceToBeMoved is Pawn && pieceToBeMoved.side != neighbourPiece.side
+                        } else false
+                    }
                 }
             ),
             MoveRule(
                 direction = -Direction.diagonal(),
                 captureType = MoveRule.CaptureType.MANDATORY,
-                moveCondition = { departureSquare, _, position ->
-                    val neighbourSquare = departureSquare.leftNeighbour()
-                    val movingPiece = position.pieceOn(departureSquare)
-                    if (
-                        position.enPassantSquare is Square &&
-                        position.enPassantSquare == neighbourSquare
-                    ) {
-                        val neighbourPiece = position.pieceOn(neighbourSquare)
-                        neighbourPiece is Pawn && movingPiece is Pawn && movingPiece.side != neighbourPiece.side
-                    } else false
+                moveCondition = { pieceToBeMoved, departureSquare, _, position ->
+                    if (position.enPassantSquare == null) {
+                        false
+                    } else {
+                        val neighbourSquare = departureSquare.leftNeighbour()
+                        if (
+                            position.enPassantSquare == neighbourSquare
+                        ) {
+                            val neighbourPiece = position.pieceOn(neighbourSquare)
+                            neighbourPiece is Pawn && pieceToBeMoved is Pawn && pieceToBeMoved.side != neighbourPiece.side
+                        } else false
+                    }
                 }
             )
         )
@@ -213,7 +218,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
             BlackKing to -kingMoveRules
         )
 
-        private val capturingRules = rules.map {  (piece, ruleSet) ->
+        private val capturingRules = rules.map { (piece, ruleSet) ->
             piece to MoveRuleSet(ruleSet.moveRules.filter { it.captureType != MoveRule.CaptureType.DISALLOWED }.toSet())
         }.toMap()
     }

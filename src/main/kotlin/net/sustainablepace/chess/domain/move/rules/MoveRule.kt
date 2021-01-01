@@ -7,6 +7,7 @@ import net.sustainablepace.chess.domain.move.ValidMove
 import net.sustainablepace.chess.domain.move.rules.MoveRule.CaptureType.*
 
 typealias MoveCondition = (
+    pieceToBeMoved: Piece,
     departureSquare: Square,
     arrivalSquare: Square,
     position: Position
@@ -18,11 +19,12 @@ sealed class MoveRule {
     abstract val captureType: CaptureType
 
     abstract fun findMoves(
+        pieceToBeMoved: Piece,
         departureSquare: Square,
         position: Position,
     ): Set<ValidMove>
 
-    abstract fun isThreatened(threatenedSquare: Square, position: Position, departureSquare: Square): Boolean
+    abstract fun isThreatened(pieceToBeMoved: Piece, threatenedSquare: Square, position: Position, departureSquare: Square): Boolean
 
     abstract operator fun unaryMinus(): MoveRule
 
@@ -55,6 +57,7 @@ sealed class MoveRule {
         private val pieceCanTakeMultipleSteps: Boolean = false
     ) : MoveRule() {
         override fun findMoves(
+            pieceToBeMoved: Piece,
             departureSquare: Square,
             position: Position
         ): Set<ValidMove> =
@@ -63,7 +66,7 @@ sealed class MoveRule {
                     for (step in (White.baseLine until Black.baseLine)) { // Move must not exceed board dimensions
                         val arrivalSquare = (direction * step).from(departureSquare)
                         if (arrivalSquare is Square) {
-                            addAll(availableMoves(position, departureSquare, arrivalSquare))
+                            addAll(availableMoves(pieceToBeMoved, position, departureSquare, arrivalSquare))
                         } else break
                         if (position.pieceOn(arrivalSquare) is Piece) break
                     }
@@ -71,12 +74,12 @@ sealed class MoveRule {
                 }
                 false ->
                     when (val arrivalSquare = direction.from(departureSquare)) {
-                        is Square -> availableMoves(position, departureSquare, arrivalSquare)
+                        is Square -> availableMoves(pieceToBeMoved, position, departureSquare, arrivalSquare)
                         else -> emptySet()
                     }
             }
 
-        override fun isThreatened(threatenedSquare: Square, position: Position, departureSquare: Square): Boolean {
+        override fun isThreatened(pieceToBeMoved: Piece, threatenedSquare: Square, position: Position, departureSquare: Square): Boolean {
             when (pieceCanTakeMultipleSteps) {
                 true -> {
                     for (step in (White.baseLine until Black.baseLine)) { // Move must not exceed board dimensions
@@ -84,7 +87,7 @@ sealed class MoveRule {
                         if (arrivalSquare !is Square) break
                         if (
                             arrivalSquare == threatenedSquare &&
-                            availableMoves(position, departureSquare, arrivalSquare).isNotEmpty()
+                            availableMoves(pieceToBeMoved, position, departureSquare, arrivalSquare).isNotEmpty()
                         ) {
                             return true
                         }
@@ -95,26 +98,25 @@ sealed class MoveRule {
                 false ->
                     return when (val arrivalSquare = direction.from(departureSquare)) {
                         is Square -> arrivalSquare == threatenedSquare &&
-                            availableMoves(position, departureSquare, arrivalSquare).isNotEmpty()
+                            availableMoves(pieceToBeMoved, position, departureSquare, arrivalSquare).isNotEmpty()
                         else -> false
                     }
             }
         }
 
-        private fun availableMoves(position: Position, departureSquare: Square, arrivalSquare: Square): Set<ValidMove> {
-            val movingPiece = position.pieceOn(departureSquare)
+        private fun availableMoves(pieceToBeMoved: Piece, position: Position, departureSquare: Square, arrivalSquare: Square): Set<ValidMove> {
             val blockingPiece = position.pieceOn(arrivalSquare)
             return when {
                 blockingPiece is NoPiece && captureType == MANDATORY -> emptySet()
-                movingPiece is Piece && blockingPiece is Piece &&
-                    (movingPiece.side == blockingPiece.side || captureType == DISALLOWED) -> emptySet()
-                movingPiece is WhitePawn && arrivalSquare.rank == 8 -> setOf(
+                blockingPiece is Piece &&
+                    (pieceToBeMoved.side == blockingPiece.side || captureType == DISALLOWED) -> emptySet()
+                pieceToBeMoved is WhitePawn && arrivalSquare.rank == 8 -> setOf(
                     PromotionMove(departureSquare, arrivalSquare, WhiteQueen),
                     PromotionMove(departureSquare, arrivalSquare, WhiteRook),
                     PromotionMove(departureSquare, arrivalSquare, WhiteBishop),
                     PromotionMove(departureSquare, arrivalSquare, WhiteKnight)
                 )
-                movingPiece is BlackPawn && arrivalSquare.rank == 1 -> setOf(
+                pieceToBeMoved is BlackPawn && arrivalSquare.rank == 1 -> setOf(
                     PromotionMove(departureSquare, arrivalSquare, BlackQueen),
                     PromotionMove(departureSquare, arrivalSquare, BlackRook),
                     PromotionMove(departureSquare, arrivalSquare, BlackBishop),
@@ -137,23 +139,18 @@ sealed class MoveRule {
         private val moveCondition: MoveCondition
     ) : MoveRule() {
         override fun findMoves(
+            pieceToBeMoved: Piece,
             departureSquare: Square,
             position: Position
-        ): Set<ValidMove> =
-            when (val arrivalSquare = direction.from(departureSquare)) {
-                is Square -> if (moveCondition(
-                        departureSquare,
-                        arrivalSquare,
-                        position
-                    )
-                ) {
-                    setOf(Move(departureSquare, arrivalSquare))
-                } else emptySet()
-                else -> emptySet()
-            }
+        ): Set<ValidMove> = direction.from(departureSquare)?.let { arrivalSquare ->
+            if (moveCondition(pieceToBeMoved, departureSquare, arrivalSquare, position)) {
+                setOf(Move(departureSquare, arrivalSquare))
+            } else emptySet()
+        } ?: emptySet()
 
-        override fun isThreatened(threatenedSquare: Square, position: Position, departureSquare: Square): Boolean =
-            findMoves(departureSquare, position).any { it.arrivalSquare == threatenedSquare }
+
+        override fun isThreatened(pieceToBeMoved: Piece, threatenedSquare: Square, position: Position, departureSquare: Square): Boolean =
+            findMoves(pieceToBeMoved, departureSquare, position).any { it.arrivalSquare == threatenedSquare }
 
         override operator fun unaryMinus(): MoveRule = CustomizedRule(
             direction = !direction,

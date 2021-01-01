@@ -13,7 +13,7 @@ interface ChessGame : Board {
     val black: Player
     val numberOfNextMove: Int
     val movesWithoutCaptureOrPawnMove: Int
-    val moves: List<PositionChanged>
+    val moves: List<Int>
     val status: Status
     val activePlayer: Player
     val moveOptions: Set<ValidMove>
@@ -36,7 +36,7 @@ fun chessGame(position: Position): PiecesHaveBeenSetUp =
     PiecesHaveBeenSetUp(
         ChessGameEntity(
             position = position,
-            white = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer,
+            white = HumanPlayer,
             black = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer
         )
     )
@@ -48,7 +48,8 @@ class ChessGameEntity(
     override val black: Player,
     override val numberOfNextMove: Int = 1,
     override val movesWithoutCaptureOrPawnMove: Int = 0,
-    override val moves: List<PositionChanged> = listOf(PositionSetUp(position))
+    override val moves: List<Int> = listOf(position.hashCode()),
+    override val identicalPositions: Int = 0
 ) : ChessGame, MoveOptionsCalculator by position, Board by position {
 
     override val status: Status by lazy {
@@ -69,10 +70,6 @@ class ChessGameEntity(
         }
     }
 
-    override val identicalPositions: Int by lazy {
-        moves.groupBy { it.position }.map { it.value.size }.maxOrNull() ?: 0
-    }
-
     override fun movePiece(move: ValidMove): PieceMovedOrNot =
         if (move !in moveOptions)
             PieceNotMoved(
@@ -81,21 +78,25 @@ class ChessGameEntity(
             )
         else {
             when (val event = position.movePiece(move)) {
-                is PieceMovedOnBoard -> PieceMoved(
-                    move = move,
-                    chessGame = ChessGameEntity(
-                        id = id,
-                        position = event.position,
-                        numberOfNextMove = numberOfNextMove + 1,
-                        white = white,
-                        black = black,
-                        movesWithoutCaptureOrPawnMove = if (event.pieceCapturedOrPawnMoved) 0 else movesWithoutCaptureOrPawnMove + 1,
-                        moves = moves.toMutableList().run {
-                            add(event)
-                            toList()
-                        }
-                    )
-                )
+                is PieceMovedOnBoard -> {
+                    val eventStore = moves.toMutableList().run {
+                        add(event.position.hashCode())
+                        toList()
+                    }
+                    PieceMoved(
+                        move = move,
+                        chessGame = ChessGameEntity(
+                            id = id,
+                            position = event.position,
+                            numberOfNextMove = numberOfNextMove + 1,
+                            white = white,
+                            black = black,
+                            movesWithoutCaptureOrPawnMove = if (event.pieceCapturedOrPawnMoved) 0 else movesWithoutCaptureOrPawnMove + 1,
+                            moves = eventStore,
+                            identicalPositions = eventStore.count { it == eventStore.last() }
+                        ))
+                }
+
                 is PieceNotMovedOnBoard -> PieceNotMoved(
                     reason = "Move $move not executed in game $id.",
                     chessGame = this

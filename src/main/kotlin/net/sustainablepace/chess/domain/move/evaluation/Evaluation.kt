@@ -1,5 +1,6 @@
 package net.sustainablepace.chess.domain.move.evaluation
 
+import net.sustainablepace.chess.domain.aggregate.ChessGame
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
 
 fun Piece.value() = when (this) {
@@ -11,13 +12,23 @@ fun Piece.value() = when (this) {
     is King -> 900.0
 }
 
-abstract class Evaluation {
-    abstract fun evaluate(board: Board, engineSide: Side): Double
-
-
+fun ChessGame.moveOptionsMinimaxSort() = moveOptions.sortedByDescending { move ->
+    val piece = pieceOn(move.departureSquare)
+    val capturedPiece = pieceOn(move.arrivalSquare)
+    when (piece) {
+        is Piece -> piece.value() + when (capturedPiece) {
+            is Piece -> 1000.0
+            else -> 0.0
+        }
+        else -> 0.0
+    }
 }
 
-object SimpleEvaluation: Evaluation() {
+abstract class Evaluation {
+    abstract fun evaluate(board: Board, engineSide: Side): Double
+}
+
+object SimpleEvaluation : Evaluation() {
     override fun evaluate(board: Board, engineSide: Side): Double {
         return setOf(White, Black).sumByDouble { side ->
             when (side) {
@@ -30,7 +41,7 @@ object SimpleEvaluation: Evaluation() {
     }
 }
 
-object WeighedEvaluation: Evaluation() {
+object WeighedEvaluation : Evaluation() {
     override fun evaluate(board: Board, engineSide: Side): Double {
         return setOf(White, Black).sumByDouble { side ->
             when (side) {

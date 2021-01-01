@@ -3,12 +3,11 @@ package net.sustainablepace.chess.domain.move.engine
 import net.sustainablepace.chess.domain.aggregate.ChessGame
 import net.sustainablepace.chess.domain.aggregate.chessgame.Checkmate
 import net.sustainablepace.chess.domain.aggregate.chessgame.InProgress
-import net.sustainablepace.chess.domain.aggregate.chessgame.Piece
 import net.sustainablepace.chess.domain.aggregate.chessgame.Side
 import net.sustainablepace.chess.domain.event.PieceMoved
 import net.sustainablepace.chess.domain.move.ValidMove
 import net.sustainablepace.chess.domain.move.evaluation.WeighedEvaluation
-import net.sustainablepace.chess.domain.move.evaluation.value
+import net.sustainablepace.chess.domain.move.evaluation.moveOptionsMinimaxSort
 import kotlin.random.Random
 
 data class MinimaxData(val engineMove: ValidMove?, val score: Double, val depth: Int)
@@ -43,17 +42,8 @@ object MinimaxWithDepthAndSophisticatedEvaluation : Engine() {
                     )
                 )
                 InProgress -> {
-                    val moves = chessGame.moveOptions.sortedByDescending { move ->
-                        val piece = chessGame.pieceOn(move.departureSquare)
-                        val capturedPiece = chessGame.pieceOn(move.arrivalSquare)
-                        when(piece) {
-                            is Piece -> piece.value() + when(capturedPiece) {
-                                is Piece -> 1000.0
-                                else -> 0.0
-                            }
-                            else -> 0.0
-                        }
-                    }
+                    val moves = chessGame.moveOptionsMinimaxSort()
+
                     val minimaxDataList: MutableList<MinimaxData> = mutableListOf()
 
                     for (engineMove in moves) {
@@ -81,9 +71,7 @@ object MinimaxWithDepthAndSophisticatedEvaluation : Engine() {
 
                             minimaxDataList.addAll(minimaxData.map { it.copy(engineMove = engineMove) }.distinct())
 
-                            if (b < a) {
-                                break
-                            }
+                            if (b < a) break
                         }
                     }
                     minimaxDataList.filter { it.score == maxEval }
@@ -100,17 +88,7 @@ object MinimaxWithDepthAndSophisticatedEvaluation : Engine() {
                     )
                 )
                 InProgress -> {
-                    val moves = chessGame.moveOptions.sortedByDescending { move ->
-                        val piece = chessGame.pieceOn(move.departureSquare)
-                        val capturedPiece = chessGame.pieceOn(move.arrivalSquare)
-                        when(piece) {
-                            is Piece -> piece.value() + when(capturedPiece) {
-                                is Piece -> 1000.0
-                                else -> 0.0
-                            }
-                            else -> 0.0
-                        }
-                    }
+                    val moves = chessGame.moveOptionsMinimaxSort()
                     val minimaxDataList: MutableList<MinimaxData> = mutableListOf()
 
                     for (engineMove in moves) {
@@ -139,9 +117,8 @@ object MinimaxWithDepthAndSophisticatedEvaluation : Engine() {
 
                             minimaxDataList.addAll(minimaxData.map { it.copy(engineMove = engineMove) })
 
-                            if (b < a) {
-                                break
-                            }
+                            if (b < a) break
+
                         }
                     }
                     minimaxDataList.filter { it.score == minEval }.distinct()
