@@ -25,7 +25,7 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                 Black -> position.blackPieces
             }.forEach { (square, pieceToBeMoved) ->
                 val diff = square diff threatenedSquare
-                val isPotentiallyThreatened = when(pieceToBeMoved) {
+                val isPotentiallyThreatened = when(pieceToBeMoved) { // TODO maybe move these to the individual rules?
                     is Pawn -> diff.x == 1 && diff.y == 1
                     is Knight -> diff.x == 1 && diff.y == 2 || diff.x == 2 && diff.y == 1
                     is Rook -> diff.x == 0 || diff.y == 0
