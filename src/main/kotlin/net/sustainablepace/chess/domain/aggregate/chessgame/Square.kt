@@ -2,6 +2,7 @@
 
 package net.sustainablepace.chess.domain.aggregate.chessgame
 
+import net.sustainablepace.chess.domain.move.rules.Direction
 import kotlin.math.abs
 
 sealed class Square(val file: File, val rank: Rank) {
@@ -172,6 +173,7 @@ typealias File = Char
 typealias Rank = Int
 
 infix fun Rank.diff(other: Rank): Int = abs(this - other)
+infix fun Square.diff(other: Square): Direction = Direction(abs(file - other.file), abs(rank - other.rank))
 
 fun Square.leftNeighbour(): Square? = Square(file - 1, rank)
 fun Square.rightNeighbour(): Square? = Square(file + 1, rank)

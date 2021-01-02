@@ -24,14 +24,26 @@ class MoveRuleSet(val moveRules: Set<MoveRule>) {
                 White -> position.whitePieces
                 Black -> position.blackPieces
             }.forEach { (square, pieceToBeMoved) ->
-                capturingRules[pieceToBeMoved]
-                    ?.moveRules
-                    ?.any { it.isThreatened(pieceToBeMoved, threatenedSquare, position, square) }
-                    ?.also { isThreatened ->
-                        if (isThreatened) {
-                            return true
+                val diff = square diff threatenedSquare
+                val isPotentiallyThreatened = when(pieceToBeMoved) {
+                    is Pawn -> diff.x == 1 && diff.y == 1
+                    is Knight -> diff.x == 1 && diff.y == 2 || diff.x == 2 && diff.y == 1
+                    is Rook -> diff.x == 0 || diff.y == 0
+                    is Bishop -> diff.x == diff.y
+                    is Queen -> diff.x == 0 || diff.y == 0 || diff.x == diff.y
+                    is King -> diff.x == 1 || diff.y == 1
+                }
+                if(isPotentiallyThreatened) {
+                    capturingRules[pieceToBeMoved]
+                        ?.moveRules
+                        ?.any { it.isThreatened(pieceToBeMoved, threatenedSquare, position, square) }
+                        ?.also { isThreatened ->
+                            if (isThreatened) {
+                                return true
+                            }
                         }
-                    }
+                }
+
             }
             return false
         }
