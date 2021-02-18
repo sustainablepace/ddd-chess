@@ -1,5 +1,36 @@
 package net.sustainablepace.chess.domain
 
+object Game
+object White
+object Black
+object Player
+object Computer
+object Human
+object Move
+
+sealed class Piece
+object King: Piece()
+object Queen: Piece()
+object Rook: Piece()
+object Bishop: Piece()
+object Knight: Piece()
+object Pawn: Piece()
+
+typealias Position = Map<Square, Piece>
+
+enum class Rank {
+    ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT
+}
+enum class File {
+    A, B, C, D, E, F, G, H
+}
+typealias Square = Pair<File, Rank>
+
+object InitialPosition
+
+
+
+
 class ChessGame private constructor(
     val id: ChessGameId,
     val position: MutableMap<String, String>,
