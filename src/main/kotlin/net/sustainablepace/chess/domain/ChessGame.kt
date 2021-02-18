@@ -78,12 +78,13 @@ val initialPosition: Position =
     )
 
 class Game(
-        val position: Position,
         val id: ChessGameId, // todo: maybe change to uuid later
-        val state: GameState = GameState.IN_PROGRESS,
-        val activeColor: Color,
+        var positions: List<Position> = listOf(initialPosition),
+        var state: GameState = GameState.IN_PROGRESS,
+        var activeColor: Color = WHITE,
 ) {
-
+    val currentPosition: Position
+        get() = positions.last()
 }
 
 class ChessGame private constructor(
