@@ -1,4 +1,12 @@
 package net.sustainablepace.chess.application.port.`in`
 
-interface Command {
+import net.sustainablepace.chess.domain.ChessGameId
+import net.sustainablepace.chess.domain.Move
+
+sealed class Command {
 }
+
+data class MoveCommand(
+        val gameId: ChessGameId,
+        val move: Move
+): Command()

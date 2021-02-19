@@ -3,6 +3,7 @@ package net.sustainablepace.chess.domain
 import net.sustainablepace.chess.domain.Color.*
 import net.sustainablepace.chess.domain.File.*
 import net.sustainablepace.chess.domain.Rank.*
+import java.lang.IllegalArgumentException
 
 sealed class Player (val color: Color)
 
@@ -22,11 +23,41 @@ class Knight(color: Color): Piece(color)
 class Pawn(color: Color): Piece(color)
 
 enum class Rank {
-    ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT
+    ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT;
+    companion object {
+        fun fromString(str: Char): Rank {
+            return when (str) {
+                '1' -> ONE
+                '2' -> TWO
+                '3' -> THREE
+                '4' -> FOUR
+                '5' -> FIVE
+                '6' -> SIX
+                '7' -> SEVEN
+                '8' -> EIGHT
+                else -> throw IllegalArgumentException()
+            }
+        }
+    }
 }
 
 enum class File {
-    A, B, C, D, E, F, G, H
+    A, B, C, D, E, F, G, H;
+    companion object {
+        fun fromString(str: Char): File {
+            return when (str) {
+                'a' -> A
+                'b' -> B
+                'c' -> C
+                'd' -> D
+                'e' -> E
+                'f' -> F
+                'g' -> G
+                'h' -> H
+                else -> throw IllegalArgumentException()
+            }
+        }
+    }
 }
 
 enum class GameState {
@@ -34,6 +65,11 @@ enum class GameState {
 }
 
 typealias Square = Pair<File, Rank>
+fun squareFromString(str: String): Square {
+    val file = File.fromString(str[0])
+    val rank = Rank.fromString(str[1])
+    return file to rank
+}
 
 typealias Position = Map<Square, Piece>
 
