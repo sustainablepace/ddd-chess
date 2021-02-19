@@ -4,9 +4,10 @@ import net.sustainablepace.chess.domain.Color.*
 import net.sustainablepace.chess.domain.File.*
 import net.sustainablepace.chess.domain.Rank.*
 
-object Player
-object Computer
-object Human
+sealed class Player (val color: Color)
+
+object Computer: Player(BLACK)
+object Human: Player(WHITE)
 
 enum class Color {
     WHITE, BLACK
@@ -36,7 +37,7 @@ typealias Square = Pair<File, Rank>
 
 typealias Position = Map<Square, Piece>
 
-typealias Move = Pair<Position, Position>
+typealias Move = Pair<Square, Square>
 
 val initialPosition: Position =
     mapOf(
@@ -83,6 +84,13 @@ class Game(
         var state: GameState = GameState.IN_PROGRESS,
         var activeColor: Color = WHITE,
 ) {
+    fun applyMove(move: Move) {
+        val piece = currentPosition.get(move.first)!!
+        val newPosition: Position = (currentPosition - move.first) + (move.second to piece)
+        positions += newPosition
+    }
+
+
     val currentPosition: Position
         get() = positions.last()
 }
