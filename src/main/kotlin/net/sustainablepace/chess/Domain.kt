@@ -1,8 +1,7 @@
 package net.sustainablepace.chess
 
 typealias Schach = Boolean
-open class Stellung()
-object Ausgangsstellung: Stellung()
+
 
 enum class Seite {
     weiss, schwarz
@@ -48,19 +47,26 @@ class Partie {
     var ergebnis: Ergebnis? = null
 }
 
+typealias Stellung =  Map<Char, List<Feld>>
+
 
 class Brett {
-    val grundlinieWeiss = Linie(Seite.weiss)
-    val grundlinieSchwarz = Linie(Seite.schwarz)
-    val felder = felderErstellen()
+    val stellung: Stellung = initAusgangstellung()
 
-        
+    companion object {
+        fun initAusgangstellung(): Stellung = mapOf()
+    }
+
 }
 
-class Linie (val seite: Seite)
-
-class Feld (val x: Char, val y: Int)
-
-fun felderErstellen(): List<Feld> {
-    return emptyList()
+enum Figur {
+    Rook, Knight, Queen, Bishop, King, Pawn
 }
+
+class Feld(val spalte: Char, val zeile: Int) {
+    var figur: Figur? = null
+
+    fun isOnGrundlinie(): Boolean = false
+
+}
+
