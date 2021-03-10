@@ -2,7 +2,7 @@ package net.sustainablepace.chess
 
 typealias Schach = Boolean
 open class Stellung()
-object Ausgansstellung: Stellung()
+object Ausgangsstellung: Stellung()
 
 enum class Seite {
     weiss, schwarz
@@ -18,7 +18,7 @@ open class Zustand(
     val aktiveSeite: Seite
 )
 
-object AnfangsZustand: Zustand(false, Ausgansstellung ,Seite.weiss)
+object AnfangsZustand: Zustand(false, Ausgangsstellung ,Seite.weiss)
 
 typealias Zustandshistorie = List<Zustand>
 typealias Aktionshistorie = List<Aktion>
@@ -46,4 +46,21 @@ class Partie {
     val spielerInWeiss = Spieler(Seite.weiss)
     val spielerInSchwarz = Spieler(Seite.schwarz)
     var ergebnis: Ergebnis? = null
+}
+
+
+class Brett {
+    val grundlinieWeiss = Linie(Seite.weiss)
+    val grundlinieSchwarz = Linie(Seite.schwarz)
+    val felder = felderErstellen()
+
+        
+}
+
+class Linie (val seite: Seite)
+
+class Feld (val x: Char, val y: Int)
+
+fun felderErstellen(): List<Feld> {
+    return emptyList()
 }
