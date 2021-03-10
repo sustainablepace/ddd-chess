@@ -17,7 +17,7 @@ open class Zustand(
     val aktiveSeite: Seite
 )
 
-object AnfangsZustand: Zustand(false, Ausgangsstellung ,Seite.weiss)
+object AnfangsZustand: Zustand(false, Brett.ausgangstellung() ,Seite.weiss)
 
 typealias Zustandshistorie = List<Zustand>
 typealias Aktionshistorie = List<Aktion>
@@ -51,16 +51,32 @@ typealias Stellung =  Map<Char, List<Feld>>
 
 
 class Brett {
-    val stellung: Stellung = initAusgangstellung()
+    val stellung: Stellung = ausgangstellung()
 
     companion object {
-        fun initAusgangstellung(): Stellung = mapOf()
+        fun ausgangstellung(): Stellung = mapOf()
     }
 
 }
 
-enum Figur {
+object BewegungsRegel
+object aktionsMenge
+
+enum class AktionsMenge {
+    schlagen, umwandeln
+}
+
+class FigurenFeature (val bewegungsregel: BewegungsRegel, val aktionsMenge: AktionsMenge) {
+
+}
+
+enum class FigurenTyp(feature: FigurenFeature) {
     Rook, Knight, Queen, Bishop, King, Pawn
+}
+
+class Figur(val typ: FigurenTyp) {
+
+    fun woKannIchHin(): List<Feld>
 }
 
 class Feld(val spalte: Char, val zeile: Int) {
