@@ -1,8 +1,8 @@
 package net.sustainablepace.chess
 
 typealias Schach = Boolean
-object Stellung
-object AktiveSeite: Seite
+open class Stellung()
+object Ausgansstellung: Stellung()
 
 enum class Seite {
     weiss, schwarz
@@ -12,13 +12,14 @@ enum class Aktion {
     Zug, RemisAnbieten, aufgeben
 }
 
-class Zustand {
-    val schach = Schach
-    val stellung = Stellung
-    val aktiveSeite = AktiveSeite
-}
+open class Zustand(
+    val schach: Schach,
+    val stellung: Stellung,
+    val aktiveSeite: Seite
+)
 
-object AktuellerZustand: Zustand
+object AnfangsZustand: Zustand(false, Ausgansstellung ,Seite.weiss)
+
 typealias Zustandshistorie = List<Zustand>
 typealias Aktionshistorie = List<Aktion>
 
@@ -32,19 +33,17 @@ sealed class Ergebnis
 
 object Schachmatt: Ergebnis()
 
-class Remis: Ergebnis() {
-    val grund: RemisGrund
-}
+class Remis(val grund: RemisGrund): Ergebnis()
 
 enum class RemisGrund {
     Patt, Einigung, Stellungswiederholung
 }
 
 class Partie {
-    val aktuellerZustand = AktuellerZustand
-    val zustandshistorie = Zustandshistorie
-    val aktionshistorie = Aktionshistorie
-    val spielerInWeiss = Spieler()
-    val spielerInSchwarz = Spieler()
-    val ergebnis = Ergebnis
+    val aktuellerZustand = AnfangsZustand
+    val zustandshistorie = emptyList<Zustand>()
+    val aktionshistorie = emptyList<Aktion>()
+    val spielerInWeiss = Spieler(Seite.weiss)
+    val spielerInSchwarz = Spieler(Seite.schwarz)
+    var ergebnis: Ergebnis? = null
 }
