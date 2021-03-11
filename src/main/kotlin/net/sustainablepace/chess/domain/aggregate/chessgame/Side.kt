@@ -1,5 +1,7 @@
 package net.sustainablepace.chess.domain.aggregate.chessgame
 
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.Rank
+
 sealed class Side {
     abstract val baseLine: Rank
 }

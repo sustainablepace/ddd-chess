@@ -1,10 +1,8 @@
-package net.sustainablepace.chess.domain.aggregate
+package net.sustainablepace.chess.domain.move
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.a1
-import net.sustainablepace.chess.domain.aggregate.chessgame.a2
-import net.sustainablepace.chess.domain.aggregate.chessgame.b1
-import net.sustainablepace.chess.domain.aggregate.chessgame.b2
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.*
 import net.sustainablepace.chess.domain.move.rules.Direction
+import net.sustainablepace.chess.domain.move.rules.diff
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -56,4 +54,13 @@ class DirectionTest {
 
     }
 
+    @Test
+    fun `compute difference between two squares`() {
+        assertThat(a1 diff a1).isEqualTo(Direction(0,0))
+        assertThat(a1 diff a2).isEqualTo(Direction(0,1))
+        assertThat(a1 diff a8).isEqualTo(Direction(0,7))
+        assertThat(a1 diff h1).isEqualTo(Direction(7,0))
+        assertThat(a1 diff h8).isEqualTo(Direction(7,7))
+        assertThat(a8 diff h1).isEqualTo(Direction(7,7))
+    }
 }

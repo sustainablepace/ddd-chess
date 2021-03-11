@@ -1,7 +1,9 @@
 package net.sustainablepace.chess.domain.move
 
 import net.sustainablepace.chess.domain.aggregate.chessGame
-import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.domain.aggregate.chessgame.MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer
+import net.sustainablepace.chess.domain.aggregate.chessgame.position
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.*
 import net.sustainablepace.chess.domain.event.MoveCalculated
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

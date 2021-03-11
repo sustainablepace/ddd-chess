@@ -1,6 +1,9 @@
 package net.sustainablepace.chess.domain.move.rules
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.domain.aggregate.chessgame.Black
+import net.sustainablepace.chess.domain.aggregate.chessgame.Position
+import net.sustainablepace.chess.domain.aggregate.chessgame.White
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.*
 import net.sustainablepace.chess.domain.move.Move
 import net.sustainablepace.chess.domain.move.PromotionMove
 import net.sustainablepace.chess.domain.move.ValidMove

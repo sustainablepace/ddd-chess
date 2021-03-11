@@ -1,6 +1,9 @@
 package net.sustainablepace.chess.domain.aggregate
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.domain.aggregate.chessgame.DeadPosition
+import net.sustainablepace.chess.domain.aggregate.chessgame.InProgress
+import net.sustainablepace.chess.domain.aggregate.chessgame.position
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.*
 import net.sustainablepace.chess.domain.move.Move
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

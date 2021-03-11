@@ -1,7 +1,7 @@
 package net.sustainablepace.chess.application.port.`in`
 
 import net.sustainablepace.chess.application.port.`in`.command.MovePiece
-import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.*
 import net.sustainablepace.chess.domain.move.Move
 import net.sustainablepace.chess.domain.move.PromotionMove
 import org.assertj.core.api.Assertions.assertThat

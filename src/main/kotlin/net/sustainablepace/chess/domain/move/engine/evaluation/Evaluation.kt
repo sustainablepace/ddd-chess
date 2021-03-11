@@ -1,7 +1,11 @@
-package net.sustainablepace.chess.domain.move.evaluation
+package net.sustainablepace.chess.domain.move.engine.evaluation
 
 import net.sustainablepace.chess.domain.aggregate.ChessGame
-import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.domain.aggregate.chessgame.Black
+import net.sustainablepace.chess.domain.aggregate.chessgame.Side
+import net.sustainablepace.chess.domain.aggregate.chessgame.White
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.Board
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.*
 
 fun Piece.value() = when (this) {
     is Pawn -> 10.0

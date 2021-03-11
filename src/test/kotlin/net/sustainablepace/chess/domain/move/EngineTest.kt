@@ -2,9 +2,10 @@ package net.sustainablepace.chess.domain.move
 
 import net.sustainablepace.chess.domain.aggregate.chessGame
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.*
 import net.sustainablepace.chess.domain.event.MoveCalculated
 import net.sustainablepace.chess.domain.event.NoMoveCalculated
-import net.sustainablepace.chess.domain.move.evaluation.WeighedEvaluation
+import net.sustainablepace.chess.domain.move.engine.evaluation.WeighedEvaluation
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
@@ -233,7 +234,7 @@ class EngineTest {
                 chessGame(player2, player1)
             }
         }.map {
-            var chessGame = it
+            var chessGame = it.chessGame
             while (chessGame.status == InProgress) {
                 val player = chessGame.activePlayer as ComputerPlayer
                 when (val move = player.calculateMove(chessGame)) {

@@ -1,6 +1,6 @@
 package net.sustainablepace.chess.domain.move.rules
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.Square
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.Square
 
 data class Direction constructor(val x: Int, val y: Int) {
 

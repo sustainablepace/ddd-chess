@@ -1,10 +1,14 @@
 package net.sustainablepace.chess.domain.move
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.application.port.`in`.command.MoveInput
+import net.sustainablepace.chess.domain.aggregate.chessgame.Black
+import net.sustainablepace.chess.domain.aggregate.chessgame.White
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.NoPiece
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.Piece
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.Square
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.promotionPiece
 
 sealed class MoveOrInvalidMove
-
-typealias MoveInput = String
 
 class InvalidMove(
     val moveInput: String,

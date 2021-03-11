@@ -1,6 +1,7 @@
 package net.sustainablepace.chess.domain.aggregate
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.domain.aggregate.chessgame.position
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.*
 import net.sustainablepace.chess.domain.move.Move
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -38,14 +39,14 @@ class WhiteBishopTest {
             )
         )
         Assertions.assertThat(position.moveOptions.filter { it.departureSquare == e4 }).containsExactlyInAnyOrder(
-            Move(e4,d3),
-            Move(e4,c2),
-            Move(e4,b1),
-            Move(e4,d5),
-            Move(e4,f5),
-            Move(e4,g6),
-            Move(e4,h7),
-            Move(e4,f3)
+            Move(e4, d3),
+            Move(e4, c2),
+            Move(e4, b1),
+            Move(e4, d5),
+            Move(e4, f5),
+            Move(e4, g6),
+            Move(e4, h7),
+            Move(e4, f3)
         )
     }
 }

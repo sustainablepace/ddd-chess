@@ -2,6 +2,7 @@ package net.sustainablepace.chess.domain.readmodel
 
 import net.sustainablepace.chess.domain.aggregate.ChessGame
 import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.Piece
 
 data class ChessGameReadModel(
     val id: ChessGameId,

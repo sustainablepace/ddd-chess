@@ -1,7 +1,7 @@
 package net.sustainablepace.chess.domain.move
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.*
-import net.sustainablepace.chess.domain.move.evaluation.Weight
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.*
+import net.sustainablepace.chess.domain.move.engine.evaluation.Weight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

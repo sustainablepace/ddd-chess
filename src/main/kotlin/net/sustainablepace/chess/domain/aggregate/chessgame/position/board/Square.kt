@@ -1,8 +1,10 @@
 @file:Suppress("ClassName")
 
-package net.sustainablepace.chess.domain.aggregate.chessgame
+package net.sustainablepace.chess.domain.aggregate.chessgame.position.board
 
-import net.sustainablepace.chess.domain.move.rules.Direction
+import net.sustainablepace.chess.domain.aggregate.chessgame.Black
+import net.sustainablepace.chess.domain.aggregate.chessgame.Side
+import net.sustainablepace.chess.domain.aggregate.chessgame.White
 import kotlin.math.abs
 
 sealed class Square(val file: File, val rank: Rank) {
@@ -159,21 +161,20 @@ object h7 : Square('h', 7)
 object h8 : Square('h', 8)
 
 val charMap = arrayOf(
-    arrayOf(a1,a2,a3,a4,a5,a6,a7,a8),
-    arrayOf(b1,b2,b3,b4,b5,b6,b7,b8),
-    arrayOf(c1,c2,c3,c4,c5,c6,c7,c8),
-    arrayOf(d1,d2,d3,d4,d5,d6,d7,d8),
-    arrayOf(e1,e2,e3,e4,e5,e6,e7,e8),
-    arrayOf(f1,f2,f3,f4,f5,f6,f7,f8),
-    arrayOf(g1,g2,g3,g4,g5,g6,g7,g8),
-    arrayOf(h1,h2,h3,h4,h5,h6,h7,h8)
+    arrayOf(a1, a2, a3, a4, a5, a6, a7, a8),
+    arrayOf(b1, b2, b3, b4, b5, b6, b7, b8),
+    arrayOf(c1, c2, c3, c4, c5, c6, c7, c8),
+    arrayOf(d1, d2, d3, d4, d5, d6, d7, d8),
+    arrayOf(e1, e2, e3, e4, e5, e6, e7, e8),
+    arrayOf(f1, f2, f3, f4, f5, f6, f7, f8),
+    arrayOf(g1, g2, g3, g4, g5, g6, g7, g8),
+    arrayOf(h1, h2, h3, h4, h5, h6, h7, h8)
 )
 
 typealias File = Char
 typealias Rank = Int
 
 infix fun Rank.diff(other: Rank): Int = abs(this - other)
-infix fun Square.diff(other: Square): Direction = Direction(abs(file - other.file), abs(rank - other.rank))
 
 fun Square.leftNeighbour(): Square? = Square(file - 1, rank)
 fun Square.rightNeighbour(): Square? = Square(file + 1, rank)

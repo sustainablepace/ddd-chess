@@ -5,7 +5,7 @@ import net.sustainablepace.chess.domain.aggregate.chessgame.Checkmate
 import net.sustainablepace.chess.domain.aggregate.chessgame.InProgress
 import net.sustainablepace.chess.domain.aggregate.chessgame.Side
 import net.sustainablepace.chess.domain.move.ValidMove
-import net.sustainablepace.chess.domain.move.evaluation.SimpleEvaluation
+import net.sustainablepace.chess.domain.move.engine.evaluation.SimpleEvaluation
 
 object Minimax : Engine() {
     override fun bestMove(chessGame: ChessGame): ValidMove? =

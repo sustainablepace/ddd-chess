@@ -1,24 +1,13 @@
-package net.sustainablepace.chess.domain.aggregate.chessgame
+package net.sustainablepace.chess.domain.aggregate.chessgame.position.board
 
+import net.sustainablepace.chess.domain.aggregate.chessgame.Black
+import net.sustainablepace.chess.domain.aggregate.chessgame.White
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.Board
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.EnPassantSquare
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board
 import net.sustainablepace.chess.domain.move.Move
 import net.sustainablepace.chess.domain.move.PromotionMove
 import net.sustainablepace.chess.domain.move.ValidMove
-
-interface Board {
-    fun pieceOn(square: Square?): PieceOrNoPiece
-    fun movePiece(move: ValidMove, movingPiece: Piece, enPassantSquare: EnPassantSquare): Board
-
-    val whiteSquares: Set<Square>
-    val blackSquares: Set<Square>
-    val whiteKing: Square?
-    val blackKing: Square?
-    val pieces: List<Pair<Square, Piece>>
-    val whitePieces: List<Pair<Square, Piece>>
-    val blackPieces: List<Pair<Square, Piece>>
-    val isDeadPosition: Boolean
-}
-
-fun board(squares: Map<Square, Piece>) = BoardValueObject(squares)
 
 data class BoardValueObject(val squares: Map<Square, Piece>) : Board {
 
@@ -106,5 +95,3 @@ data class BoardValueObject(val squares: Map<Square, Piece>) : Board {
         return board(updatedBoard)
     }
 }
-
-

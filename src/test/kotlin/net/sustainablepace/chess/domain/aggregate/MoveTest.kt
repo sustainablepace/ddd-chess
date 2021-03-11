@@ -1,7 +1,7 @@
 package net.sustainablepace.chess.domain.aggregate
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.e2
-import net.sustainablepace.chess.domain.aggregate.chessgame.e4
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.e2
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.board.e4
 import net.sustainablepace.chess.domain.move.InvalidMove
 import net.sustainablepace.chess.domain.move.Move
 import org.assertj.core.api.Assertions.assertThat

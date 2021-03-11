@@ -1,4 +1,8 @@
-package net.sustainablepace.chess.domain.aggregate.chessgame
+package net.sustainablepace.chess.domain.aggregate.chessgame.position.board
+
+import net.sustainablepace.chess.domain.aggregate.chessgame.Black
+import net.sustainablepace.chess.domain.aggregate.chessgame.Side
+import net.sustainablepace.chess.domain.aggregate.chessgame.White
 
 sealed class PieceOrNoPiece
 object NoPiece : PieceOrNoPiece()

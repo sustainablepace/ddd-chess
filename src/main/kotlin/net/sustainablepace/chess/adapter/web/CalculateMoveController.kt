@@ -2,11 +2,11 @@ package net.sustainablepace.chess.adapter.web
 
 import net.sustainablepace.chess.application.ApplicationService
 import net.sustainablepace.chess.application.port.`in`.command.CalculateMove
+import net.sustainablepace.chess.application.port.`in`.command.MoveInput
 import net.sustainablepace.chess.domain.aggregate.chessgame.ChessGameId
 import net.sustainablepace.chess.domain.event.MoveCalculated
 import net.sustainablepace.chess.domain.event.MoveCalculatedOrNot
 import net.sustainablepace.chess.domain.event.NoMoveCalculated
-import net.sustainablepace.chess.domain.move.MoveInput
 import net.sustainablepace.chess.logger
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.badRequest

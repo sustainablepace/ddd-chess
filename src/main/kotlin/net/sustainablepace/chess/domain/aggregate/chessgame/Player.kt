@@ -8,6 +8,8 @@ import net.sustainablepace.chess.domain.move.engine.*
 
 sealed class Player
 
+object HumanPlayer : Player()
+
 abstract class ComputerPlayer(val engine: Engine) : Player() {
     abstract fun calculateMove(chessGame: ChessGame): MoveCalculatedOrNot
 }
@@ -66,4 +68,3 @@ object MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer : ComputerPlayer
         )
 }
 
-object HumanPlayer : Player()

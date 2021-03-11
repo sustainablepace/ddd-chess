@@ -6,8 +6,8 @@ import net.sustainablepace.chess.domain.aggregate.chessgame.InProgress
 import net.sustainablepace.chess.domain.aggregate.chessgame.Side
 import net.sustainablepace.chess.domain.event.PieceMoved
 import net.sustainablepace.chess.domain.move.ValidMove
-import net.sustainablepace.chess.domain.move.evaluation.WeighedEvaluation
-import net.sustainablepace.chess.domain.move.evaluation.moveOptionsMinimaxSort
+import net.sustainablepace.chess.domain.move.engine.evaluation.WeighedEvaluation
+import net.sustainablepace.chess.domain.move.engine.evaluation.moveOptionsMinimaxSort
 import kotlin.random.Random
 
 data class MinimaxData(val engineMove: ValidMove?, val score: Double, val depth: Int)

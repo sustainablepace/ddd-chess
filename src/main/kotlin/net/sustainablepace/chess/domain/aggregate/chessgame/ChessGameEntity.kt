@@ -1,45 +1,11 @@
-package net.sustainablepace.chess.domain.aggregate
+package net.sustainablepace.chess.domain.aggregate.chessgame
 
-import net.sustainablepace.chess.domain.aggregate.chessgame.*
+import net.sustainablepace.chess.domain.aggregate.ChessGame
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.Board
+import net.sustainablepace.chess.domain.aggregate.chessgame.position.MoveOptionsCalculator
 import net.sustainablepace.chess.domain.event.*
 import net.sustainablepace.chess.domain.move.ValidMove
-
-interface ChessGame : Board {
-    fun movePiece(move: ValidMove): PieceMovedOrNot
-
-    val id: ChessGameId
-    val position: Position
-    val white: Player
-    val black: Player
-    val numberOfNextMove: Int
-    val movesWithoutCaptureOrPawnMove: Int
-    val moves: List<Int>
-    val status: Status
-    val activePlayer: Player
-    val moveOptions: Set<ValidMove>
-    val identicalPositions: Int
-}
-
-fun chessGame(): PiecesHaveBeenSetUp = chessGame(position())
-fun chessGame(side: Side): PiecesHaveBeenSetUp = chessGame(position(turn = side))
-fun chessGame(white: ComputerPlayer, black: ComputerPlayer): ChessGame =
-    PiecesHaveBeenSetUp(
-        ChessGameEntity(
-            id = chessGameId(),
-            position = position(),
-            white = white,
-            black = black
-        )
-    )
-
-fun chessGame(position: Position): PiecesHaveBeenSetUp =
-    PiecesHaveBeenSetUp(
-        ChessGameEntity(
-            position = position,
-            white = HumanPlayer,
-            black = MinimaxWithDepthAndSophisticatedEvaluationComputerPlayer
-        )
-    )
+import kotlin.random.Random
 
 class ChessGameEntity(
     override val id: ChessGameId = chessGameId(),
@@ -104,3 +70,11 @@ class ChessGameEntity(
             }
         }
 }
+typealias ChessGameId = String
+
+fun chessGameId(): ChessGameId =
+    (('a'..'z').toSet() + ('1'..'9').toSet()).let { chars ->
+        (1..7).map {
+            chars.elementAt(Random.nextInt(0, chars.size))
+        }.joinToString("")
+    }

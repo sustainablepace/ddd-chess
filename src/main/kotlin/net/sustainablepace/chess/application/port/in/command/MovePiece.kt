@@ -4,8 +4,9 @@ import net.sustainablepace.chess.application.port.`in`.Command
 import net.sustainablepace.chess.domain.aggregate.chessgame.ChessGameId
 import net.sustainablepace.chess.domain.move.InvalidMove
 import net.sustainablepace.chess.domain.move.Move
-import net.sustainablepace.chess.domain.move.MoveInput
 import net.sustainablepace.chess.domain.move.ValidMove
+
+typealias MoveInput = String
 
 class MovePiece private constructor(
     val chessGameId: ChessGameId,
@@ -23,5 +24,4 @@ class MovePiece private constructor(
                 )
             }
     }
-
 }
